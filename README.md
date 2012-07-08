@@ -138,7 +138,7 @@ default:
 
 Changes for each release.
 
-### Version 0.0.1 - 
+### Version 0.0.1 - Sun Jul  8 23:29:58 UTC 2012
 
  * Created change log. #10.
  * Build on Travis CI. #9.
