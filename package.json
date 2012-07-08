@@ -9,10 +9,10 @@
   }]
 , "homepage": "http://bigeasy.github.com/arguable"
 , "repository": "git://github.com/bigeasy/arguable.git"
-, "scripts" : { "test": "build/test" }
+, "scripts" : { "test": "proof t/*/*.t" }
 , "devDependencies":
-  { "proof": "0.0.10"
-  , "uglify-js": ">=0"
+  { "proof": "0.0.12"
+  , "glob": ">=0"
   }
 , "dependencies": {}
 }
