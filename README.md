@@ -133,3 +133,17 @@ default:
   options.$error('unknown command');
 }
 ```
+
+## Change Log
+
+Changes for each release.
+
+### Version 0.0.1 - 
+
+ * Created change log. #10.
+ * Build on Travis CI. #9.
+ * Bash wildcards on Windows. #7. #6. #5.
+
+### Version 0.0.0 - Sun Jul  8 02:53:58 UTC 2012
+
+ * Create README.md. #3. #2.
