@@ -1,4 +1,4 @@
-# Arguable
+# Arguable [![Build Status](https://secure.travis-ci.org/bigeasy/arguable.png?branch=master)](http://travis-ci.org/bigeasy/arguable)
 
 **Arguable** is a command line parser that lends structure to your command line
 programs. You can use Arguable as a simple command line parser, or you can use
