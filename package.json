@@ -1,0 +1,18 @@
+{ "name": "arguable"
+, "description": "UNIX style argument parsing that painlessly ports to Windows. An argument parser so well organized, you might think it's a framework."
+, "author": "Alan Gutierrez <alan@prettyrobots.com>"
+, "version": "0.0.0"
+, "keywords": [ "command", "option", "parser", "prompt", "cli", "stdin", "args", "arguments", "console" ]
+, "licenses": [
+  { "type": "MIT"
+  , "url": "http://github.com/bigeasy/arguable/raw/master/LICENSE"
+  }]
+, "homepage": "http://bigeasy.github.com/arguable"
+, "repository": "git://github.com/bigeasy/arguable.git"
+, "scripts" : { "test": "build/test" }
+, "devDependencies":
+  { "proof": "0.0.10"
+  , "uglify-js": ">=0"
+  }
+, "dependencies": {}
+}
