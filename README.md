@@ -27,48 +27,54 @@ page in order to get your command line to parse.
   frobinate will reticuatle the splines in all of your happy doodle
   files, optional in parallel. The `--processes` option is the number of
   processes to run concurrently, defaulting to zero.
+  --- arguable ---
 
 */
 
-var options = require('arguable')(__filename);
+var options;
 
-if (options.help.boolean) options.help.usage(0);
+try {
+  options = require('arguable')(__filename);
+} catch (e) {
+  console.error('error: ' + e.message);
+  console.error(e.usage);
+  process.exit(1);
+}
 
-options.processes 
-       .default(1)
-       .range(1, 16, "incorrect number of processes");
-
-require('../lib/frobinator').frobinate(options.processes.integer, options.$argv);
+if (options.help) {
+  conosle.log(options.$usage);
+} else {
+  require('../lib/frobinator').frobinate(options.processes, options.$argv);
+}
 ```
 
-**Arguable** starts with a full help mesage, because **Arguable** believes
-that a full help message is important for a command line program.
+**Arguable** starts with a full help mesage, because **Arguable** believes that
+a full help message is important for a command line program.
 
-**Arguable** is not fond of command line libraries that assemble a usage
-message from snippets. It would rather have the author spend time composing a
-nicely formatted usage message, with the ability to see the whole message,
-then work from that message.
+**Arguable** is not fond of command line libraries that assemble a usage message
+from snippets. It would rather have the author spend time composing a nicely
+formatted usage message, with the ability to see the whole message, then work
+from that message.
 
-**Arguable** provides some helper functions for dealing with Windows.
-**Arguable** will resolve UNIX file paths on Windows as if they were invoked
-in a UNIX shell. That is, it will treat `*/*.t` as a file glob. If no files
-are found, it will result in an error.
+Because one of the most common arguent values is a file path, **Arguable**
+provides some helper functions for dealing with paths Windows. **Arguable** can
+resolve UNIX file paths on Windows as if they were invoked in a UNIX shell.
+**Arguable** will convert the slashes and expand wildcards. That is, it will
+treat `*/*.t` as a file glob.
 
-```
+```javascript
 var arguable = require('arguable')
   , frobinator = require('frobinator')
   ;
 
-// Convert a UNIX path to Windows, if we're on Windows.
-arguable.resolve('t/test/example.t').forEach(function (path, files) {
-  if (!files.length) arguable.error('file not found: ' + path);
-  else frobinator(1, files);
-});
-
-// Convert a UNIX glob to a list of files Windows, if we're on Windows.
-arguable.resolve('t/test/*.t').forEach(function (path, files) {
-  if (!files.length) arguable.error('file not found: ' + path);
-  else frobinator(1, files);
+arguable.glob(process.cwd(), [ 't/test/example.t', 't/test/*.t' ]).forEach(function (glob) {
+  if (!glob.files.length) {
+    throw new Error('file not found: ' + glob.pattern);
+  } else {
+    glob.files.forEach(function (file) {
+      frobinator.frobinate(1, path.resolve(glob.base, file));
+    });
+  }
 });
 ```
 
@@ -105,38 +111,51 @@ arguable.resolve('t/test/*.t').forEach(function (path, files) {
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
 
+  --- arguable ---
+
 */
 
 var options = require('arguable')(__filename)
   , frobinator = require('../lib/frobinator')
+  , icoc
   ;
 
-switch (options.$command) {
-case 'compile':
-  if (options.help.boolean) options.$usage(0);
+function abend (message, usage) {
+  console.error('error: ' + message);
+  console.error(usage);
+  process.exit(1);
+}
 
-  var ioic = frobinator.prepare(options.strict.boolean
-                              , option.prefix.string, options.$argv);
+try {
+  options = require('arguable')(__filename);
+} catch (e) {
+  abend(e.message, e.usage);
+}
 
-  frobinator.frobinator(ioic);
-  break;
-case 'run':
-  if (options.help.boolean) options.$usage(0);
-
-  options.processes 
-         .default(1)
-         .range(1, 16, "incorrect number of processes");
-
-  frobinator.frobinate(options.processes.integer, options.$argv);
-  break;
-default:
-  options.$error('unknown command');
+if (options.help) {
+  console.log(options.$usage);
+} else {
+  switch (options.$command) {
+  case 'compile':
+    ioic = frobinator.prepare(options.strict, option.prefix, options.$argv);
+    frobinator.frobinator(ioic);
+    break
+  case 'run':
+    frobinator.frobinate(options.processes, options.$argv);
+    break;
+  default:
+    abend('unknown command', e.usage);
+  }
 }
 ```
 
 ## Change Log
 
 Changes for each release.
+
+### Version 0.0.3 -
+
+ * Implement argument parsing. #4.
 
 ### Version 0.0.2 - Mon Jul  9 00:19:49 UTC 2012
 
