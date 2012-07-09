@@ -1,0 +1,30 @@
+
+  usage: basic [options] [files]
+
+    Quick overview of what we do here.
+
+  options:
+
+    --ambiguous, -a
+      possibly ambiguous argument.
+
+    --arbitrary, -A
+      an arbitrary word, also begninning with `a`.
+
+    --name, -N <name>
+      the name of a thing.
+
+    --processes, -p <count>
+      number of processes to run in parallel.
+
+    --config, -c <key=value> @
+      set configuration varaibles.
+
+    --help, -h
+      display this help message.
+
+  description:
+
+  Here's a description.
+
+  --- arguable ---
