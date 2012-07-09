@@ -4,19 +4,19 @@ const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|
 
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
-function find (directory, pattern, index, found) {
+function find (base, directory, pattern, index, found) {
   if (index == pattern.length) {
-    found.push(directory);
+    found.push(path.relative(base, directory));
     return;
   }
 
   if (pattern[index]('.')) {
-    find(directory, pattern, index + 1, found);
+    find(base, directory, pattern, index + 1, found);
     return;
   }
 
   if (pattern[index]('..')) {
-    find(path.dirname(directory), pattern, index + 1, found);
+    find(base, path.dirname(directory), pattern, index + 1, found);
     return;
   }
 
@@ -26,7 +26,7 @@ function find (directory, pattern, index, found) {
 
   fs.readdirSync(directory).forEach(function (file) {
     if (pattern[index](file)) {
-      find(path.resolve(directory, file), pattern, index + 1, found);
+      find(base, path.resolve(directory, file), pattern, index + 1, found);
     }
   });
 }
@@ -98,7 +98,8 @@ function glob (directory, argv) {
     found.push(match = { path: pattern, files: [] });
     exploded = explode(directory);
     if (exploded[0] == '') exploded[0] = '/';
-    find(path.normalize(path.join.apply(path, exploded)), compiled, 0, match.files);
+    var normalized = path.normalize(path.join.apply(path, exploded))
+    find(normalized, normalized, compiled, 0, match.files);
   });
   return found;
 }
