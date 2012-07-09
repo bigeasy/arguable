@@ -3,10 +3,6 @@ var path = require('path')
   ;
 
 module.exports = require('proof')(function () {
-  function listing (files) {
-    return files.map(function (file) {
-      return file.split(sep).pop()
-    });
-  }
-  return { listing: listing, path: path, glob: require('../../index').glob };
+  function forward (path) { return path.split(sep).join('/') }
+  return { forward: forward, path: path, glob: require('../../index').glob };
 });
