@@ -153,7 +153,7 @@ if (options.help) {
 
 Changes for each release.
 
-### Version 0.0.3 -
+### Version 0.0.3 - Mon Jul  9 18:24:28 UTC 2012
 
  * Implement argument parsing. #4.
 
