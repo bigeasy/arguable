@@ -5,22 +5,22 @@
 
   options:
 
-    --ambiguous, -a
+    -a, --ambiguous
       possibly ambiguous argument.
 
-    --arbitrary, -A
+    -A, --arbitrary
       an arbitrary word, also begninning with `a`.
 
-    --name, -N <name>
+    -N, --name <name>
       the name of a thing.
 
-    --processes, -p <count>
+    -p, --processes <count>
       number of processes to run in parallel.
 
-    --config, -c <key=value> @
+    -c, --config <key=value> @
       set configuration varaibles.
 
-    --help, -h
+    -h, --help
       display this help message.
 
   description:
