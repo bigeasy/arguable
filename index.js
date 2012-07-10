@@ -2,6 +2,17 @@ var slice = [].slice, path = require('path'), fs = require('fs');
 
 const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
+const LANG =
+{ en_GB: 'usage'
+, en_US: 'usage'
+, fi_FI: 'käyttö'
+, it_IT: 'utilizzo'
+};
+
+const USAGES = '(?:' + Object.keys(LANG).map(function (key) { return LANG[key] }).join('|') + ')';
+const START_USAGE_RE = new RegExp('^\\s*(' + USAGES + '):\\s+(?:\\w[-\\w\\d_]*)(?:\\s+(\\w+[-\\w\\d_]*))?');
+const END_USAGE_RE = new RegExp('^\\s*(?:' + USAGES + ':|:' + USAGES + ')');
+
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
 function find (base, directory, pattern, index, found) {
@@ -104,28 +115,32 @@ function glob (directory, argv) {
   return found;
 }
 
-function usage (source, argv) {
+function usage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/)
     , i = 0, j
     , I = lines.length
     , line
     , indent
     , $
+    , candidate
     ;
 
-  for (;i < I; i++) {
-    if ($ = /^\s*usage:\s+(\w[-\w\d_]*)(?:\s+(\w+[-\w\d_]*))?/.exec(lines[i])) {
-      if (!$[2] || $[2] == argv[0]) {
+  OUTER: for (;i < I; i++) {
+    if ($ = START_USAGE_RE.exec(lines[i])) {
+      if ((!candidate || LANG[lang] == $[1]) && (!$[2] || ($[2] == argv[0] && argv.shift()))) {
         indent = /^(\s*)/.exec(lines[i])[1].length;
         for (j = i + 1; j < I; j++) {
           if (/\S/.test(lines[j])) {
             indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length);
           }
-          if (/^\s*(usage:|:usage)/.test(lines[j])) {
-            return {
-              $usage: lines.slice(i, j).map(function (line) { return line.substring(indent) })
+          if (END_USAGE_RE.test(lines[j])) {
+            candidate =
+            { $usage: lines.slice(i, j).map(function (line) { return line.substring(indent) })
             , $command: $[2]
             }
+            if (LANG[lang] == $[1]) break OUTER;
+            i = j - 1;
+            continue OUTER;
           }
         }
         return null;
@@ -133,18 +148,21 @@ function usage (source, argv) {
     }
   }
 
-  return null;
+  return candidate;
 }
 
-function parse (source, argv) {
-  var options = usage(source, argv)
+function parse () {
+  var vargs = slice.call(arguments, 0)
+    , lang = 'en_US', source, argv, options
     , flags = {}
     , numeric = /^(count|number|value|size)$/
     , arg
     , arrayed = {}
     , pat = ''
+    , $
     ;
-  argv = argv.slice(0);
+  if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
+  source = vargs.shift(), argv = flatten(vargs), options = usage(lang, source, argv);
   options.$usage = options.$usage.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
@@ -210,7 +228,9 @@ function flatten () {
   var flattened = [];
   slice.call(arguments, 0).forEach(function (arg) {
     if (arg != null) {
-      if (typeof arg == "object") {
+      if (Array.isArray(arg)) {
+        flattened.push.apply(flattened, flatten.apply(this, arg));
+      } else if (typeof arg == "object") {
         Object.keys(arg).forEach(function (key) {
           (Array.isArray(arg[key]) ? arg[key] : [ arg[key] ]).forEach(function (value) {
             flattened.push('--' + key);
