@@ -153,7 +153,7 @@ if (options.help) {
 
 Changes for each release.
 
-### Version 0.0.4 -
+### Version 0.0.4 - Tue Jul 10 05:32:25 UTC 2012
 
  * Implement `flatten`. #15.
  * Use `:usage` to end usage message. #13.
