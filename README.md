@@ -170,24 +170,33 @@ matches a given locale identifier, e.g. `fi_FI` for Finnish.
 usage: awaken
 
   Good morning!
-
 käyttö: awaken
 
   Hyvää huomenta!
-
 :käyttö
 
 */
 
 var parse = require('arguable').parse
-  , options = parse('fi_FI', __filename, []);
+  , options = parse(process.env.lang, __filename, []);
 
 console.log(options.$usage);
 ```
 
-The above will print the Finnish version of the help message. You can use the
-language specified in the users `LANG` environment variable directly. If no such
-language translation exists, it falls back to the first translation encountered.
+We can run the above program with our `LANG` environment variable set to one of
+teh supported langauges.
+
+```console
+$ LANG=fi_FI.UTF-8 node awaken.js
+käyttö: awaken
+
+  Hyvää huomenta!
+```
+
+The above will print the Finnish version of the help message. You can pass the
+language specified in the users `LANG` environment variable directly to `parse`.
+If no such language translation exists, it falls back to the first translation
+encountered.
 
 Currently supported languages are English, Finnish and Italian. To support a new
 language, please [submit a suggested
