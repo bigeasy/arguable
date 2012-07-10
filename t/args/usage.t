@@ -2,7 +2,7 @@
 
 /*
   usage: basic [options] [files]
-    --config, -c <key=value> @
+    -c, --config <key=value> @
 
   --- arguable ---
 */
@@ -11,7 +11,7 @@ require('proof')(7, function (equal) {
   var arguable = require('../..')
     , options
     , usage = 'usage: basic [options] [files]\n' +
-              '  --config, -c <key=value>\n' +
+              '  -c, --config <key=value>\n' +
               ''
     ;
   options = arguable.parse(__filename, []);
