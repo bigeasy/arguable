@@ -149,6 +149,36 @@ if (options.help) {
 }
 ```
 
+**Arguable** supports internationalization. Simply write a usage message in a
+language other than English, and **Arguable** will display that message if it
+matches a given locale identifier, e.g. `fi_FI` for Finnish.
+
+```javascript
+
+/*
+
+usage: awaken
+
+  Good morning!
+
+käyttö: awaken
+
+  Hyvää huomenta!
+
+:käyttö
+
+*/
+
+var parse = require('arguable').parse
+  , options = parse('fi_FI', __filename, []);
+
+console.log(options.$usage);
+```
+
+The above will print the Finnish version of the help message. You can use the
+language specified in the users `LANG` environment variable directly. If no such
+language translation exists, it falls back to the first translation encountered.
+
 ## Change Log
 
 Changes for each release.

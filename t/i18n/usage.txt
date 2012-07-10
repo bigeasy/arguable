@@ -1,0 +1,7 @@
+usage: awaken
+
+  Good morning!
+käyttö: awaken
+
+  Hyvää huomenta!
+:käyttö
