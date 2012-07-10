@@ -147,9 +147,9 @@ function parse (source, argv) {
   argv = argv.slice(0);
   options.$usage = options.$usage.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
-    if ($ = /^[@\s]*(--\w[-\w\d_]*)(?:\s*,\s*(-[\w\d]))?(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
-      out = $[0], verbose = $[1]
-                , terse = $[2] || '-\t'
+    if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
+      out = $[0], terse = $[1] || '-\t'
+                , verbose = $[2]
                 , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
                 , line = line.substring(out.length);
       arrayed = ~out.indexOf('@') ? '@' : ':';
