@@ -202,6 +202,11 @@ Currently supported languages are English, Finnish and Italian. To support a new
 language, please [submit a suggested
 translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
 
+### Contributors
+
+ * [Ville Lahdenvuo](https://github.com/tuhoojabotti) &mdash; Finnish
+   translation.
+
 ## Change Log
 
 Changes for each release.
