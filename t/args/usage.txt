@@ -27,4 +27,4 @@
 
   Here's a description.
 
-  --- arguable ---
+  :usage
