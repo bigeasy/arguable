@@ -2,9 +2,10 @@
 
 **Arguable** is a command line parser that lends structure to your command line
 programs. You can use Arguable as a simple command line parser, or you can use
-it to orgainze your program in a master program with any number of sub-commands
+it to organize your program in a master program with any number of sub-commands
 in the style of `git`, `apt-get` or `yum`.
 
+## Usage First
 
 **Arguable** starts with your usage message. It uses your usage message as the
 declaration of the options. In essence, **Arguable** compels you to write a man
@@ -48,7 +49,7 @@ if (options.help) {
 }
 ```
 
-**Arguable** starts with a full help mesage, because **Arguable** believes that
+**Arguable** starts with a full help message, because **Arguable** believes that
 a full help message is important for a command line program.
 
 **Arguable** is not fond of command line libraries that assemble a usage message
@@ -56,7 +57,9 @@ from snippets. It would rather have the author spend time composing a nicely
 formatted usage message, with the ability to see the whole message, then work
 from that message.
 
-Because one of the most common arguent values is a file path, **Arguable**
+## Cross-Platform Wildcard Patterns
+
+Because one of the most common argument values is a file path, **Arguable**
 provides some helper functions for dealing with paths Windows. **Arguable** can
 resolve UNIX file paths on Windows as if they were invoked in a UNIX shell.
 **Arguable** will convert the slashes and expand wildcards. That is, it will
@@ -78,7 +81,11 @@ arguable.glob(process.cwd(), [ 't/test/example.t', 't/test/*.t' ]).forEach(funct
 });
 ```
 
-**Arguable** allows you to specify multiple commands.
+## Commands with Sub-Commands
+
+**Arguable** allows you to specify sub-commands in the style of `git`, `apt-get`
+or `yum`. Add the sub-command name to your usage description. **Arguable** will
+select the correct help message based on the program arguments.
 
 ```javascript
 /*
@@ -149,9 +156,43 @@ if (options.help) {
 }
 ```
 
+## Internationalization
+
+**Arguable** supports internationalization. Simply write a usage message in a
+language other than English, and **Arguable** will display that message if it
+matches a given locale identifier, e.g. `fi_FI` for Finnish.
+
+```javascript
+
+/*
+
+usage: awaken
+
+  Good morning!
+
+käyttö: awaken
+
+  Hyvää huomenta!
+
+:käyttö
+
+*/
+
+var parse = require('arguable').parse
+  , options = parse('fi_FI', __filename, []);
+
+console.log(options.$usage);
+```
+
+The above will print the Finnish version of the help message. You can use the
+language specified in the users `LANG` environment variable directly. If no such
+language translation exists, it falls back to the first translation encountered.
+
 ## Change Log
 
 Changes for each release.
+
+### Version 0.0.5 -
 
 ### Version 0.0.4 - Tue Jul 10 05:32:25 UTC 2012
 
