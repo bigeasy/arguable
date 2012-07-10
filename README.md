@@ -211,28 +211,35 @@ translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
 
 Changes for each release.
 
-### Version 0.0.5 -
+### Version 0.0.5 &mdash; Tue Jul 10 19:02:23 UTC 2012
 
-### Version 0.0.4 - Tue Jul 10 05:32:25 UTC 2012
+ * Update `README.md` help messages with short options first, proper termiator.
+   #19.
+ * Flatten arguments passed to parse. #18.
+ * Internationalization. #8.
+ * Add `$given`, a list of given parameters. #16.
+ * Remove `sort` from flatten. #17.
+
+### Version 0.0.4 &mdash; Tue Jul 10 05:32:25 UTC 2012
 
  * Implement `flatten`. #15.
  * Use `:usage` to end usage message. #13.
  * Short opts before long opts in usage message list of options. #14.
 
-### Version 0.0.3 - Mon Jul  9 18:24:28 UTC 2012
+### Version 0.0.3 &mdash; Mon Jul  9 18:24:28 UTC 2012
 
  * Implement argument parsing. #4.
 
-### Version 0.0.2 - Mon Jul  9 00:19:49 UTC 2012
+### Version 0.0.2 &mdash; Mon Jul  9 00:19:49 UTC 2012
 
  * Give matched file relative to base. #11.
 
-### Version 0.0.1 - Sun Jul  8 23:29:58 UTC 2012
+### Version 0.0.1 &mdash; Sun Jul  8 23:29:58 UTC 2012
 
  * Created change log. #10.
  * Build on Travis CI. #9.
  * Bash wildcards on Windows. #7. #6. #5.
 
-### Version 0.0.0 - Sun Jul  8 02:53:58 UTC 2012
+### Version 0.0.0 &mdash; Sun Jul  8 02:53:58 UTC 2012
 
  * Create README.md. #3. #2.
