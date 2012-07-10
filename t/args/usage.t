@@ -4,7 +4,7 @@
   usage: basic [options] [files]
     -c, --config <key=value> @
 
-  --- arguable ---
+  :usage
 */
 
 require('proof')(7, function (equal) {
