@@ -3,11 +3,23 @@ var slice = [].slice, path = require('path'), fs = require('fs');
 const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
 const LANG =
-{ en_GB: 'usage'
+{ de_DE: 'Benutzung'
+, en_GB: 'usage'
 , en_US: 'usage'
+, es_ES: 'uso'
 , fi_FI: 'käyttö'
+, ja_JP: '使用法'
 , it_IT: 'utilizzo'
+, pt_BR: 'uso'
+, pt_PT: 'uso'
+, zh_CH: '用法'
 };
+
+const DISAMBIGUATE =
+{ en_ES: /(opciones:|descripción:)/
+, pt_BR: /(opções:|descrição:)/
+, pt_PT: /(opções:|descrição:)/
+}
 
 const USAGES = '(?:' + Object.keys(LANG).map(function (key) { return LANG[key] }).join('|') + ')';
 const START_USAGE_RE = new RegExp('^\\s*(' + USAGES + '):\\s+(?:\\w[-\\w\\d_]*)(?:\\s+(\\w+[-\\w\\d_]*))?');
@@ -123,6 +135,7 @@ function usage (lang, source, argv) {
     , indent
     , $
     , candidate
+    , message, match
     ;
 
   OUTER: for (;i < I; i++) {
@@ -134,11 +147,15 @@ function usage (lang, source, argv) {
             indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length);
           }
           if (END_USAGE_RE.test(lines[j])) {
-            candidate =
-            { $usage: lines.slice(i, j).map(function (line) { return line.substring(indent) })
-            , $command: $[2]
+            message = lines.slice(i, j).map(function (line) { return line.substring(indent) });
+            match = (LANG[lang] == $[1] && (DISAMBIGUATE[lang] || /./).test(message))
+            if (!candidate || match) {
+              candidate =
+              { $usage: message
+              , $command: $[2]
+              }
+              if (match) break OUTER;
             }
-            if (LANG[lang] == $[1]) break OUTER;
             i = j - 1;
             continue OUTER;
           }

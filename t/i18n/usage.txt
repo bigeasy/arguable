@@ -1,6 +1,11 @@
 usage: awaken
 
   Good morning!
+uso: awaken
+
+  Buenos días!
+
+opciones:
 käyttö: awaken
 
   Hyvää huomenta!
