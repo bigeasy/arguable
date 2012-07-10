@@ -204,5 +204,25 @@ function getopt (pat, opts, argv) {
   return opts;
 }
 
+function flatten () {
+  var flattened = [];
+  slice.call(arguments, 0).forEach(function (arg) {
+    if (arg != null) {
+      if (typeof arg == "object") {
+        Object.keys(arg).sort().forEach(function (key) {
+          (Array.isArray(arg[key]) ? arg[key] : [ arg[key] ]).sort().forEach(function (value) {
+            flattened.push('--' + key);
+            if (typeof value != 'boolean') flattened.push(value);
+          });
+        });
+      } else {
+        flattened.push(arg);
+      }
+    }
+  });
+  return flattened;
+}
+
 module.exports.glob = glob;
 module.exports.parse = parse;
+module.exports.flatten = flatten;
