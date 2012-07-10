@@ -121,7 +121,7 @@ function usage (source, argv) {
           if (/\S/.test(lines[j])) {
             indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length);
           }
-          if (/^\s*(usage:|--- arguable ---)/.test(lines[j])) {
+          if (/^\s*(usage:|:usage)/.test(lines[j])) {
             return {
               $usage: lines.slice(i, j).map(function (line) { return line.substring(indent) })
             , $command: $[2]
