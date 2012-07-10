@@ -20,15 +20,16 @@ page in order to get your command line to parse.
 
   options:
 
-  --help, -h                  display this message
-  --processes, -p   [count]   number of processes to run in parallel
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
 
   description:
 
   frobinate will reticuatle the splines in all of your happy doodle
-  files, optional in parallel. The `--processes` option is the number of
-  processes to run concurrently, defaulting to zero.
-  --- arguable ---
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one.
+
+  :usage
 
 */
 
@@ -94,8 +95,8 @@ select the correct help message based on the program arguments.
 
   options:
 
-  --help, -h                  display this message
-  --processes, -p   [count]   number of processes to run in parallel
+  -h, --help                  display this message
+  -p, --processes     [count] number of processes to run in parallel
 
   description:
 
@@ -107,10 +108,10 @@ select the correct help message based on the program arguments.
 
   options:
 
-  --help, -h                  display this message
-  --strict, -s                strict interpretation of the ISO 33465
+  -h, --help                  display this message
+  -s, --strict                strict interpretation of the ISO 33465
                               Frobination Standard.
-  --prefix, -p                prefix for frobination identifiers
+  -p, --prefix                prefix for frobination identifiers
 
   description:
 
@@ -118,7 +119,7 @@ select the correct help message based on the program arguments.
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
 
-  --- arguable ---
+  :usage
 
 */
 
@@ -187,6 +188,10 @@ console.log(options.$usage);
 The above will print the Finnish version of the help message. You can use the
 language specified in the users `LANG` environment variable directly. If no such
 language translation exists, it falls back to the first translation encountered.
+
+Currently supported languages are English, Finnish and Italian. To support a new
+language, please [submit a suggested
+translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
 
 ## Change Log
 
