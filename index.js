@@ -209,8 +209,8 @@ function flatten () {
   slice.call(arguments, 0).forEach(function (arg) {
     if (arg != null) {
       if (typeof arg == "object") {
-        Object.keys(arg).sort().forEach(function (key) {
-          (Array.isArray(arg[key]) ? arg[key] : [ arg[key] ]).sort().forEach(function (value) {
+        Object.keys(arg).forEach(function (key) {
+          (Array.isArray(arg[key]) ? arg[key] : [ arg[key] ]).forEach(function (value) {
             flattened.push('--' + key);
             if (typeof value != 'boolean') flattened.push(value);
           });
