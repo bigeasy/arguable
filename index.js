@@ -173,7 +173,7 @@ function abend (message) {
 }
 
 function getopt (pat, opts, argv) {
-  var arg, i = 0, $, arg, opt, l, alts;
+  var arg, i = 0, $, arg, opt, l, alts, given = {};
   pat.replace(/--([^-]+)@/, function ($1, verbose) { opts[verbose] = [] });
   while (!(i >= argv.length || (argv[i] == "--" && argv.shift()) || !/^--?[^-]/.test(argv[i]))) {
     arg = argv.shift();
@@ -197,10 +197,12 @@ function getopt (pat, opts, argv) {
         abend("option does not take value: " + (arg[1][1] != "-" ? arg[1] : "--" + opt), true);
       }
     }
+    given[opt] = true;
     if ($[1] == '@') opts[opt].push(arg[2]);
     else if (opts[opt] != null) abend("option can only be secified once: " + arg[1]);
     else opts[opt] = arg[2];
   }
+  opts.$given = Object.keys(given);
   return opts;
 }
 
