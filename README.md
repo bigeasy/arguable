@@ -204,6 +204,7 @@ translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
 
 ## Contributors
 
+ * [Yawnt](https://github.com/yawnt) &mdash; Italian translation.
  * [Ville Lahdenvuo](https://github.com/tuhoojabotti) &mdash; Finnish
    translation.
  * [Ed Vielmetti](https://github.com/vielmetti) &mdash; German, Spanish,
