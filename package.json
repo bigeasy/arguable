@@ -11,6 +11,6 @@
 , "repository": "git://github.com/bigeasy/arguable.git"
 , "scripts" : { "test": "proof t/*/*.t" }
 , "devDependencies":
-  { "proof": "0.0.12" }
+  { "proof": "0.0.15" }
 , "dependencies": {}
 }
