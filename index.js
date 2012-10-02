@@ -3,26 +3,27 @@ var slice = [].slice, path = require('path'), fs = require('fs');
 const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
 const LANG =
-{ de_DE: 'Benutzung'
-, en_GB: 'usage'
-, en_US: 'usage'
-, es_ES: 'uso'
-, fi_FI: 'käyttö'
-, ja_JP: '使用法'
-, it_IT: 'utilizzo'
-, pt_BR: 'uso'
-, pt_PT: 'uso'
-, zh_CH: '用法'
+{ 'Benutzung': 'de_DE'
+, 'usage': 'en_GB'
+, 'usage': 'en_US'
+, 'uso': 'es_ES'
+, 'käyttö': 'fi_FI'
+, '使用法': 'ja_JP'
+, 'utilizzo': 'it_IT'
+, 'uso': 'pt_BR'
+, 'uso': 'pt_PT'
+, '用法': 'zh_CH'
+, 'errors': 'errors'
 };
 
 const DISAMBIGUATE =
 { en_ES: /(opciones:|descripción:)/
 , pt_BR: /(opções:|descrição:)/
 , pt_PT: /(opções:|descrição:)/
-}
+};
 
-const USAGES = '(?:' + Object.keys(LANG).map(function (key) { return LANG[key] }).join('|') + ')';
-const START_USAGE_RE = new RegExp('^\\s*(' + USAGES + '):\\s+(?:\\w[-\\w\\d_]*)(?:\\s+(\\w+[-\\w\\d_]*))?');
+const USAGES = '(?:' + Object.keys(LANG).join('|') + ')';
+const START_USAGE_RE = new RegExp('^\\s*(' + USAGES + '):(?:\\s+\\w[-\\w\\d_]*)?(?:\\s+(\\w+[-\\w\\d_]*))?');
 const END_USAGE_RE = new RegExp('^\\s*(?:' + USAGES + ':|:' + USAGES + ')');
 
 function regular (text) { return text.replace(REGEX, '\\$1') }
@@ -153,6 +154,7 @@ function usage (lang, source, argv) {
               candidate =
               { $usage: message
               , $command: $[2]
+              , $defaultLanguage: lang
               }
               if (match) break OUTER;
             }
@@ -168,6 +170,47 @@ function usage (lang, source, argv) {
   return candidate;
 }
 
+function getMessage (defaultLanguage, lang, errors, error) {
+  var lines = errors.split(/\n/), i, I, $, spaces, line, message = [], dedent;
+
+  lines.shift();
+  error = error.trim();
+
+  OUTER: for (i = 0, I = lines.length; i < I; i++) {
+    if (($ = /^(\s*)(.*)$/.exec(lines[i])) && !$[2].indexOf(error + ':')) {
+      spaces = $[1].length;
+      if (defaultLanguage == lang) break OUTER;
+      for (i++; i < I; i++) {
+        if (!/\S/.test(lines[i])) continue;
+        $ = /^(\s*)(.*)$/.exec(lines[i]);
+        if ($[1].length != spaces) continue;
+        if (!$[2].indexOf(lang + ':')) break OUTER;
+        if (/^[a-z]{2}_[A-Z]{2}:/.test($[2])) continue;
+        return getMessage(defaultLanguage, defaultLanguage, errors, error);
+      }
+    }
+  }
+
+  if (i == I) return;
+
+  line = $[2].replace(/^[^:]+:/, '').trim();
+  if (line) message.push(line);
+  dedent = /^(\s*)/.exec(lines[i + 1] || '')[1].length;
+  for (i++; i < I && /^(\s*)/.exec(lines[i])[1].length != spaces; i++) {
+    message.push(lines[i].substring(dedent));
+  }
+
+  return message.join('\n');
+}
+
+// First argument is optionally a language identifier. This is easily obtained
+// from the environment and passed in as the first argument. The first required
+// argument is the file used to for a usage strings, followed by arguments,
+// which are flattened. And optional callback is the final argument. If provided
+// the callback is invoked with the options array. Any exception thrown is
+// reported. If it begins with something that looks like an error warning, then
+// the stack trace is supressed and the error message is followed by usage.
+
 function parse () {
   var vargs = slice.call(arguments, 0)
     , lang = 'en_US', source, argv, options
@@ -177,7 +220,14 @@ function parse () {
     , arrayed = {}
     , pat = ''
     , $
+    , main, errors, message
+    , abended = function (usage, message) {
+        if (message) console.log(message);
+        console.log(usage);
+      }
     ;
+  if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
+  if (typeof vargs[vargs.length - 1] == 'function') main = vargs.pop();
   if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
   source = vargs.shift(), argv = flatten(vargs), options = usage(lang, source, argv);
   options.$usage = options.$usage.map(function (line) {
@@ -196,10 +246,29 @@ function parse () {
   try {
     getopt(pat, options, argv);
   } catch (e) {
-    e.usage = options.$usage;
-    throw e;
+    // TODO: I18n is missing from here.
+    if (main) {
+      console.error(e.message);
+      console.error(options.$usage);
+    } else {
+      e.usage = options.$usage;
+      throw e;
+    }
   }
   options.$argv = argv;
+  if (main) {
+    try {
+      main(options);
+    } catch (e) {
+      if (e.message == 'usage') {
+        abended(options.$usage);
+      } else {
+        errors = usage('errors', source, []);
+        message = getMessage(options.$defaultLanguage, lang, errors.$usage.join('\n'), e.message);
+        abended(options.$usage, message, e.arguments || []);
+      }
+    }
+  }
   return options;
 }
 
