@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 /*
+  ___ usage: en_US ___
   usage: basic [options] [files]
     -c, --config <key=value> @
 
-  :usage
+  ___ usage ___
 */
 
 

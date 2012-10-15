@@ -7,15 +7,16 @@ in the style of `git`, `apt-get` or `yum`.
 
 ## Usage First
 
-**Arguable** starts with your usage message. It uses your usage message as the
-declaration of the options. In essence, **Arguable** compels you to write a man
-page in order to get your command line to parse.
+**Arguable** starts with your usage message. It extracts the program arguments
+from the usage message. **Arguable** compels you to write a usage message in
+order to get your command line to parse.
 
 ```javascript
 #!/usr/bin/node
 
 /*
 
+  ___ usage: en_US ___
   usage: frobinate [options] [file...] [file]
 
   options:
@@ -29,25 +30,14 @@ page in order to get your command line to parse.
   files, optionally in parallel. The `--processes` option is the number
   of processes to run concurrently, defaulting to one.
 
-  :usage
+  ___ usage ___
 
 */
 
-var options;
-
-try {
-  options = require('arguable')(__filename);
-} catch (e) {
-  console.error('error: ' + e.message);
-  console.error(e.usage);
-  process.exit(1);
-}
-
-if (options.help) {
-  conosle.log(options.$usage);
-} else {
+require('arguable')(__filename, function (options) {
+  if (options.help) throw new Error("usage");
   require('../lib/frobinator').frobinate(options.processes, options.$argv);
-}
+});
 ```
 
 **Arguable** starts with a full help message, because **Arguable** believes that
@@ -91,6 +81,7 @@ select the correct help message based on the program arguments.
 ```javascript
 /*
 
+  ___ run _ usage: en_US ___
   usage: frobinate run [options] [file...] [file]
 
   options:
@@ -104,6 +95,7 @@ select the correct help message based on the program arguments.
   files, optional in parallel. The `--processes` option is the number of
   processes to run concurrently, defaulting to zero.
 
+  ___ compile _ usage: en_US ___
   usage: frobinate compile [options] [file...] [file]
 
   options:
@@ -119,31 +111,18 @@ select the correct help message based on the program arguments.
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
 
-  :usage
+  ___ usage ___
 
 */
 
-var options = require('arguable')(__filename)
+var arguable = require('arguable')
   , frobinator = require('../lib/frobinator')
   , icoc
   ;
 
-function abend (message, usage) {
-  console.error('error: ' + message);
-  console.error(usage);
-  process.exit(1);
-}
-
-try {
-  options = require('arguable')(__filename);
-} catch (e) {
-  abend(e.message, e.usage);
-}
-
-if (options.help) {
-  console.log(options.$usage);
-} else {
-  switch (options.$command) {
+arguable(__filename, function (options) {
+  if (options.help) options.abend();
+  switch (options.command) {
   case 'compile':
     ioic = frobinator.prepare(options.strict, option.prefix, options.$argv);
     frobinator.frobinator(ioic);
@@ -154,26 +133,29 @@ if (options.help) {
   default:
     abend('unknown command', e.usage);
   }
-}
+});
 ```
 
 ## Internationalization
 
-**Arguable** supports internationalization. Simply write a usage message in a
-language other than English, and **Arguable** will display that message if it
-matches a given locale identifier, e.g. `fi_FI` for Finnish.
+**Arguable** supports internationalization. Simply write additional usage
+messages in other languages following the default language, marking the
+additional languages with their locale string. You can then invoke the parser
+passing the current locale string as the first argument.
 
 ```javascript
 
 /*
 
+___ usage: en_US ___
 usage: awaken
 
   Good morning!
+___ usage: fi_FI ___
 käyttö: awaken
 
   Hyvää huomenta!
-:käyttö
+___ usage ___
 
 */
 
@@ -198,10 +180,6 @@ language specified in the users `LANG` environment variable directly to `parse`.
 If no such language translation exists, it falls back to the first translation
 encountered.
 
-Currently supported languages are English, Finnish and Italian. To support a new
-language, please [submit a suggested
-translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
-
 ## Contributors
 
  * [Yawnt](https://github.com/yawnt) &mdash; Italian translation.
@@ -213,6 +191,12 @@ translation](https://github.com/bigeasy/arguable/issues/20) of the word "usage".
 ## Change Log
 
 Changes for each release.
+
+###
+ 
+ * Structure markup for usage messages instead of guessing locale based on
+   language. #27.
+ * Wrap main body of program in a try/catch block. #25.
 
 ### Version 0.0.5 &mdash; Tue Jul 10 19:02:23 UTC 2012
 
