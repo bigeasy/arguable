@@ -1,30 +1,11 @@
 var slice = [].slice, path = require('path'), fs = require('fs');
 
+function die () {
+  console.log.apply(console, slice.call(arguments, 0));
+  return process.exit(1);
+}
+
 const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
-
-const LANG =
-{ 'Benutzung': 'de_DE'
-, 'usage': 'en_GB'
-, 'usage': 'en_US'
-, 'uso': 'es_ES'
-, 'käyttö': 'fi_FI'
-, '使用法': 'ja_JP'
-, 'utilizzo': 'it_IT'
-, 'uso': 'pt_BR'
-, 'uso': 'pt_PT'
-, '用法': 'zh_CH'
-, 'errors': 'errors'
-};
-
-const DISAMBIGUATE =
-{ en_ES: /(opciones:|descripción:)/
-, pt_BR: /(opções:|descrição:)/
-, pt_PT: /(opções:|descrição:)/
-};
-
-const USAGES = '(?:' + Object.keys(LANG).join('|') + ')';
-const START_USAGE_RE = new RegExp('^\\s*(' + USAGES + '):(?:\\s+\\w[-\\w\\d_]*)?(?:\\s+(\\w+[-\\w\\d_]*))?');
-const END_USAGE_RE = new RegExp('^\\s*(?:' + USAGES + ':|:' + USAGES + ')');
 
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
@@ -128,6 +109,8 @@ function glob (directory, argv) {
   return found;
 }
 
+const USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
+
 function usage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/)
     , i = 0, j
@@ -136,29 +119,39 @@ function usage (lang, source, argv) {
     , indent
     , $
     , candidate
+    , defaultLanguage, language
     , message, match
+    , langs
     ;
 
   OUTER: for (;i < I; i++) {
-    if ($ = START_USAGE_RE.exec(lines[i])) {
-      if ((!candidate || LANG[lang] == $[1]) && (!$[2] || ($[2] == argv[0] && argv.shift()))) {
+    if ($ = USAGE_RE.exec(lines[i])) {
+      if (!$[3]) continue OUTER;
+      langs = $[3].split(/\s+/);
+      if (!defaultLanguage || ~langs.indexOf(lang)) {
         indent = /^(\s*)/.exec(lines[i])[1].length;
         for (j = i + 1; j < I; j++) {
           if (/\S/.test(lines[j])) {
             indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length);
           }
-          if (END_USAGE_RE.test(lines[j])) {
-            message = lines.slice(i, j).map(function (line) { return line.substring(indent) });
-            match = (LANG[lang] == $[1] && (DISAMBIGUATE[lang] || /./).test(message))
-            if (!candidate || match) {
-              candidate =
-              { $usage: message
-              , $command: $[2]
-              , $defaultLanguage: lang
-              }
-              if (match) break OUTER;
+          if ($ = USAGE_RE.exec(lines[j])) {
+            if (!message) {
+              message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) });
+              language = { $usage: message };
+            } else {
+              language.$errors = errors(lines.slice(i + 1, j));
+            }
+            if ($[2] == 'strings') {
+              i = j;
+              continue;
+            }
+            if (!defaultLanguage) defaultLanguage = language;
+            if (~langs.indexOf(lang)) {
+              language.defaultLanguage = defaultLanguage;
+              return language 
             }
             i = j - 1;
+            message = null;
             continue OUTER;
           }
         }
@@ -167,40 +160,35 @@ function usage (lang, source, argv) {
     }
   }
 
-  return candidate;
+  defaultLanguage.$defaultLanguage = defaultLanguage;
+  return defaultLanguage;
 }
 
-function getMessage (defaultLanguage, lang, errors, error) {
-  var lines = errors.split(/\n/), i, I, $, spaces, line, message = [], dedent;
-
-  lines.shift();
-  error = error.trim();
+function errors (lines) {
+  var i, I, j, J, $, spaces, key, line, message = [], dedent = Number.MAX_VALUE, errors = {};
 
   OUTER: for (i = 0, I = lines.length; i < I; i++) {
-    if (($ = /^(\s*)(.*)$/.exec(lines[i])) && !$[2].indexOf(error + ':')) {
-      spaces = $[1].length;
-      if (defaultLanguage == lang) break OUTER;
+    if (($ = /^(\s*)([^:]+):\s*(.*)$/.exec(lines[i]))) {
+      spaces = $[1].length, key = $[2], line = $[3], message = [];
+      if (line.length) message.push(line);
       for (i++; i < I; i++) {
-        if (!/\S/.test(lines[i])) continue;
-        $ = /^(\s*)(.*)$/.exec(lines[i]);
-        if ($[1].length != spaces) continue;
-        if (!$[2].indexOf(lang + ':')) break OUTER;
-        if (/^[a-z]{2}_[A-Z]{2}:/.test($[2])) continue;
-        return getMessage(defaultLanguage, defaultLanguage, errors, error);
+        if (/\S/.test(lines[i])) {
+          $ = /^(\s*)(.*)$/.exec(lines[i]);
+          if ($[1].length <= spaces) break;
+          dedent = Math.min($[1].length, dedent);
+        }
+        message.push(lines[i]);
       }
+      for (j = line.length ? 1 : 0, J = message.length; j < J; j++) {
+        message[j] = message[j].substring(dedent);
+      }
+      if (message[message.length - 1] == '') message.pop();
+      errors[key] = message.join('\n');
+      i--;
     }
   }
 
-  if (i == I) return;
-
-  line = $[2].replace(/^[^:]+:/, '').trim();
-  if (line) message.push(line);
-  dedent = /^(\s*)/.exec(lines[i + 1] || '')[1].length;
-  for (i++; i < I && /^(\s*)/.exec(lines[i])[1].length != spaces; i++) {
-    message.push(lines[i].substring(dedent));
-  }
-
-  return message.join('\n');
+  return errors;
 }
 
 // First argument is optionally a language identifier. This is easily obtained
@@ -262,10 +250,10 @@ function parse () {
     } catch (e) {
       if (e.message == 'usage') {
         abended(options.$usage);
-      } else {
-        errors = usage('errors', source, []);
-        message = getMessage(options.$defaultLanguage, lang, errors.$usage.join('\n'), e.message);
+      } else if (message = (options.$errors[e.message] || options.$defaultLanguage.$errors[e.message])) {
         abended(options.$usage, message, e.arguments || []);
+      } else {
+        throw e;
       }
     }
   }

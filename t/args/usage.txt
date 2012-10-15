@@ -1,4 +1,5 @@
 
+  ___ usage: en_US ___
   usage: basic [options] [files]
 
     Quick overview of what we do here.
@@ -27,4 +28,4 @@
 
   Here's a description.
 
-  :usage
+  ___ usage ___
