@@ -120,7 +120,7 @@ function usage (lang, source, argv) {
     , $
     , candidate
     , defaultLanguage, language
-    , message, match
+    , message, command, match
     , langs
     ;
 
@@ -128,7 +128,8 @@ function usage (lang, source, argv) {
     if ($ = USAGE_RE.exec(lines[i])) {
       if (!$[3]) continue OUTER;
       langs = $[3].split(/\s+/);
-      if (!defaultLanguage || ~langs.indexOf(lang)) {
+      if ((!$[1] || $[1] == argv[0]) && (!defaultLanguage || ~langs.indexOf(lang))) {
+        command = $[1];
         indent = /^(\s*)/.exec(lines[i])[1].length;
         for (j = i + 1; j < I; j++) {
           if (/\S/.test(lines[j])) {
@@ -138,6 +139,7 @@ function usage (lang, source, argv) {
             if (!message) {
               message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) });
               language = { $usage: message };
+              if (command) language.$command = command;
             } else {
               language.$errors = errors(lines.slice(i + 1, j));
             }
@@ -231,6 +233,9 @@ function parse () {
     }
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
+  if (options.$command) {
+    argv.shift();
+  }
   try {
     getopt(pat, options, argv);
   } catch (e) {
