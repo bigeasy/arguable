@@ -18,7 +18,7 @@ require('proof')(2, function (ok, equal) {
     ;
 
   function main (options) {
-    throw new Error('usage');
+    options.help();
   }
 
   function error (usage, message) {

@@ -31,7 +31,7 @@ require('proof')(6, function (equal) {
   var arguable = require('../..');
 
   function main (options) {
-    throw new Error('equals missing');
+    options.abend('equals missing');
   }
 
   function abended (test, message) {

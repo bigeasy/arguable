@@ -16,7 +16,7 @@ require('proof')(7, function (equal) {
               ''
     ;
   options = arguable.parse(__filename, []);
-  equal(options.$usage, usage, "usage");
+  equal(options.usage, usage, "usage");
   try {
     arguable.parse(__filename, [ '-x' ]);
   } catch (e) {
