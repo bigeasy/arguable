@@ -39,8 +39,8 @@
 require('proof')(3, function (equal, ok) {
   var arguable = require('../..'), options;
   options = arguable.parse(__filename, [ 'run', '-h' ]);
-  equal(options.$command, 'run', 'first command');
-  ok(options.help, 'switches');
+  equal(options.command, 'run', 'first command');
+  ok(options.params.help, 'switches');
   options = arguable.parse(__filename, [ 'compile' ]);
-  equal(options.$command, 'compile', 'second command');
+  equal(options.command, 'compile', 'second command');
 });

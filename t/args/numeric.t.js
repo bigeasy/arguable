@@ -5,9 +5,9 @@ require('proof')(3, function (equal) {
     , options
     ;
   options = arguable.parse(__dirname + '/usage.txt', [ '-p', 3 ]);
-  equal(options.processes + 1, 4, 'terse numeric');
+  equal(options.params.processes + 1, 4, 'terse numeric');
   options = arguable.parse(__dirname + '/usage.txt', [ '-p3' ]);
-  equal(options.processes + 1, 4, 'terse mushed numeric');
+  equal(options.params.processes + 1, 4, 'terse mushed numeric');
   options = arguable.parse(__dirname + '/usage.txt', [ '--p', 3 ]);
-  equal(options.processes + 1, 4, 'verbose numeric');
+  equal(options.params.processes + 1, 4, 'verbose numeric');
 });

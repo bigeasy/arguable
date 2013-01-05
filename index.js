@@ -249,20 +249,51 @@ function parse () {
     }
   }
   options.$argv = argv;
+  var objectified = new Options(options, 0);
   if (main) {
     try {
-      main(options);
+      main(objectified);
     } catch (e) {
-      if (e.message == 'usage') {
-        abended(options.$usage);
-      } else if (message = (options.$errors[e.message] || options.$defaultLanguage.$errors[e.message])) {
-        abended(options.$usage, message, e.arguments || []);
+      if (e._type === Options.prototype.help) {
+        abended(objectified.usage);
+      } else if (e._type === Options.prototype.abend) {
+        message = objectified._errors[e.message] || objectified.defaultLanguage._errors[e.message];
+        abended(objectified.usage, message, e._arguments || []);
       } else {
         throw e;
       }
     }
   }
-  return options;
+  return objectified;
+}
+
+function Options (legacy, depth) {
+  var options = this;
+  options.args = legacy.$argv;
+  options.params = {};
+  options.given = legacy.$given;
+  options.usage = legacy.$usage;
+  options._errors = legacy.$errors;
+  for (var key in legacy) {
+    if (key[0] != '$') {
+      options.params[key] = legacy[key];
+    }
+  }
+  if (legacy.$command) options.command = legacy.$command;
+  if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
+}
+
+Options.prototype.help = function (message) {
+  var e = new Error(message);
+  e._type = Options.prototype.help;
+  throw e;
+}
+
+Options.prototype.abend = function (message) {
+  var e = new Error(message);
+  e._type = Options.prototype.abend;
+  e._arguments = slice.call(arguments, 1);
+  throw e;
 }
 
 function abend (message) {
