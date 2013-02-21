@@ -192,8 +192,14 @@ encountered.
 
 Changes for each release.
 
-###
+### Version 0.0.6
+
+Thu Feb 21 07:42:25 UTC 2013
  
+ * Fix formatting of change log in `README.md`. #31.
+ * Create `Options` class. #32.
+ * Implement sub-commands in usage markup. #30.
+ * Add `.js` suffix to tests. #26.
  * Use markup for usage messages instead of guessing locale based on language. #27.
  * Wrap main body of program in a try/catch block. #25.
 
