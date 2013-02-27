@@ -2,7 +2,11 @@ var slice = [].slice, path = require('path'), fs = require('fs');
 
 function die () {
   console.log.apply(console, slice.call(arguments, 0));
-  return process.exit(1);
+  process.exit(1);
+}
+
+function say () {
+  console.log.apply(console, slice.call(arguments, 0));
 }
 
 const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
@@ -162,7 +166,7 @@ function usage (lang, source, argv) {
     }
   }
 
-  defaultLanguage.$defaultLanguage = defaultLanguage;
+  if(defaultLanguage) defaultLanguage.$defaultLanguage = defaultLanguage;
   return defaultLanguage;
 }
 
@@ -212,14 +216,18 @@ function parse () {
     , $
     , main, errors, message
     , abended = function (usage, message) {
+        if (!usage) throw new Error("no usage message"); 
         if (message) console.log(message);
-        console.log(usage);
       }
     ;
   if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
   if (typeof vargs[vargs.length - 1] == 'function') main = vargs.pop();
   if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
   source = vargs.shift(), argv = flatten(vargs), options = usage(lang, source, argv);
+  if (!options) {
+    if (main) abended(null);
+    return;
+  }
   options.$usage = options.$usage.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {

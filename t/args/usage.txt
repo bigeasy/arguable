@@ -19,7 +19,7 @@
       number of processes to run in parallel.
 
     -c, --config <key=value> @
-      set configuration varaibles.
+      set configuration variables.
 
     -h, --help
       display this help message.
