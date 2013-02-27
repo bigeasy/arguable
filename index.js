@@ -166,7 +166,7 @@ function usage (lang, source, argv) {
     }
   }
 
-  if(defaultLanguage) defaultLanguage.$defaultLanguage = defaultLanguage;
+  if (defaultLanguage) defaultLanguage.$defaultLanguage = defaultLanguage;
   return defaultLanguage;
 }
 
@@ -282,6 +282,8 @@ function Options (legacy, depth) {
   options.given = legacy.$given;
   options.usage = legacy.$usage;
   options._errors = legacy.$errors;
+  legacy.$defaultLanguage = legacy.defaultLanguage;
+  delete legacy.defaultLanguage;
   for (var key in legacy) {
     if (key[0] != '$') {
       options.params[key] = legacy[key];
