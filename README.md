@@ -192,6 +192,13 @@ encountered.
 
 Changes for each release.
 
+### Version 0.0.7
+
+Thu Feb 28 07:23:51 UTC 2013
+
+ * Remove `defaultLanguage` from `params`. #33.
+ * Error when usage message is missing. #28.
+
 ### Version 0.0.6
 
 Thu Feb 21 07:42:25 UTC 2013
