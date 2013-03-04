@@ -192,6 +192,11 @@ encountered.
 
 Changes for each release.
 
+### Version 0.0.8
+
+ * Extract globs into an [expandable](https://github.com/bigeasy/expandable)
+   project. #37.
+
 ### Version 0.0.7
 
 Thu Feb 28 07:23:51 UTC 2013
