@@ -127,18 +127,18 @@ function parse () {
 
   var source = vargs.shift();                     // File in which to look for usage.
   var argv = flatten(vargs);                      // Flatten arguments.
-  var options = extractUsage(lang, source, argv); // Extract a usage message.
+  var usage = extractUsage(lang, source, argv); // Extract a usage message.
 
-  if (!options) {
+  if (!usage) {
     if (main) abended(null);
     return;
   }
 
   // When invoked with a sub-command, adjust `argv`.
-  if (options.$command) argv.shift();
+  if (usage.$command) argv.shift();
 
   // Extract a definition of the command line arguments from the usage message.
-  options.$usage = options.$usage.map(function (line) {
+  usage.$usage = usage.$usage.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
       out = $[0], terse = $[1] || '-\t'
@@ -154,21 +154,21 @@ function parse () {
 
   // Here's the legacy confusion.
   try {
-    options.given = getopt(pat, options.params = {}, argv);
+    usage.given = getopt(pat, usage.params = {}, argv);
   } catch (e) {
     // TODO: I18n is missing from here.
     if (main) {
       console.error(e.message);
-      console.error(options.$usage);
+      console.error(usage.$usage);
     } else {
-      e.usage = options.$usage;
+      e.usage = usage.$usage;
       throw e;
     }
   }
  
   // And here's the legacy bridge.
-  options.$argv = argv;
-  var objectified = new Options(options, 0);
+  usage.$argv = argv;
+  var objectified = new Options(usage, 0);
   if (main) {
     try {
       main(objectified);
