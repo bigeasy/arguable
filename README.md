@@ -183,7 +183,7 @@ Thu Feb 28 07:23:51 UTC 2013
 ### Version 0.0.6
 
 Thu Feb 21 07:42:25 UTC 2013
- 
+
  * Fix formatting of change log in `README.md`. #31.
  * Create `Options` class. #32.
  * Implement sub-commands in usage markup. #30.

@@ -54,7 +54,7 @@ function extractUsage (lang, source, argv) {
             if (!defaultLanguage) defaultLanguage = language;
             if (~langs.indexOf(lang)) {
               language.defaultLanguage = defaultLanguage;
-              return language 
+              return language;
             }
             i = j - 1;
             message = null;
@@ -109,10 +109,10 @@ function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
       flags = {}, numeric = /^(count|number|value|size)$/,
       arg, arrayed = {}, pat = '', $ , main, errors, message;
-    
-    
+
+
   function abended (usage, message) {
-    if (!usage) throw new Error("no usage message"); 
+    if (!usage) throw new Error("no usage message");
     if (message) console.log(message);
   }
 
@@ -165,7 +165,7 @@ function parse () {
       throw e;
     }
   }
-  
+ 
   // And here's the legacy bridge.
   options.$argv = argv;
   var objectified = new Options(options, 0);
