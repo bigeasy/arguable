@@ -168,9 +168,10 @@ function parse () {
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
 
+  var options = new Options(usage);
   // Here's the legacy confusion.
   try {
-    usage.given = getopt(pat, usage.params = {}, argv);
+    options.given = getopt(pat, options.params = {}, argv);
   } catch (e) {
     // TODO: I18n is missing from here.
     if (main) {
@@ -183,35 +184,28 @@ function parse () {
   }
  
   // And here's the legacy bridge.
-  usage.$argv = argv;
-  var objectified = new Options(usage, 0);
+  options.argv = argv;
   if (main) {
     try {
-      main(objectified);
+      main(options);
     } catch (e) {
       if (e._type === Options.prototype.help) {
-        abended(objectified.usage);
+        abended(options._usage.message);
       } else if (e._type === Options.prototype.abend) {
-        message = objectified._errors[e.message] || objectified.defaultLanguage._errors[e.message];
-        abended(objectified.usage, message, e._arguments || []);
+        message = options._usage.errors[e.message] || options._usage["default"].errors[e.message];
+        abended(options.usage, message, e._arguments || []);
       } else {
         throw e;
       }
     }
   }
-  return objectified;
+  return options;
 }
 
-function Options (legacy, depth) {
-  var options = this;
-  options.args = legacy.$argv;
-  options.params = {};
-  options.usage = legacy.message;
-  options.params = legacy.params;
-  options.given = legacy.given;
-  options._errors = legacy.errors;
-  if (legacy.command) options.command = legacy.command;
-  if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
+function Options (usage, command) {
+  this._usage = usage;
+  this.usage = usage.message;
+  if (usage.command) this.command = usage.command;
 }
 
 Options.prototype.help = function (message) {
