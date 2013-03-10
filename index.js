@@ -42,7 +42,7 @@ function extractUsage (lang, source, argv) {
           if ($ = USAGE_RE.exec(lines[j])) {
             if (!message) {
               message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) });
-              language = { $usage: message };
+              language = { message: message };
               if (command) language.$command = command;
             } else {
               language.$errors = errors(lines.slice(i + 1, j));
@@ -129,16 +129,19 @@ function parse () {
   var argv = flatten(vargs);                      // Flatten arguments.
   var usage = extractUsage(lang, source, argv); // Extract a usage message.
 
+  // No usage message found, report error and return `undefined`.
   if (!usage) {
     if (main) abended(null);
     return;
   }
 
+  // Now we have a usage message, so we can begin to build our options object.
+
   // When invoked with a sub-command, adjust `argv`.
   if (usage.$command) argv.shift();
 
   // Extract a definition of the command line arguments from the usage message.
-  usage.$usage = usage.$usage.map(function (line) {
+  usage.message = usage.message.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
       out = $[0], terse = $[1] || '-\t'
@@ -159,9 +162,9 @@ function parse () {
     // TODO: I18n is missing from here.
     if (main) {
       console.error(e.message);
-      console.error(usage.$usage);
+      console.error(usage.message);
     } else {
-      e.usage = usage.$usage;
+      e.usage = usage.message;
       throw e;
     }
   }
@@ -190,7 +193,7 @@ function Options (legacy, depth) {
   var options = this;
   options.args = legacy.$argv;
   options.params = {};
-  options.usage = legacy.$usage;
+  options.usage = legacy.message;
   options.params = legacy.params;
   options.given = legacy.given;
   options._errors = legacy.$errors;
