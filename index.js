@@ -231,6 +231,10 @@ function abend (message) {
   throw new Error(message);
 }
 
+// A regex rocking argument parser implementation. It can do most of the
+// manipulations of GNU `getopt`, parsing long options, short options, long
+// options who's value is deilmited by an equal sign, short options all mushed
+// together, etc.
 function getopt (pat, opts, argv) {
   var arg, i = 0, $, arg, opt, l, alts, given = {};
   pat.replace(/--([^-]+)@/, function ($1, verbose) { opts[verbose] = [] });
@@ -264,6 +268,9 @@ function getopt (pat, opts, argv) {
   return Object.keys(given);
 }
 
+// Flatten an object or an array or an arry of objects or what have you into
+// long option command line parameters. This is one of the resasons we require
+// that usage definitions define a long option for each parameter.
 function flatten () {
   var flattened = [];
   slice.call(arguments, 0).forEach(function (arg) {
