@@ -124,7 +124,13 @@ function parse () {
 
   function abended (usage, message) {
     if (!usage) throw new Error("no usage message");
-    if (message) console.log(message);
+    if (message) {
+      console.log(message);
+      process.exit(1);
+    } else {
+      console.log(usage);
+      process.exit(0);
+    }
   }
 
   // Caller provisioned error handler.
