@@ -16,23 +16,24 @@ function regular (text) { return text.replace(REGEX, '\\$1') }
 const USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
 
 function extractUsage (lang, source, argv) {
-  var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/)
-    , i = 0, j
-    , I = lines.length
-    , line
-    , indent
-    , $
-    , candidate
-    , defaultLanguage, language
-    , message, command, match
-    , langs
-    ;
+  var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
+      i, j, I, line, indent, $, candidate, _default, usage,
+      message, command, match, langs;
 
-  OUTER: for (;i < I; i++) {
+  // **TODO**: Note that the test to see if we matched a line is if there is no
+  // sub-command specified, or else the sub-command matches the first argument.
+  // This would seem to imply that the default usage string should come last,
+  // but I've not written an application that has a default usage string yet.
+  //
+  // Need to allow the no sub-command to match, but then get vetoed by a matched
+  // sub-command.
+
+  //
+  OUTER: for (i = 0, I = lines.length;i < I; i++) {
     if ($ = USAGE_RE.exec(lines[i])) {
-      if (!$[3]) continue OUTER;
+      if (!$[3]) continue OUTER; // **TODO**: Why? It looks like it is required. Fix regex?
       langs = $[3].split(/\s+/);
-      if ((!$[1] || $[1] == argv[0]) && (!defaultLanguage || ~langs.indexOf(lang))) {
+      if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
         command = $[1];
         indent = /^(\s*)/.exec(lines[i])[1].length;
         for (j = i + 1; j < I; j++) {
@@ -42,19 +43,19 @@ function extractUsage (lang, source, argv) {
           if ($ = USAGE_RE.exec(lines[j])) {
             if (!message) {
               message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) });
-              language = { message: message };
-              if (command) language.$command = command;
+              usage = { message: message };
+              if (command) usage.command = command;
             } else {
-              language.$errors = errors(lines.slice(i + 1, j));
+              usage.errors = errors(lines.slice(i + 1, j));
             }
             if ($[2] == 'strings') {
               i = j;
               continue;
             }
-            if (!defaultLanguage) defaultLanguage = language;
+            if (!_default) _default = usage;
             if (~langs.indexOf(lang)) {
-              language.defaultLanguage = defaultLanguage;
-              return language;
+              usage["default"] = _default;
+              return usage;
             }
             i = j - 1;
             message = null;
@@ -66,8 +67,9 @@ function extractUsage (lang, source, argv) {
     }
   }
 
-  if (defaultLanguage) defaultLanguage.$defaultLanguage = defaultLanguage;
-  return defaultLanguage;
+  if (_default) _default["default"] = _default;
+
+  return _default;
 }
 
 function errors (lines) {
@@ -138,7 +140,7 @@ function parse () {
   // Now we have a usage message, so we can begin to build our options object.
 
   // When invoked with a sub-command, adjust `argv`.
-  if (usage.$command) argv.shift();
+  if (usage.command) argv.shift();
 
   // Extract a definition of the command line arguments from the usage message.
   usage.message = usage.message.map(function (line) {
@@ -196,10 +198,8 @@ function Options (legacy, depth) {
   options.usage = legacy.message;
   options.params = legacy.params;
   options.given = legacy.given;
-  options._errors = legacy.$errors;
-  legacy.$defaultLanguage = legacy.defaultLanguage;
-  delete legacy.defaultLanguage;
-  if (legacy.$command) options.command = legacy.$command;
+  options._errors = legacy.errors;
+  if (legacy.command) options.command = legacy.command;
   if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
 }
 
