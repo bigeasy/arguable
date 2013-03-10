@@ -126,8 +126,7 @@ function strings (lines) {
 function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
       flags = {}, numeric = /^(count|number|value|size)$/,
-      arg, arrayed = {}, pat = '', $ , main, message;
-
+      arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted;
 
   function abended (usage, message) {
     if (!usage) throw new Error("no usage message");
@@ -208,11 +207,11 @@ function parse () {
         message =  options._usage.strings[e.message] ||
                    options._usage["default"].strings[e.message] ||
                    { text: e.message, order: [] }
-        var ordered = [], unordered = e._arguments;
+        ordered = [];
         for (var i = 0; i < e._arguments.length; i++) {
           ordered[i] = e._arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
         }
-        var formatted= util.format.apply(util, [ message.text ].concat(ordered));
+        formatted = util.format.apply(util, [ message.text ].concat(ordered));
         abended(options.usage, formatted, e._arguments || []);
       } else {
         throw e;
