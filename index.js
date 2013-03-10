@@ -9,12 +9,12 @@ function say () {
   console.log.apply(console, slice.call(arguments, 0));
 }
 
-var REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
-
+// Create a regular expression that matches a specific string.
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
-var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
+var REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
+// Exract a usage message from a file.
 function extractUsage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
       i, j, I, line, indent, $, candidate, _default, usage,
@@ -27,11 +27,16 @@ function extractUsage (lang, source, argv) {
   //
   // Need to allow the no sub-command to match, but then get vetoed by a matched
   // sub-command.
+  //
+  // Note that the regular expression to match a usage line matches both the
+  // beginning and ending markup, so we need to check in our outer loop that
+  // we've matched beginning markup, and not ending markup, which would be an
+  // odd occurance, probably worth abenending about.
 
   //
   OUTER: for (i = 0, I = lines.length;i < I; i++) {
     if ($ = USAGE_RE.exec(lines[i])) {
-      if (!$[3]) continue OUTER; // **TODO**: Why? It looks like it is required. Fix regex?
+      if (!$[3]) continue OUTER;  // Matched ending markup.
       langs = $[3].split(/\s+/);
       if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
         command = $[1];
@@ -72,6 +77,10 @@ function extractUsage (lang, source, argv) {
   return _default;
 }
 
+// The regular expression to match usage markdown.
+var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
+
+// Extract message strings from the errors section of a usage message.
 function errors (lines) {
   var i, I, j, J, $, spaces, key, line, message = [], dedent = Number.MAX_VALUE, errors = {};
 
@@ -142,7 +151,9 @@ function parse () {
   // When invoked with a sub-command, adjust `argv`.
   if (usage.command) argv.shift();
 
-  // Extract a definition of the command line arguments from the usage message.
+  // Extract a definition of the command line arguments from the usage message
+  // while tiding the usage message; removing special characters that are flags
+  // to Arguable that do not belong in the usage message printed to `stdout`.
   usage.message = usage.message.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
