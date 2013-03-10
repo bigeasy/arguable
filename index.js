@@ -58,7 +58,7 @@ function extractUsage (lang, source, argv) {
               usage = { message: message };
               if (command) usage.command = command;
             } else {
-              usage.errors = errors(lines.slice(i + 1, j));
+              usage.strings = strings(lines.slice(i + 1, j));
             }
             if ($[2] == 'strings') {
               i = j;
@@ -87,9 +87,9 @@ function extractUsage (lang, source, argv) {
 // The regular expression to match usage markdown.
 var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
 
-// Extract message strings from the errors section of a usage message.
-function errors (lines) {
-  var i, I, j, J, $, spaces, key, order, line, message = [], dedent = Number.MAX_VALUE, errors = {};
+// Extract message strings from the strings section of a usage message.
+function strings (lines) {
+  var i, I, j, J, $, spaces, key, order, line, message = [], dedent = Number.MAX_VALUE, strings = {};
 
   OUTER: for (i = 0, I = lines.length; i < I; i++) {
     if (($ = /^(\s*)([^:(]+)(?:\((\d+(?:\s*,\s*\d+)*)\))?:\s*(.*)$/.exec(lines[i]))) {
@@ -107,12 +107,12 @@ function errors (lines) {
         message[j] = message[j].substring(dedent);
       }
       if (message[message.length - 1] == '') message.pop();
-      errors[key] = { text: message.join('\n'), order: order.split(/\s*,\s*/) };
+      strings[key] = { text: message.join('\n'), order: order.split(/\s*,\s*/) };
       i--;
     }
   }
 
-  return errors;
+  return strings;
 }
 
 // First argument is optionally a language identifier. This is easily obtained
@@ -126,7 +126,7 @@ function errors (lines) {
 function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
       flags = {}, numeric = /^(count|number|value|size)$/,
-      arg, arrayed = {}, pat = '', $ , main, errors, message;
+      arg, arrayed = {}, pat = '', $ , main, message;
 
 
   function abended (usage, message) {
@@ -205,8 +205,8 @@ function parse () {
       if (e._type === Options.prototype.help) {
         abended(options._usage.message);
       } else if (e._type === Options.prototype.abend) {
-        message =  options._usage.errors[e.message] ||
-                   options._usage["default"].errors[e.message] ||
+        message =  options._usage.strings[e.message] ||
+                   options._usage["default"].strings[e.message] ||
                    { text: e.message, order: [] }
         var ordered = [], unordered = e._arguments;
         for (var i = 0; i < e._arguments.length; i++) {
