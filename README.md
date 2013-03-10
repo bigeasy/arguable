@@ -161,6 +161,9 @@ language specified in the users `LANG` environment variable directly to `parse`.
 If no such language translation exists, it falls back to the first translation
 encountered.
 
+Note that command names and switches are not internationalized. Changing the
+user's language preferences is not supposed change the program interface.
+
 ## Contributors
 
  * [Yawnt](https://github.com/yawnt) &mdash; Italian translation.
