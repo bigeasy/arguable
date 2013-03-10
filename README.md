@@ -147,7 +147,7 @@ console.log(options.$usage);
 ```
 
 We can run the above program with our `LANG` environment variable set to one of
-teh supported langauges.
+the supported languages.
 
 ```console
 $ LANG=fi_FI.UTF-8 node awaken.js
@@ -203,7 +203,7 @@ Thu Feb 21 07:42:25 UTC 2013
 
 Tue Jul 10 19:02:23 UTC 2012
 
- * Update `README.md` help messages with short options first, proper termiator.
+ * Update `README.md` help messages with short options first, proper terminator.
    #19.
  * Flatten arguments passed to parse. #18.
  * Internationalization. #8.
