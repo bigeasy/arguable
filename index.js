@@ -15,7 +15,7 @@ function regular (text) { return text.replace(REGEX, '\\$1') }
 
 const USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
 
-function usage (lang, source, argv) {
+function extractUsage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/)
     , i = 0, j
     , I = lines.length
@@ -106,28 +106,38 @@ function errors (lines) {
 // the stack trace is supressed and the error message is followed by usage.
 
 function parse () {
-  var vargs = slice.call(arguments, 0)
-    , lang = 'en_US', source, argv, options
-    , flags = {}
-    , numeric = /^(count|number|value|size)$/
-    , arg
-    , arrayed = {}
-    , pat = ''
-    , $
-    , main, errors, message
-    , abended = function (usage, message) {
-        if (!usage) throw new Error("no usage message"); 
-        if (message) console.log(message);
-      }
-    ;
+  var vargs = slice.call(arguments, 0), lang = 'en_US',
+      flags = {}, numeric = /^(count|number|value|size)$/,
+      arg, arrayed = {}, pat = '', $ , main, errors, message;
+    
+    
+  function abended (usage, message) {
+    if (!usage) throw new Error("no usage message"); 
+    if (message) console.log(message);
+  }
+
+  // Caller provisioned error handler.
   if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
+
+  // Caller provisioned main function.
   if (typeof vargs[vargs.length - 1] == 'function') main = vargs.pop();
+
+  // Caller specified language string.
   if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
-  source = vargs.shift(), argv = flatten(vargs), options = usage(lang, source, argv);
+
+  var source = vargs.shift();                     // File in which to look for usage.
+  var argv = flatten(vargs);                      // Flatten arguments.
+  var options = extractUsage(lang, source, argv); // Extract a usage message.
+
   if (!options) {
     if (main) abended(null);
     return;
   }
+
+  // When invoked with a sub-command, adjust `argv`.
+  if (options.$command) argv.shift();
+
+  // Extract a definition of the command line arguments from the usage message.
   options.$usage = options.$usage.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
@@ -141,9 +151,8 @@ function parse () {
     }
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
-  if (options.$command) {
-    argv.shift();
-  }
+
+  // Here's the legacy confusion.
   try {
     options.given = getopt(pat, options.params = {}, argv);
   } catch (e) {
@@ -156,6 +165,8 @@ function parse () {
       throw e;
     }
   }
+  
+  // And here's the legacy bridge.
   options.$argv = argv;
   var objectified = new Options(options, 0);
   if (main) {
