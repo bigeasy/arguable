@@ -1,4 +1,11 @@
-var slice = [].slice, path = require('path'), fs = require('fs');
+/*
+
+    ___ usage: en_US ___
+    ___ strings ___
+    ___ usage ___
+
+ */
+var slice = [].slice, path = require('path'), fs = require('fs'), util = require('util');
 
 function die () {
   console.log.apply(console, slice.call(arguments, 0));
@@ -82,11 +89,11 @@ var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A
 
 // Extract message strings from the errors section of a usage message.
 function errors (lines) {
-  var i, I, j, J, $, spaces, key, line, message = [], dedent = Number.MAX_VALUE, errors = {};
+  var i, I, j, J, $, spaces, key, order, line, message = [], dedent = Number.MAX_VALUE, errors = {};
 
   OUTER: for (i = 0, I = lines.length; i < I; i++) {
-    if (($ = /^(\s*)([^:]+):\s*(.*)$/.exec(lines[i]))) {
-      spaces = $[1].length, key = $[2], line = $[3], message = [];
+    if (($ = /^(\s*)([^:(]+)(?:\((\d+(?:\s*,\s*\d+)*)\))?:\s*(.*)$/.exec(lines[i]))) {
+      spaces = $[1].length, key = $[2].trim(), order = $[3] || '1', line = $[4], message = [];
       if (line.length) message.push(line);
       for (i++; i < I; i++) {
         if (/\S/.test(lines[i])) {
@@ -100,7 +107,7 @@ function errors (lines) {
         message[j] = message[j].substring(dedent);
       }
       if (message[message.length - 1] == '') message.pop();
-      errors[key] = message.join('\n');
+      errors[key] = { text: message.join('\n'), order: order.split(/\s*,\s*/) };
       i--;
     }
   }
@@ -198,8 +205,15 @@ function parse () {
       if (e._type === Options.prototype.help) {
         abended(options._usage.message);
       } else if (e._type === Options.prototype.abend) {
-        message = options._usage.errors[e.message] || options._usage["default"].errors[e.message];
-        abended(options.usage, message, e._arguments || []);
+        message =  options._usage.errors[e.message] ||
+                   options._usage["default"].errors[e.message] ||
+                   { text: e.message, order: [] }
+        var ordered = [], unordered = e._arguments;
+        for (var i = 0; i < e._arguments.length; i++) {
+          ordered[i] = e._arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
+        }
+        var formatted= util.format.apply(util, [ message.text ].concat(ordered));
+        abended(options.usage, formatted, e._arguments || []);
       } else {
         throw e;
       }

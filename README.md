@@ -164,6 +164,98 @@ encountered.
 Note that command names and switches are not internationalized. Changing the
 user's language preferences is not supposed change the program interface.
 
+## Error Messages
+
+You can define internationalized error messages. Add a `strings` section to
+following your usage defintion
+
+```javascript
+#!/usr/bin/node
+
+/*
+
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
+
+  options:
+
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+
+  description:
+
+  frobinate will reticuatle the splines in all of your happy doodle
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time.
+
+  ___ strings ___
+
+    too many processes:
+      You choose %d processes to frobinate %s, but the maximum is 4.
+
+  ___ usage ___
+
+*/
+
+require('arguable')(__filename, function (options) {
+  if (options.help) throw new Error("usage");
+  if (options.processes > 4) {
+    options.abend('too many processes', options.processes, options.argv[0]);
+  }
+  require('../lib/frobinator').frobinate(options.processes, options.argv);
+});
+```
+
+Arguments are fed to `util.format` and the result is printed in your language
+message to standard out.
+
+Each language can have it's own message section. Your translation might need to
+reorder the arguments to fit a different sentence structure. Here's an example
+of reordering, however we're still in English, because it's really all I know.
+
+Oh, I'd love a patch if you have an example in your language, and your language
+is not English.
+
+```javascript
+#!/usr/bin/node
+
+/*
+
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
+
+  options:
+
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+
+  description:
+
+  frobinate will reticuatle the splines in all of your happy doodle
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time.
+
+  ___ strings ___
+
+    too many processes (2, 1):
+      You choose frobinate %s using %d processes, but the maximum is 4.
+
+  ___ usage ___
+
+*/
+
+require('arguable')(__filename, function (options) {
+  if (options.help) throw new Error("usage");
+  if (options.processes > 4) {
+    options.abend('too many processes', options.processes, options.argv[0]);
+  }
+  require('../lib/frobinator').frobinate(options.processes, options.argv);
+});
+```
+
+
 ## Contributors
 
  * [Yawnt](https://github.com/yawnt) &mdash; Italian translation.
