@@ -214,15 +214,11 @@ Options.prototype.help = function (message) {
   throw e;
 }
 
-Options.prototype.abend = function (message) {
+var abend = Options.prototype.abend = function (message) {
   var e = new Error(message);
   e._type = Options.prototype.abend;
   e._arguments = slice.call(arguments, 1);
   throw e;
-}
-
-function abend (message) {
-  throw new Error(message);
 }
 
 // A regex rocking argument parser implementation. It can do most of the
@@ -245,7 +241,7 @@ function getopt (pat, opts, argv) {
           if (!argv.length) abend("missing argument for: " + (arg[1][1] != "-" ? arg[1] : "--" + opt), true);
           arg[2] = argv.shift();
         }
-        if ($[2] == '#' && isNaN(arg[2] = +arg[2])) abend("numeric option: " + arg[1]);
+        if ($[2] == '#' && isNaN(arg[2] = +arg[2])) abend("numeric option: --" + opt);
       }
     } else if (arg[0]) {
       if (arg[1][1] != "-") {
