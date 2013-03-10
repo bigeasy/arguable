@@ -15,24 +15,25 @@ function regular (text) { return text.replace(REGEX, '\\$1') }
 
 const USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
 
-function usage (lang, source, argv) {
-  var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/)
-    , i = 0, j
-    , I = lines.length
-    , line
-    , indent
-    , $
-    , candidate
-    , defaultLanguage, language
-    , message, command, match
-    , langs
-    ;
+function extractUsage (lang, source, argv) {
+  var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
+      i, j, I, line, indent, $, candidate, _default, usage,
+      message, command, match, langs;
 
-  OUTER: for (;i < I; i++) {
+  // **TODO**: Note that the test to see if we matched a line is if there is no
+  // sub-command specified, or else the sub-command matches the first argument.
+  // This would seem to imply that the default usage string should come last,
+  // but I've not written an application that has a default usage string yet.
+  //
+  // Need to allow the no sub-command to match, but then get vetoed by a matched
+  // sub-command.
+
+  //
+  OUTER: for (i = 0, I = lines.length;i < I; i++) {
     if ($ = USAGE_RE.exec(lines[i])) {
-      if (!$[3]) continue OUTER;
+      if (!$[3]) continue OUTER; // **TODO**: Why? It looks like it is required. Fix regex?
       langs = $[3].split(/\s+/);
-      if ((!$[1] || $[1] == argv[0]) && (!defaultLanguage || ~langs.indexOf(lang))) {
+      if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
         command = $[1];
         indent = /^(\s*)/.exec(lines[i])[1].length;
         for (j = i + 1; j < I; j++) {
@@ -42,19 +43,19 @@ function usage (lang, source, argv) {
           if ($ = USAGE_RE.exec(lines[j])) {
             if (!message) {
               message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) });
-              language = { $usage: message };
-              if (command) language.$command = command;
+              usage = { message: message };
+              if (command) usage.command = command;
             } else {
-              language.$errors = errors(lines.slice(i + 1, j));
+              usage.errors = errors(lines.slice(i + 1, j));
             }
             if ($[2] == 'strings') {
               i = j;
               continue;
             }
-            if (!defaultLanguage) defaultLanguage = language;
+            if (!_default) _default = usage;
             if (~langs.indexOf(lang)) {
-              language.defaultLanguage = defaultLanguage;
-              return language 
+              usage["default"] = _default;
+              return usage;
             }
             i = j - 1;
             message = null;
@@ -66,8 +67,9 @@ function usage (lang, source, argv) {
     }
   }
 
-  if (defaultLanguage) defaultLanguage.$defaultLanguage = defaultLanguage;
-  return defaultLanguage;
+  if (_default) _default["default"] = _default;
+
+  return _default;
 }
 
 function errors (lines) {
@@ -106,29 +108,42 @@ function errors (lines) {
 // the stack trace is supressed and the error message is followed by usage.
 
 function parse () {
-  var vargs = slice.call(arguments, 0)
-    , lang = 'en_US', source, argv, options
-    , flags = {}
-    , numeric = /^(count|number|value|size)$/
-    , arg
-    , arrayed = {}
-    , pat = ''
-    , $
-    , main, errors, message
-    , abended = function (usage, message) {
-        if (!usage) throw new Error("no usage message"); 
-        if (message) console.log(message);
-      }
-    ;
+  var vargs = slice.call(arguments, 0), lang = 'en_US',
+      flags = {}, numeric = /^(count|number|value|size)$/,
+      arg, arrayed = {}, pat = '', $ , main, errors, message;
+
+
+  function abended (usage, message) {
+    if (!usage) throw new Error("no usage message");
+    if (message) console.log(message);
+  }
+
+  // Caller provisioned error handler.
   if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
+
+  // Caller provisioned main function.
   if (typeof vargs[vargs.length - 1] == 'function') main = vargs.pop();
+
+  // Caller specified language string.
   if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
-  source = vargs.shift(), argv = flatten(vargs), options = usage(lang, source, argv);
-  if (!options) {
+
+  var source = vargs.shift();                     // File in which to look for usage.
+  var argv = flatten(vargs);                      // Flatten arguments.
+  var usage = extractUsage(lang, source, argv); // Extract a usage message.
+
+  // No usage message found, report error and return `undefined`.
+  if (!usage) {
     if (main) abended(null);
     return;
   }
-  options.$usage = options.$usage.map(function (line) {
+
+  // Now we have a usage message, so we can begin to build our options object.
+
+  // When invoked with a sub-command, adjust `argv`.
+  if (usage.command) argv.shift();
+
+  // Extract a definition of the command line arguments from the usage message.
+  usage.message = usage.message.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
       out = $[0], terse = $[1] || '-\t'
@@ -141,23 +156,24 @@ function parse () {
     }
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
-  if (options.$command) {
-    argv.shift();
-  }
+
+  // Here's the legacy confusion.
   try {
-    getopt(pat, options, argv);
+    usage.given = getopt(pat, usage.params = {}, argv);
   } catch (e) {
     // TODO: I18n is missing from here.
     if (main) {
       console.error(e.message);
-      console.error(options.$usage);
+      console.error(usage.message);
     } else {
-      e.usage = options.$usage;
+      e.usage = usage.message;
       throw e;
     }
   }
-  options.$argv = argv;
-  var objectified = new Options(options, 0);
+ 
+  // And here's the legacy bridge.
+  usage.$argv = argv;
+  var objectified = new Options(usage, 0);
   if (main) {
     try {
       main(objectified);
@@ -179,17 +195,11 @@ function Options (legacy, depth) {
   var options = this;
   options.args = legacy.$argv;
   options.params = {};
-  options.given = legacy.$given;
-  options.usage = legacy.$usage;
-  options._errors = legacy.$errors;
-  legacy.$defaultLanguage = legacy.defaultLanguage;
-  delete legacy.defaultLanguage;
-  for (var key in legacy) {
-    if (key[0] != '$') {
-      options.params[key] = legacy[key];
-    }
-  }
-  if (legacy.$command) options.command = legacy.$command;
+  options.usage = legacy.message;
+  options.params = legacy.params;
+  options.given = legacy.given;
+  options._errors = legacy.errors;
+  if (legacy.command) options.command = legacy.command;
   if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
 }
 
@@ -240,8 +250,7 @@ function getopt (pat, opts, argv) {
     else if (opts[opt] != null) abend("option can only be secified once: " + arg[1]);
     else opts[opt] = arg[2];
   }
-  opts.$given = Object.keys(given);
-  return opts;
+  return Object.keys(given);
 }
 
 function flatten () {
