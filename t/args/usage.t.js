@@ -41,6 +41,6 @@ require('proof')(7, function (equal) {
   try {
     console.log(arguable.parse(__dirname + '/usage.txt', [ '-p', 'Z' ]));
   } catch (e) {
-    equal(e.message, 'numeric option: -p', "ambiguous");
+    equal(e.message, 'numeric option: --processes', "numeric");
   }
 });
