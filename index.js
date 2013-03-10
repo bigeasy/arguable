@@ -145,7 +145,7 @@ function parse () {
     argv.shift();
   }
   try {
-    getopt(pat, options, argv);
+    options.given = getopt(pat, options.params = {}, argv);
   } catch (e) {
     // TODO: I18n is missing from here.
     if (main) {
@@ -179,16 +179,12 @@ function Options (legacy, depth) {
   var options = this;
   options.args = legacy.$argv;
   options.params = {};
-  options.given = legacy.$given;
   options.usage = legacy.$usage;
+  options.params = legacy.params;
+  options.given = legacy.given;
   options._errors = legacy.$errors;
   legacy.$defaultLanguage = legacy.defaultLanguage;
   delete legacy.defaultLanguage;
-  for (var key in legacy) {
-    if (key[0] != '$') {
-      options.params[key] = legacy[key];
-    }
-  }
   if (legacy.$command) options.command = legacy.$command;
   if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
 }
@@ -240,8 +236,7 @@ function getopt (pat, opts, argv) {
     else if (opts[opt] != null) abend("option can only be secified once: " + arg[1]);
     else opts[opt] = arg[2];
   }
-  opts.$given = Object.keys(given);
-  return opts;
+  return Object.keys(given);
 }
 
 function flatten () {
