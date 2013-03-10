@@ -9,12 +9,12 @@ function say () {
   console.log.apply(console, slice.call(arguments, 0));
 }
 
-const REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
-
+// Create a regular expression that matches a specific string.
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
-const USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
+var REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
+// Exract a usage message from a file.
 function extractUsage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
       i, j, I, line, indent, $, candidate, _default, usage,
@@ -27,11 +27,16 @@ function extractUsage (lang, source, argv) {
   //
   // Need to allow the no sub-command to match, but then get vetoed by a matched
   // sub-command.
+  //
+  // Note that the regular expression to match a usage line matches both the
+  // beginning and ending markup, so we need to check in our outer loop that
+  // we've matched beginning markup, and not ending markup, which would be an
+  // odd occurance, probably worth abenending about.
 
   //
   OUTER: for (i = 0, I = lines.length;i < I; i++) {
     if ($ = USAGE_RE.exec(lines[i])) {
-      if (!$[3]) continue OUTER; // **TODO**: Why? It looks like it is required. Fix regex?
+      if (!$[3]) continue OUTER;  // Matched ending markup.
       langs = $[3].split(/\s+/);
       if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
         command = $[1];
@@ -72,6 +77,10 @@ function extractUsage (lang, source, argv) {
   return _default;
 }
 
+// The regular expression to match usage markdown.
+var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/;
+
+// Extract message strings from the errors section of a usage message.
 function errors (lines) {
   var i, I, j, J, $, spaces, key, line, message = [], dedent = Number.MAX_VALUE, errors = {};
 
@@ -142,7 +151,9 @@ function parse () {
   // When invoked with a sub-command, adjust `argv`.
   if (usage.command) argv.shift();
 
-  // Extract a definition of the command line arguments from the usage message.
+  // Extract a definition of the command line arguments from the usage message
+  // while tiding the usage message; removing special characters that are flags
+  // to Arguable that do not belong in the usage message printed to `stdout`.
   usage.message = usage.message.map(function (line) {
     var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/;
     if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
@@ -157,9 +168,10 @@ function parse () {
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
 
+  var options = new Options(usage);
   // Here's the legacy confusion.
   try {
-    usage.given = getopt(pat, usage.params = {}, argv);
+    options.given = getopt(pat, options.params = {}, argv);
   } catch (e) {
     // TODO: I18n is missing from here.
     if (main) {
@@ -172,35 +184,28 @@ function parse () {
   }
  
   // And here's the legacy bridge.
-  usage.$argv = argv;
-  var objectified = new Options(usage, 0);
+  options.argv = argv;
   if (main) {
     try {
-      main(objectified);
+      main(options);
     } catch (e) {
       if (e._type === Options.prototype.help) {
-        abended(objectified.usage);
+        abended(options._usage.message);
       } else if (e._type === Options.prototype.abend) {
-        message = objectified._errors[e.message] || objectified.defaultLanguage._errors[e.message];
-        abended(objectified.usage, message, e._arguments || []);
+        message = options._usage.errors[e.message] || options._usage["default"].errors[e.message];
+        abended(options.usage, message, e._arguments || []);
       } else {
         throw e;
       }
     }
   }
-  return objectified;
+  return options;
 }
 
-function Options (legacy, depth) {
-  var options = this;
-  options.args = legacy.$argv;
-  options.params = {};
-  options.usage = legacy.message;
-  options.params = legacy.params;
-  options.given = legacy.given;
-  options._errors = legacy.errors;
-  if (legacy.command) options.command = legacy.command;
-  if (!depth && legacy.$defaultLanguage) options.defaultLanguage = new Options(legacy.$defaultLanguage, depth + 1);
+function Options (usage, command) {
+  this._usage = usage;
+  this.usage = usage.message;
+  if (usage.command) this.command = usage.command;
 }
 
 Options.prototype.help = function (message) {
@@ -220,6 +225,10 @@ function abend (message) {
   throw new Error(message);
 }
 
+// A regex rocking argument parser implementation. It can do most of the
+// manipulations of GNU `getopt`, parsing long options, short options, long
+// options who's value is deilmited by an equal sign, short options all mushed
+// together, etc.
 function getopt (pat, opts, argv) {
   var arg, i = 0, $, arg, opt, l, alts, given = {};
   pat.replace(/--([^-]+)@/, function ($1, verbose) { opts[verbose] = [] });
@@ -253,6 +262,9 @@ function getopt (pat, opts, argv) {
   return Object.keys(given);
 }
 
+// Flatten an object or an array or an arry of objects or what have you into
+// long option command line parameters. This is one of the resasons we require
+// that usage definitions define a long option for each parameter.
 function flatten () {
   var flattened = [];
   slice.call(arguments, 0).forEach(function (arg) {

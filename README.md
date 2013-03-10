@@ -1,5 +1,6 @@
 # Arguable [![Build Status](https://secure.travis-ci.org/bigeasy/arguable.png?branch=master)](http://travis-ci.org/bigeasy/arguable)
 
+
 **Arguable** is a command line parser that lends structure to your command line
 programs. You can use Arguable as a simple command line parser, or you can use
 it to organize your program in a master program with any number of sub-commands
@@ -47,6 +48,10 @@ a full help message is important for a command line program.
 from snippets. It would rather have the author spend time composing a nicely
 formatted usage message, with the ability to see the whole message, then work
 from that message.
+
+Your usage message must contain a long option for every option; short options
+are optional. If you have a synonym, declare it as separately and document it as
+a synonym.
 
 ## Commands with Sub-Commands
 
@@ -155,6 +160,9 @@ The above will print the Finnish version of the help message. You can pass the
 language specified in the users `LANG` environment variable directly to `parse`.
 If no such language translation exists, it falls back to the first translation
 encountered.
+
+Note that command names and switches are not internationalized. Changing the
+user's language preferences is not supposed change the program interface.
 
 ## Contributors
 
