@@ -8,9 +8,9 @@ usage: node help.js\n\
 
 var spawn = require('child_process').spawn, path = require('path');
 
-require('proof')(2, function (equal, callback) {
-
-  var help = spawn('node', [ path.join(__dirname, 'help.js') ]);
+require('proof')(2, function (step, equal, callback) {
+  var help = spawn('node', [ path.join(__dirname, 'help.js') ]),
+      callback = step();
 
   var data = '';
   help.stdout.setEncoding('utf8');
