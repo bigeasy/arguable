@@ -13,3 +13,15 @@ validation for that command should attempt to report a missing command, if it is
 at all able to detect it.
 
 `svn` behaves the same way.
+
+## The `abended` function.
+
+Currently, the user `abend` function handles the case of a programmer invoking
+help by calling the `help` function of options. We use an exception to stop the
+program, but that is an implementation detail. We then invoke the `abend`
+function, which may be user supplied, and require that the user handle our help
+message exception. This is confusing and needs to be removed. If the user wants
+special help message handling, they can implement it themselves. They don't need
+a framework for it.
+
+This needs to be added to GitHub Issues.
