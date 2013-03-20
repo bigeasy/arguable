@@ -128,13 +128,18 @@ function parse () {
       flags = {}, numeric = /^(count|number|value|size)$/,
       arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted;
 
-  function abended (usage, message) {
-    if (message) {
-      console.log(message);
-      process.exit(1);
-    } else {
-      console.log(usage);
+  function abended (e) {
+    switch (e.arguable ? e.arguable.type : '') {
+    case "help":
+      console.log(e.usage);
       process.exit(0);
+      break;
+    case "abend":
+      console.log(e.message);
+      process.exit(1);
+      break;
+    default:
+      throw e;
     }
   }
 
@@ -190,26 +195,36 @@ function parse () {
       throw e;
     }
   }
- 
+
   // And here's the legacy bridge.
   options.argv = argv;
   if (main) {
     try {
       main(options);
     } catch (e) {
-      if (e._type === Options.prototype.help) {
-        abended(options._usage.message);
-      } else if (e._type === Options.prototype.abend) {
+      switch (e.arguable ? e.arguable.type : '') {
+      case "help":
+        e.type = "help";
+        e.usage = options._usage.message;
+        e.message = options._usage.message;
+        abended(e);
+        break;
+      case "abend":
         message =  options._usage.strings[e.message] ||
                    options._usage["default"].strings[e.message] ||
                    { text: e.message, order: [] }
         ordered = [];
-        for (var i = 0; i < e._arguments.length; i++) {
-          ordered[i] = e._arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
+        for (var i = 0; i < e.arguments.length; i++) {
+          ordered[i] = e.arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
         }
-        formatted = util.format.apply(util, [ message.text ].concat(ordered));
-        abended(options.usage, formatted, e._arguments || []);
-      } else {
+        e.message = util.format.apply(util, [ message.text ].concat(ordered));
+        e.usage = options.usage;
+        e.format = message.text;
+        e.order = message.order;
+        e.arguments = message.arguments;
+        abended(e);
+        break;
+      default:
         throw e;
       }
     }
@@ -225,14 +240,14 @@ function Options (usage, command) {
 
 Options.prototype.help = function (message) {
   var e = new Error(message);
-  e._type = Options.prototype.help;
+  e.arguable = { type: "help" }
   throw e;
 }
 
 var abend = Options.prototype.abend = function (message) {
   var e = new Error(message);
-  e._type = Options.prototype.abend;
-  e._arguments = slice.call(arguments, 1);
+  e.arguable = { type: "abend" }
+  e.arguments = slice.call(arguments, 1);
   throw e;
 }
 
