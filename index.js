@@ -129,7 +129,6 @@ function parse () {
       arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted;
 
   function abended (usage, message) {
-    if (!usage) throw new Error("no usage message");
     if (message) {
       console.log(message);
       process.exit(1);
@@ -152,11 +151,8 @@ function parse () {
   var argv = flatten(vargs);                      // Flatten arguments.
   var usage = extractUsage(lang, source, argv); // Extract a usage message.
 
-  // No usage message found, report error and return `undefined`.
-  if (!usage) {
-    if (main) abended(null);
-    return;
-  }
+  // No usage message is a programmer's error; throw a plain old exception.
+  if (!usage) throw new Error("no usage found");
 
   // Now we have a usage message, so we can begin to build our options object.
 
