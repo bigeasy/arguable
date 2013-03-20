@@ -2,6 +2,25 @@
 
     ___ usage: en_US ___
     ___ strings ___
+
+      ambiguous argument:
+        The argument %s is ambiguous.
+
+      unknown argument:
+        There is no such argument as %s.
+
+      missing argument:
+        The argument %s requires an argument value.
+
+      numeric argument:
+        The argument %s is numeric.
+
+      toggle argument:
+        The argument %s does not take a value.
+
+      scalar argument:
+        The argument %s can only be specified once.
+
     ___ usage ___
 
  */
@@ -126,17 +145,10 @@ function strings (lines) {
 function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
       flags = {}, numeric = /^(count|number|value|size)$/,
-      arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted;
+      arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted, abended;
 
-  function abended (usage, message) {
-    if (!usage) throw new Error("no usage message");
-    if (message) {
-      console.log(message);
-      process.exit(1);
-    } else {
-      console.log(usage);
-      process.exit(0);
-    }
+  function abened (e) {
+
   }
 
   // Caller provisioned error handler.
@@ -145,6 +157,24 @@ function parse () {
   // Caller provisioned main function.
   if (typeof vargs[vargs.length - 1] == 'function') main = vargs.pop();
 
+  if (!abended) {
+    if (main) abended = function (e) {
+      switch (e.arguable ? e.arguable.type : '') {
+      case "help":
+        console.log(e.usage);
+        process.exit(0);
+        break;
+      case "abend":
+        console.log(e.message);
+        process.exit(1);
+        break;
+      default:
+        throw e;
+      }
+    }
+    else abended = function (e) { throw e }
+  }
+
   // Caller specified language string.
   if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
 
@@ -152,11 +182,8 @@ function parse () {
   var argv = flatten(vargs);                      // Flatten arguments.
   var usage = extractUsage(lang, source, argv); // Extract a usage message.
 
-  // No usage message found, report error and return `undefined`.
-  if (!usage) {
-    if (main) abended(null);
-    return;
-  }
+  // No usage message is a programmer's error; throw a plain old exception.
+  if (!usage) throw new Error("no usage found");
 
   // Now we have a usage message, so we can begin to build our options object.
 
@@ -180,44 +207,42 @@ function parse () {
     return (out.replace('@', ' ') + line).replace(trim, '');
   }).join('\n');
 
-  var options = new Options(usage);
-  // Here's the legacy confusion.
-  try {
-    options.given = getopt(pat, options.params = {}, argv);
-  } catch (e) {
-    // TODO: I18n is missing from here.
-    if (main) {
-      console.error(e.message);
-      console.error(usage.message);
-    } else {
-      e.usage = usage.message;
-      throw e;
-    }
-  }
- 
-  // And here's the legacy bridge.
-  options.argv = argv;
-  if (main) {
+  // Set the messages that we'll use for parse error reporting and parse the
+  // command line, then set the messages to the user provided messages.
+  var messages = extractUsage(lang, __filename, []);
     try {
-      main(options);
+      var options = new Options(usage);
+      options.given = getopt(pat, options.params = {}, argv);
+      options.argv = argv;
+      messages = options._usage;
+      if (main) main(options);
     } catch (e) {
-      if (e._type === Options.prototype.help) {
-        abended(options._usage.message);
-      } else if (e._type === Options.prototype.abend) {
-        message =  options._usage.strings[e.message] ||
-                   options._usage["default"].strings[e.message] ||
+      switch (e.arguable ? e.arguable.type : '') {
+      case "help":
+        e.type = "help";
+        e.usage = messages.message;
+        e.message = messages.message;
+        abended(e);
+        break;
+      case "abend":
+        message =  messages.strings[e.message] ||
+                   messages["default"].strings[e.message] ||
                    { text: e.message, order: [] }
         ordered = [];
-        for (var i = 0; i < e._arguments.length; i++) {
-          ordered[i] = e._arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
+        for (var i = 0; i < e.arguments.length; i++) {
+          ordered[i] = e.arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
         }
-        formatted = util.format.apply(util, [ message.text ].concat(ordered));
-        abended(options.usage, formatted, e._arguments || []);
-      } else {
+        e.message = util.format.apply(util, [ message.text ].concat(ordered));
+        e.usage = options.usage;
+        e.format = message.text;
+        e.order = message.order;
+        e.arguments = message.arguments;
+        abended(e);
+        break;
+      default:
         throw e;
       }
     }
-  }
   return options;
 }
 
@@ -229,14 +254,14 @@ function Options (usage, command) {
 
 Options.prototype.help = function (message) {
   var e = new Error(message);
-  e._type = Options.prototype.help;
+  e.arguable = { type: "help" }
   throw e;
 }
 
 var abend = Options.prototype.abend = function (message) {
   var e = new Error(message);
-  e._type = Options.prototype.abend;
-  e._arguments = slice.call(arguments, 1);
+  e.arguable = { type: "abend" }
+  e.arguments = slice.call(arguments, 1);
   throw e;
 }
 
@@ -251,27 +276,27 @@ function getopt (pat, opts, argv) {
     arg = argv.shift();
     arg = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true];
     alts = pat.replace(new RegExp(regular(arg[1]), 'g'), '').replace(/-[^,],--[^|]+\|/g, '').split("|");
-    if ((l = alts.length - 1) != 1) abend((l ? "ambiguous: " : "unknown option: ") + arg[1], true);
+    if ((l = alts.length - 1) != 1) abend(l ? "ambiguous argument" : "unknown argument", arg[1]);
     opt = (arg[1] + /,([^:@]*)/.exec(alts[0])[1]).replace(/^(-[^-]+)?--/, '').replace(/-/g, '');
     $ = /([:@])(.)$/.exec(alts[0]);
     if ($[2] != '!') {
       if ($[1].length == 1 || (argv.length && argv[0][0] != "-")) {
         if (!arg[0]) {
-          if (!argv.length) abend("missing argument for: " + (arg[1][1] != "-" ? arg[1] : "--" + opt), true);
+          if (!argv.length) abend("missing argument",  arg[1][1] != "-" ? arg[1] : "--" + opt);
           arg[2] = argv.shift();
         }
-        if ($[2] == '#' && isNaN(arg[2] = +arg[2])) abend("numeric option: --" + opt);
+        if ($[2] == '#' && isNaN(arg[2] = +arg[2])) abend("numeric argument", "--" + opt);
       }
     } else if (arg[0]) {
       if (arg[1][1] != "-") {
         argv.unshift("-" + arg[2]);
       } else {
-        abend("option does not take value: " + (arg[1][1] != "-" ? arg[1] : "--" + opt), true);
+        abend("toggle argument", arg[1][1] != "-" ? arg[1] : "--" + opt);
       }
     }
     given[opt] = true;
     if ($[1] == '@') opts[opt].push(arg[2]);
-    else if (opts[opt] != null) abend("option can only be secified once: " + arg[1]);
+    else if (opts[opt] != null) abend("scalar argument", arg[1]);
     else opts[opt] = arg[2];
   }
   return Object.keys(given);

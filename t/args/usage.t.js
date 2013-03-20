@@ -20,27 +20,27 @@ require('proof')(7, function (equal) {
   try {
     arguable.parse(__filename, [ '-x' ]);
   } catch (e) {
-    equal(e.message, 'unknown option: -x', "unknown");
+    equal(e.message, 'There is no such argument as -x.', "unknown");
     equal(e.usage, usage, "error usage");
   }
   try {
     arguable.parse(__filename, [ '-c' ]);
   } catch (e) {
-    equal(e.message, 'missing argument for: -c', "terse missing");
+    equal(e.message, 'The argument -c requires an argument value.', "terse missing");
   }
   try {
     arguable.parse(__filename, [ '--c' ]);
   } catch (e) {
-    equal(e.message, 'missing argument for: --config', "verbose inferred missing");
+    equal(e.message, 'The argument --config requires an argument value.', "verbose inferred missing");
   }
   try {
     arguable.parse(__dirname + '/usage.txt', [ '--a' ]);
   } catch (e) {
-    equal(e.message, 'ambiguous: --a', "ambiguous");
+    equal(e.message, 'The argument --a is ambiguous.', "ambiguous");
   }
   try {
     console.log(arguable.parse(__dirname + '/usage.txt', [ '-p', 'Z' ]));
   } catch (e) {
-    equal(e.message, 'numeric option: --processes', "numeric");
+    equal(e.message, 'The argument --processes is numeric.', "numeric");
   }
 });

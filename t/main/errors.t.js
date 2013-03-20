@@ -35,9 +35,9 @@ require('proof')(6, function (equal) {
   }
 
   function abended (test, message) {
-    return function (usage, $message) {
-      equal(usage, USAGE, test + ' usage');
-      equal($message, message, test + ' message');
+    return function (e) {
+      equal(e.usage, USAGE, test + ' usage');
+      equal(e.message, message, test + ' message');
     }
   }
   

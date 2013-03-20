@@ -21,9 +21,9 @@ require('proof')(2, function (ok, equal) {
     options.help();
   }
 
-  function error (usage, message) {
-    ok(message == null, 'no message');
-    equal(usage, USAGE, 'usage');
+  function error (e) {
+    ok(e.message == e.usage, 'no message');
+    equal(e.usage, USAGE, 'usage');
   }
   
   arguable.parse('en_US', __filename, main, error);

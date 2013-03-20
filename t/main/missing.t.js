@@ -13,18 +13,18 @@ const USAGE = 'usage: basic [options] [files]\n' +
               '  -c, --config <key=value>\n' +
               ''
 
-require('proof')(2, function (ok, equal) {
-  var arguable = require('../..')
-    ;
+require('proof')(1, function (equal) {
+  var arguable = require('../..');
 
-  function main (options) {
-    options.help();
+  function main () {
   }
 
-  function error (usage, message) {
-    ok(!usage, "usage missing");
-    ok(!usage, "message missing");
+  function error () {
   }
-  
-  arguable.parse('en_US', __filename, [ 'missing' ], main, error);
+
+  try {
+    arguable.parse('en_US', __filename, [ 'missing' ], main, error);
+  } catch (e) {
+    equal(e.message, 'no usage found');
+  }
 });
