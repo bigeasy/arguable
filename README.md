@@ -270,6 +270,17 @@ Changes for each release.
 
 ### Version 0.0.8
 
+ * Use a usage message for parse errors. #44.
+ * Pass `Error` to user provided abnormal exit callback. #45.
+ * Make no matching usage a plain old exception. #46.
+ * Begin a design diary.
+ * Add an MIT `LICENSE` and a contribution guide.
+ * Rename `errors` function to `strings`. #42.
+ * Reorder and format error messages. #29.
+ * Drop support for Node.js 0.6.
+ * Fix and test `Options.help`. #38.
+ * Use `Options.abend` in arguments parser. #36.
+ * Complete internal conversion to an `Options` class.
  * Extract globs into an [expandable](https://github.com/bigeasy/expandable)
    project. #37.
 
