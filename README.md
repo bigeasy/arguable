@@ -270,6 +270,8 @@ Changes for each release.
 
 ### Version 0.0.8
 
+Thu Mar 21 05:26:43 UTC 2013
+
  * Use a usage message for parse errors. #44.
  * Pass `Error` to user provided abnormal exit callback. #45.
  * Make no matching usage a plain old exception. #46.
