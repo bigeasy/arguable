@@ -9,8 +9,8 @@
   }]
 , "homepage": "http://bigeasy.github.com/arguable"
 , "repository": "git://github.com/bigeasy/arguable.git"
-, "scripts" : { "test": "proof t/*/*.t.js" }
+, "scripts" : { "test": "proof test t/*/*.t.js" }
 , "devDependencies":
-  { "proof": "0.0.24" }
+  { "proof": "0.0.27" }
 , "dependencies": {}
 }
