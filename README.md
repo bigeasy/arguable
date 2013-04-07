@@ -1,4 +1,4 @@
-# Arguable [![Build Status](https://secure.travis-ci.org/bigeasy/arguable.png?branch=master)](http://travis-ci.org/bigeasy/arguable)
+# Arguable [![Build Status](https://secure.travis-ci.org/bigeasy/arguable.png?branch=master)](http://travis-ci.org/bigeasy/arguable) [![Coverage Status](https://coveralls.io/repos/bigeasy/arguable/badge.png?branch=master)](https://coveralls.io/r/bigeasy/arguable) ![NPM version](https://badge.fury.io/js/arguable.png)](http://badge.fury.io/js/arguable)
 
 
 **Arguable** is a command line parser that lends structure to your command line
