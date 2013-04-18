@@ -15,7 +15,7 @@ require('proof')(2, function (step, equal, callback) {
   var data = '';
   help.stdout.setEncoding('utf8');
   help.stdout.on('data', function (chunk) { data += chunk });
-  help.on('close', function (code) {
+  help.on((/^v0.(\d+)/.exec(process.version) || [])[1] < 8 ? 'exit' : 'close', function (code) {
     equal(data, usage, 'usage');
     equal(code, 0, 'exit success');
     callback();
