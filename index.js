@@ -145,11 +145,8 @@ function strings (lines) {
 function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
       flags = {}, numeric = /^(count|number|value|size)$/,
-      arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted, abended;
-
-  function abened (e) {
-
-  }
+      arg, arrayed = {}, pat = '', $,
+      main, message, ordered, formatted, abended;
 
   // Caller provisioned error handler.
   if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
@@ -180,15 +177,15 @@ function parse () {
 
   var source = vargs.shift();                     // File in which to look for usage.
   var argv = flatten(vargs);                      // Flatten arguments.
-  var usage = extractUsage(lang, source, argv); // Extract a usage message.
+  var usage = extractUsage(lang, source, argv);   // Extract a usage message.
 
   // No usage message is a programmer's error; throw a plain old exception.
   if (!usage) throw new Error("no usage found");
 
-  // Now we have a usage message, so we can begin to build our options object.
-
   // When invoked with a sub-command, adjust `argv`.
-  if (usage.command) argv.shift();
+  if (usage.command) {
+    argv.shift();
+  }
 
   // Extract a definition of the command line arguments from the usage message
   // while tiding the usage message; removing special characters that are flags
@@ -209,34 +206,37 @@ function parse () {
 
   // Set the messages that we'll use for parse error reporting and parse the
   // command line, then set the messages to the user provided messages.
-  var messages = extractUsage(lang, __filename, []);
+  var messages = [ extractUsage(lang, __filename, []) ];
   try {
     var options = new Options(usage);
     options.given = getopt(pat, options.params = {}, argv);
     options.argv = argv;
-    messages = options._usage;
+    messages = [ options._usage ];
+    if (options.command) {
+      var primaryUsage = extractUsage(lang, source, []);
+      if (primaryUsage) {
+        messages.push(primaryUsage);
+      }
+    }
+    options._messages = messages;
     if (main) main(options);
   } catch (e) {
     switch (e.arguable ? e.arguable.type : '') {
     case "help":
       e.type = "help";
-      e.usage = messages.message;
-      e.message = messages.message;
+      e.usage = messages[0].message;
+      e.message = messages[0].message;
       abended(e);
       break;
     case "abend":
-      message =  messages.strings[e.message] ||
-                 messages["default"].strings[e.message] ||
-                 { text: e.message, order: [] }
-      ordered = [];
-      for (var i = 0; i < e.arguments.length; i++) {
-        ordered[i] = e.arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
-      }
-      e.message = util.format.apply(util, [ message.text ].concat(ordered));
+      message = chooseMessage(messages, e.message)
+      e.message = formatMessage(message, e.arguments);
       e.usage = options.usage;
-      e.format = message.text;
-      e.order = message.order;
-      e.arguments = message.arguments;
+      e.format = {
+        text: message.text,
+        order: message.order,
+        args: message.arguments
+      }
       abended(e);
       break;
     default:
@@ -246,10 +246,33 @@ function parse () {
   return options;
 }
 
-function Options (usage, command) {
+function formatMessage (message, args) {
+  ordered = [];
+  for (var i = 0; i < args.length; i++) {
+    ordered[i] = args[i < message.order.length ? +(message.order[i]) - 1 : i];
+  }
+  return util.format.apply(util, [ message.text ].concat(ordered));
+}
+
+function chooseMessage (messages, identifier) {
+  var message;
+  for (var i = 0; i < messages.length; i++)
+    if (message = messages[i].strings[identifier]) return message;
+  for (var i = 0; i < messages.length; i++)
+    if (message = messages[i]["default"].strings[identifier]) return message;
+  return { text: identifier, order: [] };
+}
+
+function Options (usage, messages) {
   this._usage = usage;
+  this._messages = messages;
   this.usage = usage.message;
   if (usage.command) this.command = usage.command;
+}
+
+Options.prototype.format = function (message) {
+  var vargs = slice.call(arguments, 1);
+  return formatMessage(chooseMessage(this._messages, message), vargs);
 }
 
 Options.prototype.help = function (message) {
