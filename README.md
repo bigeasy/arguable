@@ -41,17 +41,74 @@ require('arguable')(__filename, function (options) {
 });
 ```
 
-**Arguable** starts with a full help message, because **Arguable** believes that
-a full help message is important for a command line program.
+In the spirit of opinionated software **Arguable** starts with a full help
+message, because I believe that a full usage message is important for a command
+line program. 
 
-**Arguable** is not fond of command line libraries that assemble a usage message
-from snippets. It would rather have the author spend time composing a nicely
-formatted usage message, with the ability to see the whole message, then work
-from that message.
+Usage messages are important to Node.js; Linux users have become accustomed to
+having a lot of context at their disposal when they invoke `--help`. Windows
+users are without a decent manual page system, so they tend to rely on usage
+messages to discover what their software can do.
+
+I don't want my command line library to assemble a usage message from a method
+chained, declarative API. The usage message and arguments of a command line
+program are the user interface. I do not expect its implementation to be
+trivial. I do not want to delegate the details to a module.
+
+It would rather have spend time composing a nicely formatted usage message, with
+the ability to see the whole message, then work from that message.
+
+## Anatomy of a Usage Message
 
 Your usage message must contain a long option for every option; short options
-are optional. If you have a synonym, declare it as separately and document it as
-a synonym.
+are optional.
+
+If you have a synonym for one of your commands, simply declare it separately and
+document it separately.
+
+The only argument validation that *Arguable** performs is to check that
+arguments that accept a parameter have a parameter; that arguments that don't
+accept a parameter don't have a parameter. Type checking is meant to be
+performed by the program itself.
+
+```javascript
+#!/usr/bin/node
+
+/*
+
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
+
+  options:
+
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+  -t, --threads     [count]   same as `--proceses`
+  -v, --verbose               toggle verbose output
+
+  description:
+
+  frobinate will reticuatle the splines in all of your happy doodle
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one.
+
+  ___ usage ___
+
+*/
+
+require('arguable')(__filename, function (options) {
+  if (options.params.help) throw new Error("usage");
+  var processes = options.processes || options.threads || 1;
+  require('../lib/frobinator').frobinate(processes, options.verbose, options.$argv);
+});
+```
+
+**TK**: Add an example of type checking &mdash; integer &mdash; to the example
+above.
+
+**TK**: The error checking example would also show how to report errors.
+
+**TK**: End of last edit.
 
 ## Commands with Sub-Commands
 
