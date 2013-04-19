@@ -147,10 +147,6 @@ function parse () {
       flags = {}, numeric = /^(count|number|value|size)$/,
       arg, arrayed = {}, pat = '', $ , main, message, ordered, formatted, abended;
 
-  function abened (e) {
-
-  }
-
   // Caller provisioned error handler.
   if (typeof vargs[vargs.length - 2] == 'function') abended = vargs.pop();
 
@@ -180,7 +176,7 @@ function parse () {
 
   var source = vargs.shift();                     // File in which to look for usage.
   var argv = flatten(vargs);                      // Flatten arguments.
-  var usage = extractUsage(lang, source, argv); // Extract a usage message.
+  var usage = extractUsage(lang, source, argv);   // Extract a usage message.
 
   // No usage message is a programmer's error; throw a plain old exception.
   if (!usage) throw new Error("no usage found");
@@ -188,7 +184,10 @@ function parse () {
   // Now we have a usage message, so we can begin to build our options object.
 
   // When invoked with a sub-command, adjust `argv`.
-  if (usage.command) argv.shift();
+  if (usage.command) {
+    argv.shift();
+  } else {
+  }
 
   // Extract a definition of the command line arguments from the usage message
   // while tiding the usage message; removing special characters that are flags
