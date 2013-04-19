@@ -40,3 +40,12 @@ but you really ought not to be allowed to. This means that the definition ought
 to always be pulled from the default langauge.
 
 Are there translations; can read from a directory, instead of from a file?
+
+## Inbox
+
+This library migrated from generated code from a language that compiles into
+JavaSript, so it is in rough shape, having been built from generated output.
+
+As I document, and use the library, I'm going to probably find uses for this
+current code base that are hidden by my distaste for the code, uses exposed by
+the interface, which pleases me.
