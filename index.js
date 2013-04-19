@@ -229,12 +229,14 @@ function parse () {
       abended(e);
       break;
     case "abend":
-      message =  chooseMessage(messages, e.message);
+      message = chooseMessage(messages, e.message)
       e.message = formatMessage(message, e.arguments);
       e.usage = options.usage;
-      e.format = message.text;
-      e.order = message.order;
-      e.arguments = message.arguments;
+      e.format = {
+        text: message.text,
+        order: message.order,
+        args: message.arguments
+      }
       abended(e);
       break;
     default:
