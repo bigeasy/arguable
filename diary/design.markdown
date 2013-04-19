@@ -25,3 +25,18 @@ special help message handling, they can implement it themselves. They don't need
 a framework for it.
 
 This needs to be added to GitHub Issues.
+
+## String Resources
+
+The string resources in the main module part are generally available to all
+commands, so that subcommands can pull from a common pool of error messages and
+resource strings.
+
+## Internationalization
+
+Make a note, somewhere in the documentation, that you're not supposed to change
+the way the software works in a different language, but maybe you're allowed to,
+but you really ought not to be allowed to. This means that the definition ought
+to always be pulled from the default langauge.
+
+Are there translations; can read from a directory, instead of from a file?
