@@ -210,39 +210,39 @@ function parse () {
   // Set the messages that we'll use for parse error reporting and parse the
   // command line, then set the messages to the user provided messages.
   var messages = extractUsage(lang, __filename, []);
-    try {
-      var options = new Options(usage);
-      options.given = getopt(pat, options.params = {}, argv);
-      options.argv = argv;
-      messages = options._usage;
-      if (main) main(options);
-    } catch (e) {
-      switch (e.arguable ? e.arguable.type : '') {
-      case "help":
-        e.type = "help";
-        e.usage = messages.message;
-        e.message = messages.message;
-        abended(e);
-        break;
-      case "abend":
-        message =  messages.strings[e.message] ||
-                   messages["default"].strings[e.message] ||
-                   { text: e.message, order: [] }
-        ordered = [];
-        for (var i = 0; i < e.arguments.length; i++) {
-          ordered[i] = e.arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
-        }
-        e.message = util.format.apply(util, [ message.text ].concat(ordered));
-        e.usage = options.usage;
-        e.format = message.text;
-        e.order = message.order;
-        e.arguments = message.arguments;
-        abended(e);
-        break;
-      default:
-        throw e;
+  try {
+    var options = new Options(usage);
+    options.given = getopt(pat, options.params = {}, argv);
+    options.argv = argv;
+    messages = options._usage;
+    if (main) main(options);
+  } catch (e) {
+    switch (e.arguable ? e.arguable.type : '') {
+    case "help":
+      e.type = "help";
+      e.usage = messages.message;
+      e.message = messages.message;
+      abended(e);
+      break;
+    case "abend":
+      message =  messages.strings[e.message] ||
+                 messages["default"].strings[e.message] ||
+                 { text: e.message, order: [] }
+      ordered = [];
+      for (var i = 0; i < e.arguments.length; i++) {
+        ordered[i] = e.arguments[i < message.order.length ? +(message.order[i]) - 1 : i];
       }
+      e.message = util.format.apply(util, [ message.text ].concat(ordered));
+      e.usage = options.usage;
+      e.format = message.text;
+      e.order = message.order;
+      e.arguments = message.arguments;
+      abended(e);
+      break;
+    default:
+      throw e;
     }
+  }
   return options;
 }
 
