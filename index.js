@@ -40,7 +40,7 @@ function regular (text) { return text.replace(REGEX, '\\$1') }
 
 var REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g');
 
-// Exract a usage message from a file.
+// Extract a usage message from a file.
 function extractUsage (lang, source, argv) {
   var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
       i, j, I, line, indent, $, candidate, _default, usage,
@@ -57,7 +57,7 @@ function extractUsage (lang, source, argv) {
   // Note that the regular expression to match a usage line matches both the
   // beginning and ending markup, so we need to check in our outer loop that
   // we've matched beginning markup, and not ending markup, which would be an
-  // odd occurance, probably worth abenending about.
+  // odd occurrence, probably worth abenending about.
 
   //
   OUTER: for (i = 0, I = lines.length;i < I; i++) {
@@ -140,7 +140,7 @@ function strings (lines) {
 // which are flattened. And optional callback is the final argument. If provided
 // the callback is invoked with the options array. Any exception thrown is
 // reported. If it begins with something that looks like an error warning, then
-// the stack trace is supressed and the error message is followed by usage.
+// the stack trace is suppressed and the error message is followed by usage.
 
 function parse () {
   var vargs = slice.call(arguments, 0), lang = 'en_US',
@@ -267,7 +267,7 @@ var abend = Options.prototype.abend = function (message) {
 
 // A regex rocking argument parser implementation. It can do most of the
 // manipulations of GNU `getopt`, parsing long options, short options, long
-// options who's value is deilmited by an equal sign, short options all mushed
+// options who's value is delimited by an equal sign, short options all mushed
 // together, etc.
 function getopt (pat, opts, argv) {
   var arg, i = 0, $, arg, opt, l, alts, given = {};
@@ -302,8 +302,8 @@ function getopt (pat, opts, argv) {
   return Object.keys(given);
 }
 
-// Flatten an object or an array or an arry of objects or what have you into
-// long option command line parameters. This is one of the resasons we require
+// Flatten an object or an array or an array of objects or what have you into
+// long option command line parameters. This is one of the reasons we require
 // that usage definitions define a long option for each parameter.
 function flatten () {
   var flattened = [];
