@@ -247,7 +247,7 @@ function parse () {
 }
 
 function formatMessage (message, args) {
-  ordered = [];
+  var ordered = [];
   for (var i = 0; i < args.length; i++) {
     ordered[i] = args[i < message.order.length ? +(message.order[i]) - 1 : i];
   }
