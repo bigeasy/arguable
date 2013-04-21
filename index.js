@@ -25,7 +25,7 @@
 
  */
 var slice = [].slice, path = require('path'), fs = require('fs'), util = require('util');
-
+/*
 function die () {
   console.log.apply(console, slice.call(arguments, 0));
   process.exit(1);
@@ -34,7 +34,7 @@ function die () {
 function say () {
   console.log.apply(console, slice.call(arguments, 0));
 }
-
+*/
 // Create a regular expression that matches a specific string.
 function regular (text) { return text.replace(REGEX, '\\$1') }
 
