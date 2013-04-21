@@ -240,7 +240,7 @@ function parse () {
       abended(e);
       break;
     default:
-      throw e;
+      abended(e);
     }
   }
   return options;
