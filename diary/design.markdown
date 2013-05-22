@@ -37,14 +37,14 @@ resource strings.
 Make a note, somewhere in the documentation, that you're not supposed to change
 the way the software works in a different language, but maybe you're allowed to,
 but you really ought not to be allowed to. This means that the definition ought
-to always be pulled from the default langauge.
+to always be pulled from the default language.
 
 Are there translations; can read from a directory, instead of from a file?
 
 ## Inbox
 
 This library migrated from generated code from a language that compiles into
-JavaSript, so it is in rough shape, having been built from generated output.
+JavaScript, so it is in rough shape, having been built from generated output.
 
 As I document, and use the library, I'm going to probably find uses for this
 current code base that are hidden by my distaste for the code, uses exposed by
