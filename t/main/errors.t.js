@@ -40,7 +40,7 @@ require('proof')(8, function (equal) {
       equal(e.message, message, test + ' message');
     }
   }
-  
+
   arguable.parse('en_US', __filename, main,
     abended('primary', 'The --config 1 argument 2 requires a key value pair in the form key=value.'));
   arguable.parse('fr_FR', __filename, main, abended('alternate', 'In 2 french 1.'));

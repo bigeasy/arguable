@@ -47,7 +47,7 @@ require('proof')(3, function (step, equal, callback) {
   var exit = process.exit, log = console.log;
   process.exit = function () {};
   arguable.parse('en_US', __filename, function (options) {
-    options.help();  
+    options.help();
   });
   equal(message, USAGE, message, 'default help');
   process.exit = exit, console.log = log;

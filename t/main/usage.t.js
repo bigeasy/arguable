@@ -25,6 +25,6 @@ require('proof')(2, function (ok, equal) {
     ok(e.message == e.usage, 'no message');
     equal(e.usage, USAGE, 'usage');
   }
-  
+
   arguable.parse('en_US', __filename, main, error);
 });

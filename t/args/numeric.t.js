@@ -11,7 +11,7 @@ require('proof')(4, function (equal) {
   options = arguable.parse(__dirname + '/usage.txt', [ '--p', 3 ]);
   equal(options.params.processes + 1, 4, 'verbose numeric');
 
-  try { 
+  try {
     options = arguable.parse(__dirname + '/usage.txt', [ '--p', 'x' ]);
   } catch (e) {
     equal(e.message, 'The argument --processes is numeric.', 'not numeric');
