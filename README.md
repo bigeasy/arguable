@@ -43,7 +43,7 @@ require('arguable')(__filename, function (options) {
 
 In the spirit of opinionated software **Arguable** starts with a full help
 message, because I believe that a full usage message is important for a command
-line program. 
+line program.
 
 Usage messages are important to Node.js; Linux users have become accustomed to
 having a lot of context at their disposal when they invoke `--help`. Windows
