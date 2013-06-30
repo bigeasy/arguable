@@ -209,6 +209,30 @@ function parse () {
   var messages = [ extractUsage(lang, __filename, []) ];
   try {
     var options = new Options(usage);
+    options.fatal = function (e) {
+      if (!e) return;
+      switch (e.arguable ? e.arguable.type : '') {
+      case "help":
+        e.type = "help";
+        e.usage = messages[0].message;
+        e.message = messages[0].message;
+        abended(e);
+        break;
+      case "abend":
+        message = chooseMessage(messages, e.message)
+        e.message = formatMessage(message, e.arguments);
+        e.usage = options.usage;
+        e.format = {
+          text: message.text,
+          order: message.order,
+          args: message.arguments
+        }
+        abended(e);
+        break;
+      default:
+        abended(e);
+      }
+    }
     options.given = getopt(pat, options.params = {}, argv);
     options.argv = argv;
     messages = [ options._usage ];
@@ -221,27 +245,7 @@ function parse () {
     options._messages = messages;
     if (main) main(options);
   } catch (e) {
-    switch (e.arguable ? e.arguable.type : '') {
-    case "help":
-      e.type = "help";
-      e.usage = messages[0].message;
-      e.message = messages[0].message;
-      abended(e);
-      break;
-    case "abend":
-      message = chooseMessage(messages, e.message)
-      e.message = formatMessage(message, e.arguments);
-      e.usage = options.usage;
-      e.format = {
-        text: message.text,
-        order: message.order,
-        args: message.arguments
-      }
-      abended(e);
-      break;
-    default:
-      abended(e);
-    }
+    options.fatal(e)
   }
   return options;
 }

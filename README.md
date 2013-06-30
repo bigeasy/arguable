@@ -312,6 +312,83 @@ require('arguable')(__filename, function (options) {
 });
 ```
 
+## The Fatal Callback
+
+Your appliation may want to report an error through Arguable after the initial
+Arguable callback has completed. It is often the case in Node.js that it only
+gets interesting after you've invoked a few callbacks.
+
+When you plan on using `help` or `abend` in a callback, you're going to want to
+make sure that the error propagates out to the `fatal` function of the `options`
+object.
+
+How you propagate your errors is up to you. Here we use the `"domain"` package
+to propagte errors.
+
+```javascript
+#!/usr/bin/node
+
+/*
+
+  ___ usage: en_US ___
+  usage: frobinate [options]
+
+  options:
+
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+  -f, --file        [path]    the file to frobinate
+
+  description:
+
+
+  frobinate will reticuatle the splines in all of your happy doodle
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time. The `--file` option is path to
+  the file to frobinate and it is required.
+
+  ___ strings ___
+
+    too many processes (2, 1):
+      You choose frobinate %s using %d processes, but the maximum is 4.
+
+    file missing:
+      cannot find the file to frobinate: %s.
+
+  ___ usage ___
+
+*/
+
+require('arguable')(__filename, function (options) {
+  var d = require('domain').create();
+  d.on('error', options.fatal);
+  d.run(function () {
+    var fs = require('fs');
+
+    if (options.help) options.help();
+
+    if (options.processes > 4) {
+      options.abend('too many processes', options.processes, options.argv[0]);
+    }
+
+    // Read a file.
+    fs.readFile(options.file, d.intercept(function (result) {
+      // Here we either call abend or rethrow the error, either way we'll
+      // propagate to our `options.fatal` function..
+      if (error) {
+        if (error.code == 'ENOENT') options.abend('file missing', options.file);
+        else throw error;
+      }
+      // Good to go.
+      require('../lib/frobinator').frobinate(options.processes, options.argv);
+    }));
+  });
+});
+```
+
+You could use `process.on("uncaughtException")` for a quicker and dirtier
+implementation that would work just as well.
 
 ## Contributors
 
