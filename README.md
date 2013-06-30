@@ -404,6 +404,8 @@ Changes for each release.
 
 ### Version 0.0.9
 
+Sun Jun 30 14:57:25 UTC 2013
+
  * Implement `options.fatal`. #52.
  * Upgrade to Proof 0.0.30. #51. #50.
  * Use `parseFloat` to parse numeric. #41.

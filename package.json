@@ -1,7 +1,7 @@
 { "name": "arguable"
 , "description": "UNIX style argument parsing that painlessly ports to Windows. An argument parser so well organized, you might think it's a framework."
 , "author": "Alan Gutierrez <alan@prettyrobots.com>"
-, "version": "0.0.8"
+, "version": "0.0.9"
 , "keywords": [ "command", "option", "parser", "prompt", "cli", "stdin", "args", "arguments", "console", "glob" ]
 , "licenses": [
   { "type": "MIT"
