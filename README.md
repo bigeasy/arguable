@@ -402,6 +402,19 @@ implementation that would work just as well.
 
 Changes for each release.
 
+### Version 0.0.9
+
+ * Implement `options.fatal`. #52.
+ * Upgrade to Proof 0.0.30. #51. #50.
+ * Use `parseFloat` to parse numeric. #41.
+ * Fix variable leaked into global namespace. #49.
+ * Provide format to `abended` function. #35.
+ * Make string resources generally available. #43.
+ * Tidy, delete dead code. #43. #35.
+ * Add coverage chicklet to `README.md`.
+ * Remove `bc` install from Travis CI build.
+ * Remove `.npmignore`. #47.
+
 ### Version 0.0.8
 
 Thu Mar 21 05:26:43 UTC 2013
