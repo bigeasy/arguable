@@ -11,6 +11,6 @@
 , "repository": "git://github.com/bigeasy/arguable.git"
 , "scripts" : { "test": "proof platform win32 && proof test */*/*.t.js || t/test" }
 , "devDependencies":
-  { "proof": "0.0.30" }
+  { "proof": "0.0.32" }
 , "dependencies": {}
 }

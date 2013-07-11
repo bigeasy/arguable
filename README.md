@@ -402,6 +402,8 @@ implementation that would work just as well.
 
 Changes for each release.
 
+ * Upgrade Proof to 0.0.32. #54.
+
 ### Version 0.0.9
 
 Sun Jun 30 14:57:25 UTC 2013
