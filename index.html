@@ -24,7 +24,7 @@ in the style of <code>git</code>, <code>apt-get</code> or <code>yum</code>.</p>
 <p><strong>Arguable</strong> starts with your usage message. It extracts the program arguments
 from the usage message. <strong>Arguable</strong> compels you to write a usage message in
 order to get your command line to parse.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/node</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
 
 <span class="cm">/*</span>
 
@@ -74,7 +74,7 @@ document it separately.</p>
 arguments that accept a parameter have a parameter; that arguments that don&#39;t
 accept a parameter don&#39;t have a parameter. Type checking is meant to be
 performed by the program itself.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/node</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
 
 <span class="cm">/*</span>
 
@@ -210,7 +210,7 @@ user&#39;s language preferences is not supposed change the program interface.</p
 <h2>Error Messages</h2>
 <p>You can define internationalized error messages. Add a <code>strings</code> section to
 following your usage defintion</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/node</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
 
 <span class="cm">/*</span>
 
@@ -254,7 +254,7 @@ reorder the arguments to fit a different sentence structure. Here&#39;s an examp
 of reordering, however we&#39;re still in English, because it&#39;s really all I know.</p>
 <p>Oh, I&#39;d love a patch if you have an example in your language, and your language
 is not English.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/node</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/node</span>
 
 <span class="cm">/*</span>
 
@@ -300,7 +300,7 @@ make sure that the error propagates out to the <code>fatal</code> function of th
 object.</p>
 <p>How you propagate your errors is up to you. Here we use the <code>&quot;domain&quot;</code> package
 to propagte errors.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/node</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/node</span>
 
 <span class="cm">/*</span>
 

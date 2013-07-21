@@ -17,5 +17,9 @@ module.exports = cadence(function (step, $, cache) {
         //
         // Until then, ugly markup. :(
         edify.pygments($, '.lang-javascript', 'javascript', cache, step())
+    }, function () {
+        $('.err').each(function () {
+            $(this).removeClass('err')
+        })
     })
 })
