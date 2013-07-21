@@ -1,0 +1,115 @@
+@import "response";
+@import "../vendor/lesshat/lesshat";
+
+@logo-text: #000000;
+@body-text: lighten(#000000, 10%);
+
+html {
+    background: darken(#ffffff, 3%);
+    font-size: 100%;
+    color: @body-text;
+}
+
+body {
+    font-family: Helvetica;
+    margin: 0 auto;
+    padding: 0 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+.container {
+    /* Whatever you want. They’re your oats. */
+    max-width: 60em;
+    margin: 0 auto;
+    padding: 0 0;
+}
+
+.unit.welcome {
+    .span-grid;
+    h1 {
+        font-family: "Alex Brush", "Helvetica", sans-serif;
+        /*font-size: 48pt;*/
+        font-size: 72pt;
+        margin-top: 0.5em;
+        margin-bottom: 0.25em;
+    }
+    p {
+        font-family: "Questrial", "Helvetica", sans-serif;
+        font-size: 18pt;
+        margin-bottom: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+}
+
+.unit {
+    padding: 0 36px;
+}
+
+.unit.value-proposition {
+    .span-grid;
+    p {
+        margin: 1em 0;
+    }
+}
+
+.unit.description {
+    font-family: "Raleway", "Merriweather", "Maven Pro", "Helvetica", serif;
+    p {
+        margin: 1em 0;
+        /* todo: not working in chrome */
+        font-weight: 100;
+        strong {
+            font-weight: 900;
+        }
+    }
+    ul {
+        margin: 1em 0;
+        padding-left: 2em;
+    }
+    h2 {
+        font-family: "Offside";
+        font-size: 2em;
+        font-style: italic;
+        margin: 1em 0;
+    }
+}
+
+.unit.benefit {
+    padding: 1em;
+    .one-of-three;
+    h2 {
+        text-align: center;
+        font-size: 1em;
+        margin-bottom: 1em;
+    }
+}
+
+.unit.verbiage {
+    .span-grid;
+    h2 {
+        font-size: 1em;
+        margin-bottom: 1em;
+    }
+    p {
+        margin-bottom: 1em;
+    }
+}
+
+.unit.description {
+    .span-grid;
+    .highlight > pre {
+        margin: 2em 0;
+        padding: 1em;
+        font-family: 'Share Tech Mono', monospace;
+    }
+}
+
+.unit.sidebar {
+    .one-of-four;
+}
+
+/* vim: set ts=4 sw=4: */
