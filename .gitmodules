@@ -1,6 +1,0 @@
-[submodule "arguable"]
-	path = arguable
-	url = https://github.com/bigeasy/arguable
-[submodule "vendor/lesshat"]
-	path = vendor/lesshat
-	url = https://github.com/CSSHat/LESSHat.git
