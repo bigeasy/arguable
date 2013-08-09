@@ -41,6 +41,11 @@ to always be pulled from the default language.
 
 Are there translations; can read from a directory, instead of from a file?
 
+## Markup Language
+
+I'd like to make the input to arguable be more of a markup language, easier to
+write, and it can create the nice columnar displays as optional outputs.
+
 ## Inbox
 
 This library migrated from generated code from a language that compiles into
