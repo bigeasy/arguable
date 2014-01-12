@@ -10,8 +10,8 @@
     ],
     "licenses":
     [{
-                        "type": "MIT",
-                        "url": "http://github.com/bigeasy/arguable/raw/master/LICENSE"
+                        "type": "Affero GPL 3.0 with linking exception.",
+                        "url": "http://github.com/bigeasy/arguable/raw/master/LINKING"
     }],
     "homepage":         "http://bigeasy.github.com/arguable",
     "repository":       "git://github.com/bigeasy/arguable.git",
