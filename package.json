@@ -17,7 +17,7 @@
     "repository":       "git://github.com/bigeasy/arguable.git",
     "devDependencies":
     {
-                        "proof": "0.0.38"
+                        "proof": "0.0.40"
     },
     "dependencies":
     {},
