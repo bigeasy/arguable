@@ -14,7 +14,11 @@
                         "url": "http://github.com/bigeasy/arguable/raw/master/LICENSE"
     }],
     "homepage":         "http://bigeasy.github.com/arguable",
-    "repository":       "git://github.com/bigeasy/arguable.git",
+    "repository":
+    {
+                        "type": "git",
+                        "url": "git://github.com/bigeasy/arguable.git"
+    },
     "devDependencies":
     {
                         "proof": "0.0.40"
