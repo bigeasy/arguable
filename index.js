@@ -302,7 +302,10 @@ function getopt (pat, opts, argv) {
   while (!(i >= argv.length || (argv[i] == "--" && argv.shift()) || !/^--?[^-]/.test(argv[i]))) {
     arg = argv.shift();
     arg = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true];
-    alts = pat.replace(new RegExp(regular(arg[1]), 'g'), '').replace(/-[^,],--[^|]+\|/g, '').split("|");
+    alts = pat.replace(new RegExp(regular(arg[1]), 'g'), '')
+              .replace(/-[^,],--[^|]+\|/g, '')
+              .replace(/^.*((?:^|\|),[^|]+\|).*$/g, '$1')   // unambiguous match of short opt
+              .split("|");
     if ((l = alts.length - 1) != 1) abend(l ? "ambiguous argument" : "unknown argument", arg[1]);
     opt = (arg[1] + /,([^:@]*)/.exec(alts[0])[1]).replace(/^(-[^-]+)?--/, '').replace(/-/g, '');
     $ = /([:@])(.)$/.exec(alts[0]);
