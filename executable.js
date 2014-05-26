@@ -1,5 +1,6 @@
 var stream = require('stream'),
-    arguable = require('./.')
+    arguable = require('./.'),
+    __slice = [].slice
 
 function createStream (s) {
     return s || new stream.PassThrough
@@ -7,11 +8,14 @@ function createStream (s) {
 
 module.exports = function (module, program) {
     var run = module.exports = function (argv, stdout, stdin, stderr, callback) {
-        var io = {
-            stdin: createStream(stdin),
-            stdout: createStream(stdout),
-            stderr: createStream(stderr)
-        }
+        var vargs = __slice.apply(arguments),
+            callback = (typeof vargs[vargs.length - 1] == 'function') && vargs.pop(),
+            argv = vargs.shift() || [],
+            io = {
+                stdout: createStream(vargs.shift()),
+                stdin: createStream(vargs.shift()),
+                stderr: createStream(vargs.shift())
+            }
         arguable.parse(module.filename, argv, function (options) {
             options.stdin = io.stdin
             options.stdout = io.stdout
