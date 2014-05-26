@@ -6,7 +6,7 @@
   ___ usage ___
 */
 
-require('../../../executable')(module, function (options, stdout) {
+require('../../../executable')(module, function (options, stdout, stderr, stdin, callback) {
     if (options.argv.length) {
         var separator = ''
         options.argv.forEach(function (arg) {
@@ -16,4 +16,5 @@ require('../../../executable')(module, function (options, stdout) {
         })
         stdout.write('\n')
     }
+    callback()
 })
