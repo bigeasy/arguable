@@ -7,14 +7,15 @@ function createStream (s) {
 }
 
 module.exports = function (module, program) {
-    var run = module.exports = function (argv, stdout, stdin, stderr, callback) {
+    var run = module.exports = function () {
         var vargs = __slice.apply(arguments),
             callback = (typeof vargs[vargs.length - 1] == 'function') && vargs.pop(),
-            argv = vargs.shift() || [],
+            argv = vargs.shift(),
+            options = vargs.shift() || {},
             io = {
-                stdout: createStream(vargs.shift()),
-                stdin: createStream(vargs.shift()),
-                stderr: createStream(vargs.shift())
+                stdout: createStream(options.stdout),
+                stdin: createStream(options.stdin),
+                stderr: createStream(options.stderr)
             }
         arguable.parse(module.filename, argv, function (options) {
             options.stdin = io.stdin

@@ -6,7 +6,7 @@ require('proof')(4, function (ok, equal) {
     var stdout = new stream.PassThrough
     var chunks = []
     stdout.on('data', function (data) { chunks.push(data.toString()) })
-    echo([ 'a', 'b' ], stdout, function () {
+    echo([ 'a', 'b' ], { stdout: stdout }, function () {
         ok(1, 'called back')
     })
     equal(chunks.join(''), 'a b\n', 'executable')
