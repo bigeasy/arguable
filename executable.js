@@ -26,6 +26,10 @@ module.exports = function (module, program) {
         return io
     }
     if (module === require.main) {
-        run(process.argv.slice(2), process.stdout, process.stdin, process.stderr)
+        run(process.argv.slice(2), {
+            stdout: process.stdout,
+            stdin: process.stdin,
+            stderr: process.stderr
+        })
     }
 }
