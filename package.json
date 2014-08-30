@@ -24,7 +24,8 @@
                         "proof": "0.0.44"
     },
     "dependencies":
-    {},
+    {
+    },
     "scripts":
     {
                         "test": "proof platform win32 && proof test */*/*.t.js || t/test"
