@@ -15,16 +15,15 @@ var USAGE = 'usage: basic [options] [files]\n' +
 
 require('proof')(2, function (ok, equal) {
     var arguable = require('../..')
-      ;
 
     function main (options) {
-        options.help();
+        options.help()
     }
 
     function error (e) {
-        ok(e.message == e.usage, 'no message');
-        equal(e.usage, USAGE, 'usage');
+        ok(e.message == e.usage, 'no message')
+        equal(e.usage, USAGE, 'usage')
     }
 
-    arguable.parse('en_US', __filename, main, error);
-});
+    arguable.parse('en_US', __filename, main, error)
+})

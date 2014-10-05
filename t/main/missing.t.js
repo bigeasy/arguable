@@ -14,7 +14,7 @@ const USAGE = 'usage: basic [options] [files]\n' +
               ''
 
 require('proof')(1, function (equal) {
-    var arguable = require('../..');
+    var arguable = require('../..')
 
     function main () {
     }
@@ -23,8 +23,8 @@ require('proof')(1, function (equal) {
     }
 
     try {
-        arguable.parse('en_US', __filename, [ 'missing' ], main, error);
+        arguable.parse('en_US', __filename, [ 'missing' ], main, error)
     } catch (e) {
-        equal(e.message, 'no usage found');
+        equal(e.message, 'no usage found')
     }
-});
+})
