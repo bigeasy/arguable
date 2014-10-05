@@ -37,15 +37,15 @@
 */
 
 require('proof')(4, function (equal, ok) {
-  var arguable = require('../..'), options;
-  options = arguable.parse(__filename, [ 'run', '-h' ]);
-  equal(options.command, 'run', 'first command');
-  ok(options.params.help, 'switches');
-  options = arguable.parse(__filename, [ 'compile' ]);
-  equal(options.command, 'compile', 'second command');
-  try {
-    arguable.parse(__filename, [ 'missing' ]);
-  } catch (e) {
-    equal(e.message, "no usage found", "missing command");
-  }
+    var arguable = require('../..'), options;
+    options = arguable.parse(__filename, [ 'run', '-h' ]);
+    equal(options.command, 'run', 'first command');
+    ok(options.params.help, 'switches');
+    options = arguable.parse(__filename, [ 'compile' ]);
+    equal(options.command, 'compile', 'second command');
+    try {
+        arguable.parse(__filename, [ 'missing' ]);
+    } catch (e) {
+        equal(e.message, "no usage found", "missing command");
+    }
 });

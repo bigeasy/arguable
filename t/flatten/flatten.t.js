@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 require('proof')(1, function (deepEqual) {
-  var arguable = require('../..')
-    ;
-  deepEqual(arguable.flatten('progress', { width: 3, monochrome: true })
-         , [ 'progress', '--width', '3', '--monochrome' ], 'flatten');
+    var arguable = require('../..');
+    deepEqual(arguable.flatten('progress', { width: 3, monochrome: true }),
+        [ 'progress', '--width', '3', '--monochrome' ], 'flatten');
 });
 

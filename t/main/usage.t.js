@@ -9,22 +9,22 @@
 */
 
 
-const USAGE = 'usage: basic [options] [files]\n' +
-              '  -c, --config <key=value>\n' +
-              ''
+var USAGE = 'usage: basic [options] [files]\n' +
+            '  -c, --config <key=value>\n' +
+            ''
 
 require('proof')(2, function (ok, equal) {
-  var arguable = require('../..')
-    ;
+    var arguable = require('../..')
+      ;
 
-  function main (options) {
-    options.help();
-  }
+    function main (options) {
+        options.help();
+    }
 
-  function error (e) {
-    ok(e.message == e.usage, 'no message');
-    equal(e.usage, USAGE, 'usage');
-  }
+    function error (e) {
+        ok(e.message == e.usage, 'no message');
+        equal(e.usage, USAGE, 'usage');
+    }
 
-  arguable.parse('en_US', __filename, main, error);
+    arguable.parse('en_US', __filename, main, error);
 });

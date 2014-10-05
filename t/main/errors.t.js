@@ -28,41 +28,41 @@ var USAGE = 'usage: basic [options] [files]\n' +
     ;
 
 require('proof')(8, function (equal) {
-  var arguable = require('../..');
+    var arguable = require('../..');
 
-  function main (options) {
-    options.abend('equals missing', 1, 2);
-  }
-
-  function abended (test, message) {
-    return function (e) {
-      equal(e.usage, USAGE, test + ' usage');
-      equal(e.message, message, test + ' message');
+    function main (options) {
+        options.abend('equals missing', 1, 2);
     }
-  }
 
-  arguable.parse('en_US', __filename, main,
-    abended('primary', 'The --config 1 argument 2 requires a key value pair in the form key=value.'));
-  arguable.parse('fr_FR', __filename, main, abended('alternate', 'In 2 french 1.'));
-  arguable.parse('de_DE', __filename, main,
-    abended('default', 'The --config 1 argument 2 requires a key value pair in the form key=value.'));
-  try {
-    arguable.parse('en_US', __filename, function () {
-      throw new Error('thrown');
+    function abended (test, message) {
+        return function (e) {
+            equal(e.usage, USAGE, test + ' usage');
+            equal(e.message, message, test + ' message');
+        }
+    }
+
+    arguable.parse('en_US', __filename, main,
+        abended('primary', 'The --config 1 argument 2 requires a key value pair in the form key=value.'));
+    arguable.parse('fr_FR', __filename, main, abended('alternate', 'In 2 french 1.'));
+    arguable.parse('de_DE', __filename, main,
+        abended('default', 'The --config 1 argument 2 requires a key value pair in the form key=value.'));
+    try {
+        arguable.parse('en_US', __filename, function () {
+            throw new Error('thrown');
+        });
+    } catch (e) {
+        equal(e.message, 'thrown', 'thrown');
+    }
+    var message;
+    var exit = process.exit, log = console.log;
+    console.log = function (m) {
+        message = m;
+    }
+    process.exit = function () {};
+    arguable.parse('en_US', __filename, function (options) {
+        options.abend('equals missing', 1, 2);
     });
-  } catch (e) {
-    equal(e.message, 'thrown', 'thrown');
-  }
-  var message;
-  var exit = process.exit, log = console.log;
-  console.log = function (m) {
-    message = m;
-  }
-  process.exit = function () {};
-  arguable.parse('en_US', __filename, function (options) {
-    options.abend('equals missing', 1, 2);
-  });
-  equal(message, 'The --config 1 argument 2 requires a key value pair in the form key=value.',
-    message, 'default abend');
-  process.exit = exit, console.log = log;
+    equal(message, 'The --config 1 argument 2 requires a key value pair in the form key=value.',
+        message, 'default abend');
+    process.exit = exit, console.log = log;
 });

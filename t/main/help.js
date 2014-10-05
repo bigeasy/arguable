@@ -12,5 +12,5 @@ var arguable = require('../..');
 */
 
 arguable.parse(__filename, function (options) {
-  options.help();
+    options.help();
 });
