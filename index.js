@@ -174,7 +174,7 @@ function parse () {
     if (($ = /^(\w{2}_\w{2})(?:\.[\w\d-]+)?$/.exec(vargs[0])) && vargs.shift()) lang = $[1];
 
     var source = vargs.shift();                     // File in which to look for usage.
-    var argv = flatten(vargs);                      // Flatten arguments.
+    var argv = vargs.shift() || [];
     var usage = extractUsage(lang, source, argv);   // Extract a usage message.
 
     // No usage message is a programmer's error; throw a plain old exception.
@@ -290,31 +290,4 @@ var abend = Options.prototype.abend = function (message) {
     throw e;
 }
 
-// fixme: Why am I doing this? I have never used it.
-//
-// Flatten an object or an array or an array of objects or what have you into
-// long option command line parameters. This is one of the reasons we require
-// that usage definitions define a long option for each parameter.
-function flatten () {
-    var flattened = [];
-    slice.call(arguments, 0).forEach(function (arg) {
-        if (arg != null) {
-            if (Array.isArray(arg)) {
-                flattened.push.apply(flattened, flatten.apply(this, arg));
-            } else if (typeof arg == "object") {
-                Object.keys(arg).forEach(function (key) {
-                    (Array.isArray(arg[key]) ? arg[key] : [ arg[key] ]).forEach(function (value) {
-                      flattened.push('--' + key);
-                      if (typeof value != 'boolean') flattened.push(value);
-                    });
-                });
-            } else {
-                flattened.push(arg);
-            }
-        }
-    });
-    return flattened;
-}
-
 module.exports.parse = parse;
-module.exports.flatten = flatten;
