@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 
-require('proof')(5, function (equal) {
+require('proof')(6, function (deepEqual) {
+    var assert = deepEqual
+    var equal = deepEqual
     var arguable = require('../..'), options
-    options = arguable.parse(__dirname + '/usage.txt', [ '-N', 'steve' ])
-    equal(options.params.name, 'steve', 'terse string')
-    options = arguable.parse(__dirname + '/usage.txt', [ '-Nsteve' ])
-    equal(options.params.name, 'steve', 'terse mushed string')
-    options = arguable.parse(__dirname + '/usage.txt', [ '--name', 'steve' ])
-    equal(options.params.name, 'steve', 'verbose string')
+    var usage = require('../../usage'), path = require('path')
+    var pat = '-a,--ambiguous:!|-A,--arbitrary:!|-N,--name:$|-p,--processes:#|-c,--config@$|-h,--help:!|'
+    var getopt = require('../../getopt'), params
+    var given = getopt(pat, params = {}, [ '-N', 'steve'])
+    assert(given, [ 'name' ], 'string given')
+    assert(params, { config: [], name: 'steve' }, 'terse string')
+    getopt(pat, params = {}, [ '-Nsteve'])
+    assert(params, { config: [], name: 'steve' }, 'terse mushed string')
+    getopt(pat, params = {}, [ '--name', 'steve'])
+    assert(params, { config: [], name: 'steve' }, 'verbose string')
     options = arguable.parse(__dirname + '/usage.txt', [ '--n', 'steve' ])
-    equal(options.params.name, 'steve', 'verbose abbrevated string')
+    assert(params, { config: [], name: 'steve' }, 'verbose abbrevated string')
     options = arguable.parse(__dirname + '/usage.txt', [ '--n=steve' ])
-    equal(options.params.name, 'steve', 'verbose assigned string')
+    assert(params, { config: [], name: 'steve' }, 'verbose assigned string')
 })
