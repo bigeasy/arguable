@@ -26,6 +26,8 @@
  */
 var slice = [].slice, path = require('path'), fs = require('fs'), util = require('util')
 
+var extractUsage = require('./usage')
+
 var getopt = require('./getopt')
 /*
 function die () {
@@ -38,100 +40,6 @@ function say () {
 }
 */
 
-// Extract a usage message from a file.
-function extractUsage (lang, source, argv) {
-    var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
-        i, j, I, line, indent, $, candidate, _default, usage,
-        message, command, match, langs
-
-    // **TODO**: Note that the test to see if we matched a line is if there is no
-    // sub-command specified, or else the sub-command matches the first argument.
-    // This would seem to imply that the default usage string should come last,
-    // but I've not written an application that has a default usage string yet.
-    //
-    // Need to allow the no sub-command to match, but then get vetoed by a matched
-    // sub-command.
-    //
-    // Note that the regular expression to match a usage line matches both the
-    // beginning and ending markup, so we need to check in our outer loop that
-    // we've matched beginning markup, and not ending markup, which would be an
-    // odd occurrence, probably worth abenending about.
-
-    //
-    OUTER: for (i = 0, I = lines.length;i < I; i++) {
-        if ($ = USAGE_RE.exec(lines[i])) {
-            if (!$[3]) continue OUTER;  // Matched ending markup.
-            langs = $[3].split(/\s+/)
-            if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
-                command = $[1]
-                indent = /^(\s*)/.exec(lines[i])[1].length
-                for (j = i + 1; j < I; j++) {
-                    if (/\S/.test(lines[j])) {
-                        indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length)
-                    }
-                    if ($ = USAGE_RE.exec(lines[j])) {
-                        if (!message) {
-                            message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) })
-                            usage = { message: message }
-                            if (command) usage.command = command
-                        } else {
-                            usage.strings = strings(lines.slice(i + 1, j))
-                        }
-                        if ($[2] == 'strings') {
-                            i = j
-                            continue
-                        }
-                        if (!_default) _default = usage
-                        if (~langs.indexOf(lang)) {
-                            usage["default"] = _default
-                            return usage
-                        }
-                        i = j - 1
-                        message = null
-                        continue OUTER
-                    }
-                }
-                return null
-            }
-        }
-    }
-
-    if (_default) _default["default"] = _default
-
-    return _default
-}
-
-// The regular expression to match usage markdown.
-var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/
-
-// Extract message strings from the strings section of a usage message.
-function strings (lines) {
-    var i, I, j, J, $, spaces, key, order, line, message = [], dedent = Number.MAX_VALUE, strings = {}
-
-    OUTER: for (i = 0, I = lines.length; i < I; i++) {
-        if (($ = /^(\s*)([^:(]+)(?:\((\d+(?:\s*,\s*\d+)*)\))?:\s*(.*)$/.exec(lines[i]))) {
-            spaces = $[1].length, key = $[2].trim(), order = $[3] || '1', line = $[4], message = []
-            if (line.length) message.push(line)
-            for (i++; i < I; i++) {
-                if (/\S/.test(lines[i])) {
-                    $ = /^(\s*)(.*)$/.exec(lines[i])
-                    if ($[1].length <= spaces) break
-                    dedent = Math.min($[1].length, dedent)
-                }
-                message.push(lines[i])
-            }
-            for (j = line.length ? 1 : 0, J = message.length; j < J; j++) {
-                message[j] = message[j].substring(dedent)
-            }
-            if (message[message.length - 1] == '') message.pop()
-            strings[key] = { text: message.join('\n'), order: order.split(/\s*,\s*/) }
-            i--
-        }
-    }
-
-    return strings
-}
-
 // First argument is optionally a language identifier. This is easily obtained
 // from the environment and passed in as the first argument. The first required
 // argument is the file used to for a usage strings, followed by arguments,
@@ -142,7 +50,7 @@ function strings (lines) {
 
 function parse () {
     var vargs = slice.call(arguments, 0), lang = 'en_US',
-        flags = {}, numeric = /^(count|number|value|size)$/,
+        flags = {},
         arg, arrayed = {}, pat = '', $,
         main, message, ordered, formatted, abended
 
@@ -185,23 +93,6 @@ function parse () {
         argv.shift()
     }
 
-    // Extract a definition of the command line arguments from the usage message
-    // while tiding the usage message; removing special characters that are flags
-    // to Arguable that do not belong in the usage message printed to `stdout`.
-    usage.message = usage.message.map(function (line) {
-        var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/
-        if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
-            out = $[0], terse = $[1] || '-\t'
-                      , verbose = $[2]
-                      , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
-                      , line = line.substring(out.length)
-            arrayed = ~out.indexOf('@') ? '@' : ':'
-            pat += terse + ',' + verbose + arrayed + type + '|'
-            if (!line.length) trim = /\s+$/
-        }
-        return (out.replace('@', ' ') + line).replace(trim, '')
-    }).join('\n')
-
     // Set the messages that we'll use for parse error reporting and parse the
     // command line, then set the messages to the user provided messages.
     var messages = [ extractUsage(lang, __filename, []) ]
@@ -231,7 +122,7 @@ function parse () {
                 abended(e)
             }
         }
-        options.given = getopt(pat, options.params = {}, argv, abend)
+        options.given = getopt(usage.pat, options.params = {}, argv, abend)
         options.argv = argv
         messages = [ options._usage ]
         if (options.command) {
