@@ -26,16 +26,13 @@ var USAGE = 'usage: basic [options] [files]\n' +
 
 var spawn = require('child_process').spawn, path = require('path')
 
-require('proof')(3, function (step, equal, callback) {
-    var help = spawn('node', [ path.join(__dirname, 'help.js') ]),
-        callback = step()
-
-    var data = ''
+require('proof')(3, function (assert, callback) {
+    var help = spawn('node', [ path.join(__dirname, 'help.js') ]), data = ''
     help.stdout.setEncoding('utf8')
     help.stdout.on('data', function (chunk) { data += chunk })
     help.on((/^v0.(\d+)/.exec(process.version) || [])[1] < 8 ? 'exit' : 'close', function (code) {
-        equal(data, usage, 'usage')
-        equal(code, 0, 'exit success')
+        assert(data, usage, 'usage')
+        assert(code, 0, 'exit success')
         callback()
     })
 
@@ -48,6 +45,6 @@ require('proof')(3, function (step, equal, callback) {
     arguable.parse('en_US', __filename, function (options) {
         options.help()
     })
-    equal(message, USAGE, message, 'default help')
+    assert(message, USAGE, 'default help')
     process.exit = exit, console.log = log
 })

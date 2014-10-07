@@ -13,7 +13,7 @@ var USAGE = 'usage: basic [options] [files]\n' +
             '  -c, --config <key=value>\n' +
             ''
 
-require('proof')(2, function (ok, equal) {
+require('proof')(2, function (assert) {
     var arguable = require('../..')
 
     function main (options) {
@@ -21,8 +21,8 @@ require('proof')(2, function (ok, equal) {
     }
 
     function error (e) {
-        ok(e.message == e.usage, 'no message')
-        equal(e.usage, USAGE, 'usage')
+        assert(e.message == e.usage, 'no message')
+        assert(e.usage, USAGE, 'usage')
     }
 
     arguable.parse('en_US', __filename, main, error)
