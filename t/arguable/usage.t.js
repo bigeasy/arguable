@@ -8,7 +8,7 @@
   ___ usage ___
 */
 
-require('proof')(11, function (assert) {
+require('proof')(12, function (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
@@ -41,4 +41,7 @@ require('proof')(11, function (assert) {
         text: 'This is the main message: %s.',
         order: [ 1 ]
     }, 'strings')
+
+    var none = extractUsage('en_US', path.join(__dirname, 'sub.js'), [ 'missing' ])
+    assert(none == null, 'missing')
 })
