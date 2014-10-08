@@ -10,7 +10,7 @@ function extractUsage (lang, source, argv) {
 
     if (!usage) return usage
 
-    usage.pat = ''
+    usage.pattern = usage.pat = ''
 
     // Extract a definition of the command line arguments from the usage message
     // while tiding the usage message; removing special characters that are flags
@@ -23,7 +23,7 @@ function extractUsage (lang, source, argv) {
                       , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
                       , line = line.substring(out.length)
             arrayed = ~out.indexOf('@') ? '@' : ':'
-            usage.pat += terse + ',' + verbose + arrayed + type + '|'
+            usage.pattern = usage.pat += terse + ',' + verbose + arrayed + type + '|'
             if (!line.length) trim = /\s+$/
         }
         return (out.replace('@', ' ') + line).replace(trim, '')

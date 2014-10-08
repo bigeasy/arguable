@@ -1,0 +1,12 @@
+usage: frobinate run [options] [file...] [file]
+
+options:
+
+-h, --help                  display this message
+-p, --processes     [count] number of processes to run in parallel
+
+description:
+
+frobinate will reticuatle the splines in all of your happy doodle
+files, optional in parallel. The `--processes` option is the number of
+processes to run concurrently, defaulting to zero.

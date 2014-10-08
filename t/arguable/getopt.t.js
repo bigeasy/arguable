@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('proof')(14, function (assert) {
+require('proof')(18, function (assert) {
     var pattern = '-a,--ambiguous:!|-A,--arbitrary:!|-N,--name:$|' +
         '-p,--processes:#|-c,--config@$|-h,--help:!|'
     var getopt = require('../../getopt'), params
@@ -32,8 +32,19 @@ require('proof')(14, function (assert) {
     getopt(pattern, params = {}, [ '--p', '3' ])
     assert(params, { config: [], processes: 3 }, 'verbose numeric')
 
-    // fixme: outgoing.
-    getopt(pattern, params = {}, [ '--p', 'x' ], function (message) {
-        assert(message, 'numeric argument')
-    })
+    function failed (args, expected, message) {
+        try {
+            getopt(pattern, params = {}, args, function (actual) {
+                throw new Error(actual)
+            })
+        } catch (e) {
+            assert(e.message, expected, message)
+        }
+    }
+
+    failed([ '--p', 'x' ], 'numeric argument', 'numeric argument')
+    failed([ '-x' ], 'unknown argument', 'unknown')
+    failed([ '-c' ], 'missing argument', 'terse missing')
+    failed([ '--c' ], 'missing argument', 'verbose inferred missing')
+    failed([ '--a' ], 'ambiguous argument', 'ambiguous')
 })
