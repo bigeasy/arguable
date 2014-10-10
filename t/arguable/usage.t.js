@@ -4,21 +4,23 @@
   ___ usage: en_US ___
   usage: basic [options] [files]
     -c, --config <key=value> @
+        --longonly
 
   ___ usage ___
 */
 
-require('proof')(12, function (assert) {
+require('proof')(16, function (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
         options,
         usage = 'usage: basic [options] [files]\n' +
                 '  -c, --config <key=value>\n' +
+                '      --longonly\n' +
                 ''
 
     var extracted = extractUsage('en_US', __filename, [])
-    assert(extracted.pattern, '-c,--config@$|', 'extracted pattern')
+    assert(extracted.pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
     assert(extracted.message, usage, 'extracted message')
     assert(extracted === extracted['default'], 'extracted default')
 
@@ -41,7 +43,22 @@ require('proof')(12, function (assert) {
         text: 'This is the main message: %s.',
         order: [ 1 ]
     }, 'strings')
+    assert(strings.strings['immediate'], {
+        text: 'No space before or after.',
+        order: [ 1 ]
+    }, 'strings')
+    assert(strings.strings['following'], {
+        text: 'Message follows label.',
+        order: [ 1 ]
+    }, 'strings')
+    assert(strings.strings['multi line'], {
+        text: 'One line.\n\nAnd then another.',
+        order: [ 1 ]
+    }, 'strings')
 
     var none = extractUsage('en_US', path.join(__dirname, 'sub.js'), [ 'missing' ])
     assert(none == null, 'missing')
+
+    var none = extractUsage('en_US', path.join(__dirname, 'endless.js'), [])
+    assert(none == null, 'endless')
 })

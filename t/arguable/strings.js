@@ -12,6 +12,14 @@
 
   ___ strings ___
 
+    multi line:
+      One line.
+
+      And then another.
+    immediate:
+      No space before or after.
+    following: Message follows label.
+
     main message:
       This is the main message: %s.
 
