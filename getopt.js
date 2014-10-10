@@ -21,13 +21,11 @@ function getopt (pat, opts, argv, abend) {
         opt = (arg[1] + /,([^:@]*)/.exec(alts[0])[1]).replace(/^(-[^-]+)?--/, '').replace(/-/g, '')
         $ = /([:@])(.)$/.exec(alts[0])
         if ($[2] != '!') {
-            if ($[1].length == 1 || (argv.length && argv[0][0] != '-')) {
-                if (!arg[0]) {
-                    if (!argv.length) abend('missing argument',  arg[1][1] != '-' ? arg[1] : '--' + opt)
-                    arg[2] = argv.shift()
-                }
-                if ($[2] == '#' && isNaN(arg[2] = parseFloat(arg[2]))) abend('numeric argument', '--' + opt)
+            if (!arg[0]) {
+                if (!argv.length) abend('missing argument',  arg[1][1] != '-' ? arg[1] : '--' + opt)
+                arg[2] = argv.shift()
             }
+            if ($[2] == '#' && isNaN(arg[2] = parseFloat(arg[2]))) abend('numeric argument', '--' + opt)
         } else if (arg[0]) {
             if (arg[1][1] != '-') {
                 argv.unshift('-' + arg[2])
