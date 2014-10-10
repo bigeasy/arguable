@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('proof')(18, function (assert) {
+require('proof')(22, function (assert) {
     var pattern = '-a,--ambiguous:!|-A,--arbitrary:!|-N,--name:$|' +
         '-p,--processes:#|-c,--config@$|-h,--help:!|'
     var getopt = require('../../getopt'), params
@@ -22,6 +22,8 @@ require('proof')(18, function (assert) {
     assert(params, { config: [], arbitrary: true }, 'short opt match')
     assert(!('ambiguous' in params), 'boolean not added')
 
+    getopt(pattern, params = {}, [ '-aA' ])
+
     getopt(pattern, params = {}, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ])
     assert(params, { config: [ 'one=1', 'two=2', 'three=3' ] }, 'array')
 
@@ -31,6 +33,11 @@ require('proof')(18, function (assert) {
     assert(params, { config: [], processes: 3 }, 'terse mushed numeric')
     getopt(pattern, params = {}, [ '--p', '3' ])
     assert(params, { config: [], processes: 3 }, 'verbose numeric')
+
+    var argv = [ '-p', 3, '--', '-A' ]
+    getopt(pattern, params = {}, argv)
+    assert(argv, [ '-A' ], 'stop on double hyphens')
+    assert(params, { config: [], processes: '3' }, 'stop on double hyphens params')
 
     function failed (args, expected, message) {
         try {
@@ -45,6 +52,8 @@ require('proof')(18, function (assert) {
     failed([ '--p', 'x' ], 'numeric argument', 'numeric argument')
     failed([ '-x' ], 'unknown argument', 'unknown')
     failed([ '-c' ], 'missing argument', 'terse missing')
+    failed([ '--p', 2, '--p', 3 ], 'scalar argument', 'duplicate argument')
     failed([ '--c' ], 'missing argument', 'verbose inferred missing')
     failed([ '--a' ], 'ambiguous argument', 'ambiguous')
+    failed([ '--ambiguous=1' ], 'toggle argument', 'value to toggle')
 })
