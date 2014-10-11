@@ -56,7 +56,7 @@ function extractUsage (source) {
                 if (vargs.length == 1 && vargs[0] == this.usage[0].lang) {
                     return null
                 } else {
-                    return this.chooseString(command, this.usage[0].lang, key)
+                    return this.chooseUsage(command, this.usage[0].lang)
                 }
             }
             return usages.shift()

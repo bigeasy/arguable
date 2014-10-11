@@ -9,19 +9,21 @@
   ___ usage ___
 */
 
-require('proof')(14, function (assert) {
+require('proof')(16, function (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
         options,
-        usage = 'usage: basic [options] [files]\n' +
-                '  -c, --config <key=value>\n' +
-                '      --longonly\n' +
-                ''
+        message = 'usage: basic [options] [files]\n' +
+                  '  -c, --config <key=value>\n' +
+                  '      --longonly\n' +
+                  ''
 
-    var extracted = extractUsage(__filename).usage
+    var usage = extractUsage(__filename)
+    var extracted = usage.usage
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
-    assert(extracted[0].usage, usage, 'extracted message')
+    assert(extracted[0].usage, message, 'extracted message')
+    assert(usage.chooseUsage(null, 'xx_XX').usage, message, 'extracted message')
 
     var usage = extractUsage(path.join(__dirname, 'sub.js'), [ 'run' ])
     var sub = usage.usage
@@ -53,6 +55,10 @@ require('proof')(14, function (assert) {
         text: 'One line.\n\nAnd then another.',
         order: [ 1 ]
     }, 'strings')
+    assert(usage.chooseString(null, 'xx_XX', 'main message'), {
+        text: 'This is the main message: %s.',
+        order: [ 1 ]
+    }, 'default string')
 
     var none = extractUsage(path.join(__dirname, 'missing.js')).usage
     assert(none, [], 'missing')
