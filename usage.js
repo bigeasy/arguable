@@ -10,12 +10,13 @@ function extractUsage (lang, source, argv) {
 
     if (!usage) return usage
 
+    usage.forEach(function (usage) {
     usage.pattern = usage.pat = ''
 
     // Extract a definition of the command line arguments from the usage message
     // while tiding the usage message; removing special characters that are flags
     // to Arguable that do not belong in the usage message printed to `stdout`.
-    usage.message = usage.message.map(function (line) {
+    usage.usage = usage.usage.map(function (line) {
         var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/
         if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
             out = $[0], terse = $[1] || '-\t'
@@ -28,6 +29,7 @@ function extractUsage (lang, source, argv) {
         }
         return (out.replace('@', ' ') + line).replace(trim, '')
     }).join('\n')
+    })
 
 
     return usage
@@ -38,7 +40,8 @@ function extractUsage (lang, source, argv) {
 function _extractUsage (lang, source, argv) {
     var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
         i, j, I, line, indent, $, candidate, _default, usage,
-        message, command, match, langs
+        message, command, match, langs,
+        usages = []
 
     // **TODO**: Note that the test to see if we matched a line is if there is no
     // sub-command specified, or else the sub-command matches the first argument.
@@ -58,43 +61,44 @@ function _extractUsage (lang, source, argv) {
         if ($ = USAGE_RE.exec(lines[i])) {
             if (!$[3]) continue OUTER;  // Matched ending markup.
             langs = $[3].split(/\s+/)
-            if ((!$[1] || $[1] == argv[0]) && (!_default || ~langs.indexOf(lang))) {
-                command = $[1]
-                indent = /^(\s*)/.exec(lines[i])[1].length
-                for (j = i + 1; j < I; j++) {
-                    if (/\S/.test(lines[j])) {
-                        indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length)
-                    }
-                    if ($ = USAGE_RE.exec(lines[j])) {
-                        if (!message) {
-                            message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) })
-                            usage = { message: message }
-                            if (command) usage.command = command
-                        } else {
-                            usage.strings = strings(lines.slice(i + 1, j))
-                        }
-                        if ($[2] == 'strings') {
-                            i = j
-                            continue
-                        }
-                        if (!_default) _default = usage
-                        if (~langs.indexOf(lang)) {
-                            usage["default"] = _default
-                            return usage
-                        }
-                        i = j - 1
-                        message = null
-                        continue OUTER
-                    }
+            command = $[1]
+            indent = /^(\s*)/.exec(lines[i])[1].length
+            for (j = i + 1; j < I; j++) {
+                if (/\S/.test(lines[j])) {
+                    indent = Math.min(indent, /^(\s*)/.exec(lines[j])[1].length)
                 }
-                return null
+                if ($ = USAGE_RE.exec(lines[j])) {
+                    if (!message) {
+                        message = lines.slice(i + 1, j).map(function (line) { return line.substring(indent) })
+                        usage = { message: message }
+                        usage.command = command || null
+                    } else {
+                        usage.strings = strings(lines.slice(i + 1, j))
+                    }
+                    if ($[2] == 'strings') {
+                        i = j
+                        continue
+                    }
+                    langs.forEach(function (lang) {
+                        usage = {
+                            lang: lang,
+                            command: usage.command,
+                            usage: usage.message,
+                            strings: usage.strings || {}
+                        }
+                        if (!usage.command) delete usage.command
+                        usages.push(usage)
+                    })
+                    i = j - 1
+                    message = null
+                    continue OUTER
+                }
             }
+            return []
         }
     }
 
-    if (_default) _default["default"] = _default
-
-    return _default
+    return usages
 }
 
 // Extract message strings from the strings section of a usage message.

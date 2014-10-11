@@ -83,7 +83,7 @@ function parse () {
 
     var source = vargs.shift()                      // File in which to look for usage.
     var argv = vargs.shift() || []
-    var usage = extractUsage(lang, source, argv)    // Extract a usage message.
+    var usage = extractUsage(lang, source, argv).shift()    // Extract a usage message.
 
     // No usage message is a programmer's error; throw a plain old exception.
     if (!usage) throw new Error("no usage found")

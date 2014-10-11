@@ -9,7 +9,7 @@
   ___ usage ___
 */
 
-require('proof')(16, function (assert) {
+require('proof')(13, function (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
@@ -20,45 +20,39 @@ require('proof')(16, function (assert) {
                 ''
 
     var extracted = extractUsage('en_US', __filename, [])
-    assert(extracted.pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
-    assert(extracted.message, usage, 'extracted message')
-    assert(extracted === extracted['default'], 'extracted default')
-
+    assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
+    assert(extracted[0].usage, usage, 'extracted message')
 
     var sub = extractUsage('en_US', path.join(__dirname, 'sub.js'), [ 'run' ])
-    assert(sub.pattern, '-h,--help:!|-p,--processes:#|', 'extracted sub pattern')
-    assert(sub.message, fs.readFileSync(path.join(__dirname, 'sub.txt'), 'utf8'), 'extracted sub message')
-    assert(sub.command, 'run', 'sub command')
-    assert(sub === sub['default'], 'sub default')
+    assert(sub[0].pattern, '-h,--help:!|-p,--processes:#|', 'extracted sub pattern')
+    assert(sub[0].usage, fs.readFileSync(path.join(__dirname, 'sub.txt'), 'utf8'), 'extracted sub message')
+    assert(sub[0].command, 'run', 'sub command')
 
-    var fallback = extractUsage('xx_XX', path.join(__dirname, 'i18n.js'), [])
-    assert(fallback.message, 'usage: awaken\n\n  Good morning!', 'i18n missing')
-    var fi_FI = extractUsage('fi_FI', path.join(__dirname, 'i18n.js'), [])
-    assert(fi_FI.message, 'käyttö: awaken\n\n  Hyvää huomenta!', 'i18n Finnish')
-    var es_ES = extractUsage('es_ES', path.join(__dirname, 'i18n.js'), [])
-    assert(es_ES.message, 'uso: awaken\n\n  Buenos días!\n\nopciones:', 'i18n Spanish')
+    var i18n = extractUsage('fi_FI', path.join(__dirname, 'i18n.js'), [])
+    assert(i18n[2].usage, 'käyttö: awaken\n\n  Hyvää huomenta!', 'i18n Finnish')
+    assert(i18n[1].usage, 'uso: awaken\n\n  Buenos días!\n\nopciones:', 'i18n Spanish')
 
     var strings = extractUsage(null, path.join(__dirname, 'strings.js'), [])
-    assert(strings.strings['main message'], {
+    assert(strings[1].strings['main message'], {
         text: 'This is the main message: %s.',
         order: [ 1 ]
     }, 'strings')
-    assert(strings.strings['immediate'], {
+    assert(strings[1].strings['immediate'], {
         text: 'No space before or after.',
         order: [ 1 ]
     }, 'strings')
-    assert(strings.strings['following'], {
+    assert(strings[1].strings['following'], {
         text: 'Message follows label.',
         order: [ 1 ]
     }, 'strings')
-    assert(strings.strings['multi line'], {
+    assert(strings[1].strings['multi line'], {
         text: 'One line.\n\nAnd then another.',
         order: [ 1 ]
     }, 'strings')
 
-    var none = extractUsage('en_US', path.join(__dirname, 'sub.js'), [ 'missing' ])
-    assert(none == null, 'missing')
+    var none = extractUsage('en_US', path.join(__dirname, 'missing.js'), [ 'missing' ])
+    assert(none, [], 'missing')
 
     var none = extractUsage('en_US', path.join(__dirname, 'endless.js'), [])
-    assert(none == null, 'endless')
+    assert(none, [], 'endless')
 })

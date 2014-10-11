@@ -16,7 +16,7 @@ Options.prototype.help = function () {
 module.exports = cadence(function (async, source, env, argv, main) {
     var options = new Options
     async([function () {
-        var usage = createUsage('en_US', source, [])
+        var usage = createUsage('en_US', source, []).shift()
         options.params = {}
         options.usage = usage.message
         options.given = getopt(usage.pattern, options.params, argv, function (message) {
