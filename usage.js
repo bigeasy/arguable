@@ -66,7 +66,7 @@ function extractUsage (source) {
             var usages = []
             if (command) {
                 usages.push.apply(usages, this.usage.filter(function (usage) {
-                    return command == usage.command && !~vargs.indexOf(usage.lang)
+                    return command == usage.command && ~vargs.indexOf(usage.lang)
                 }.bind(this)))
             }
             usages.push.apply(usages, this.usage.filter(function (usage) {

@@ -31,7 +31,8 @@
   `frobinate compile` will accelerate frobination by compling it to
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
-
+  ___ strings ___
+  example: This is an example.
   ___ usage ___
 
 */

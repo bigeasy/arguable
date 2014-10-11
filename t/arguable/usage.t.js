@@ -9,7 +9,7 @@
   ___ usage ___
 */
 
-require('proof')(13, function (assert) {
+require('proof')(14, function (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
@@ -23,16 +23,20 @@ require('proof')(13, function (assert) {
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
     assert(extracted[0].usage, usage, 'extracted message')
 
-    var sub = extractUsage(path.join(__dirname, 'sub.js'), [ 'run' ]).usage
+    var usage = extractUsage(path.join(__dirname, 'sub.js'), [ 'run' ])
+    var sub = usage.usage
     assert(sub[0].pattern, '-h,--help:!|-p,--processes:#|', 'extracted sub pattern')
     assert(sub[0].usage, fs.readFileSync(path.join(__dirname, 'sub.txt'), 'utf8'), 'extracted sub message')
     assert(sub[0].command, 'run', 'sub command')
+    assert(usage.chooseString('compile', 'en_US', 'example'),
+        { text: 'This is an example.', order: [ 1 ] }, 'choose string for particular command')
 
     var i18n = extractUsage(path.join(__dirname, 'i18n.js')).usage
     assert(i18n[2].usage, 'käyttö: awaken\n\n  Hyvää huomenta!', 'i18n Finnish')
     assert(i18n[1].usage, 'uso: awaken\n\n  Buenos días!\n\nopciones:', 'i18n Spanish')
 
-    var strings = extractUsage(path.join(__dirname, 'strings.js')).usage
+    var usage = extractUsage(path.join(__dirname, 'strings.js'))
+    var strings = usage.usage
     assert(strings[1].strings['main message'], {
         text: 'This is the main message: %s.',
         order: [ 1 ]
