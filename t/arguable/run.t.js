@@ -7,6 +7,8 @@
             --longonly
     ___ strings ___
     badness: A bad thing happened.
+    ordered(2, 1): First %s then %s.
+    unordered: First %s then %s.
     ___ usage ___
 */
 
@@ -14,7 +16,7 @@ var stream = require('stream'),
     path = require('path'),
     cadence = require('cadence')
 
-require('proof')(14, cadence(function (async, assert) {
+require('proof')(16, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -86,5 +88,12 @@ require('proof')(14, cadence(function (async, assert) {
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
+    })
+    run(__filename, {}, [],  {
+    }, cadence(function (async, options) {
+        assert(options.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
+        assert(options.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
+    }), function (error, code) {
+        if (error) throw error
     })
 }))
