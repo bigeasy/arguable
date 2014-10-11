@@ -84,7 +84,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             }
 
             // exit with error code
-            return [ async, this._code ]
+            return [ async, options._code ]
 
         } else {
 
