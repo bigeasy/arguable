@@ -10,15 +10,20 @@
     ___ usage ___
 */
 
-var cadence = require('cadence')
-var stream = require('stream')
+var stream = require('stream'),
+    path = require('path'),
+    cadence = require('cadence')
 
-require('proof')(10, cadence(function (async, assert) {
+require('proof')(11, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
                 ''
     var redux = require('../../redux'), io
+    redux(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, options) {
+    }), function (error, code) {
+        assert(error.message, 'no usage found', 'no usage found')
+    })
     redux(__filename, {}, [], {}, cadence(function (async, options) {
     }), function (error, code) {
         if (error) throw error
