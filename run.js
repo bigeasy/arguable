@@ -24,7 +24,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         // see if the first argument is a sub-command
         var command = usage.commands[argv[0]] ? argv.shift() : null
 
-        // pick a language for round these parts
+        // pick a language for round these parts, null if no such command
         var l10n = usage.chooseUsage(command, lang)
 
         // set options object properties
@@ -71,6 +71,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             throw this._thrown = new Error
         }
 
+        // null localization means no such command found and no default action
         if (!l10n) {
             options.abend('command required')
         }
