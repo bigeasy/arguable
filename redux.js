@@ -13,7 +13,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     async([function () {
 
         // parse usage
-        usage = createUsage('en_US', source, []).usage.shift()
+        usage = createUsage(source).usage.shift()
         if (!usage) {
             throw new Error('no usage found')
         }

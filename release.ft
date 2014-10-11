@@ -1,5 +1,6 @@
 ### Issue by Issue
 
+ * Remove unused arguments to `createUsage`. #107.
  * Set exit code on exit. #106.
  * Rename `propagate` to `exit`. #105.
  * Parse usage all the way through. #104.

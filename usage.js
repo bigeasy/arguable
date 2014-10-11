@@ -3,10 +3,10 @@ var fs = require('fs'), slice = [].slice
 // The regular expression to match usage markdown.
 var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/
 
-function extractUsage (lang, source, argv) {
+function extractUsage (source) {
     var  numeric = /^(count|number|value|size)$/
 
-    var usage = _extractUsage(lang, source, argv)
+    var usage = _extractUsage(source)
 
     usage.forEach(function (usage) {
         usage.pattern = usage.pat = ''
@@ -91,7 +91,7 @@ function extractUsage (lang, source, argv) {
 
 
 // Extract a usage message from a file.
-function _extractUsage (lang, source, argv) {
+function _extractUsage (source) {
     var lines = fs.readFileSync(source, 'utf8').split(/\r?\n/),
         i, j, I, line, indent, $, candidate, _default, usage,
         message, command, match, langs,
