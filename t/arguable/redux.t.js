@@ -13,7 +13,7 @@
 var cadence = require('cadence')
 var stream = require('stream')
 
-require('proof')(9, cadence(function (async, assert) {
+require('proof')(10, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -54,6 +54,13 @@ require('proof')(9, cadence(function (async, assert) {
     }), function (error, code) {
         assert(io.stderr.read().toString(), 'unknown argument\n', 'unknown argument')
         assert(code, 1, 'unknown argument code')
+    })
+    redux(__filename, {}, [], io = {
+    }, cadence(function (async, options) {
+        options.exit(0)
+    }), function (error, code) {
+        if (error) throw error
+        assert(code, 0, 'normal exit')
     })
     redux(__filename, {}, [], io = {
         stdout: new stream.PassThrough
