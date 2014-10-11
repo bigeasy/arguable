@@ -31,7 +31,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.command = command
         options.argv = argv = argv.slice()
         options.params = {}
-        options.usage = l10n.usage
+        options.usage = l10n && l10n.usage
         options.stdout = io.stdout
         options.stderr = io.stderr
         options.stdin = io.stdin
@@ -69,6 +69,10 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.exit = function (code) {
             this._code = code
             throw this._thrown = new Error
+        }
+
+        if (!l10n) {
+            options.abend('command required')
         }
 
         // parse arguments

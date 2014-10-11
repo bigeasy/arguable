@@ -14,7 +14,7 @@ var stream = require('stream'),
     path = require('path'),
     cadence = require('cadence')
 
-require('proof')(11, cadence(function (async, assert) {
+require('proof')(14, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -73,5 +73,18 @@ require('proof')(11, cadence(function (async, assert) {
         options.help()
     }), function (error) {
         assert(io.stdout.read().toString(), usage, 'help')
+    })
+    redux(path.join(__dirname, 'sub.js'), {}, [], io = {
+        stderr: new stream.PassThrough
+    }, cadence(function (async, options) {
+    }), function (error, code) {
+        assert(io.stderr.read().toString(), 'command required\n', 'command missing')
+    })
+    redux(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3 ],  {
+    }, cadence(function (async, options) {
+        assert(options.params.processes, 3, 'correct sub command arguments pattern')
+    }), function (error, code) {
+        if (error) throw error
+        assert(code, 0, 'sub command normal exit')
     })
 }))
