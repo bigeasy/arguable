@@ -20,6 +20,10 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             this._redirect = 'stdout'
             throw this._thrown = new Error(usage.usage)
         }
+        options.argv = argv = argv.slice()
+        options.stdout = io.stdout
+        options.stderr = io.stderr
+        options.stdin = io.stdin
         options.given = getopt(usage.pattern, options.params, argv, function (message) {
             options.abend(message)
         })
