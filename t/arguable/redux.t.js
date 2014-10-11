@@ -29,6 +29,7 @@ require('proof')(5, cadence(function (async, assert) {
     }, cadence(function (async, options) {
         options.abend('badness')
     }), function (error) {
+        if (error) throw error
         assert(io.stderr.read().toString(), 'A bad thing happened.\n', 'error')
     })
     redux(__filename, {}, [], io = {

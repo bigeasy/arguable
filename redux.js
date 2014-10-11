@@ -1,5 +1,6 @@
-var slice = [].slice
-var cadence = require('cadence')
+var util = require('util'),
+    cadence = require('cadence'),
+    slice = [].slice
 var createUsage = require('./usage')
 var getopt = require('./getopt')
 
@@ -28,6 +29,16 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.stderr = io.stderr
         options.stdin = io.stdin
 
+        // format messages using strings.
+        options.format = function () {
+            var vargs = slice.call(arguments), key = vargs.shift()
+            var message = usage.strings[key] || { text: key, order: [] }
+            var ordered = []
+            for (var i = 0; i < vargs.length; i++) {
+                ordered[i] = vargs[i < message.order.length ? +(message.order[i]) - 1 : i]
+            }
+            return util.format.apply(util, [ message.text ].concat(ordered))
+        }
         // abend helper stops execution and prints a message
         options.abend = function () {
             var vargs = slice.call(arguments), key = vargs.shift(), code
@@ -37,10 +48,9 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             } else {
                 this._code = 1
             }
-            var message = usage.strings[key] || { text: key, order: [] }
-            var formatted = require('./format')(message, vargs)
+            var message = this.format.apply(this, [ key ].concat(vargs))
             this._redirect = 'stderr'
-            throw this._thrown = new Error(formatted)
+            throw this._thrown = new Error(message)
         }
         // help helper prints stops execution and prints the help message
         options.help = function () {
