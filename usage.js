@@ -1,4 +1,4 @@
-var fs = require('fs')
+var fs = require('fs'), slice = [].slice
 
 // The regular expression to match usage markdown.
 var USAGE_RE = /^\s*___(?:\s+(\w+)\s+_)?\s+(usage|strings)(?::\s+((?:[a-z]{2}_[A-Z]{2})(?:\s+[a-z]{2}_[A-Z]{2})*))?\s+___\s*/
@@ -9,28 +9,84 @@ function extractUsage (lang, source, argv) {
     var usage = _extractUsage(lang, source, argv)
 
     usage.forEach(function (usage) {
-    usage.pattern = usage.pat = ''
+        usage.pattern = usage.pat = ''
 
-    // Extract a definition of the command line arguments from the usage message
-    // while tiding the usage message; removing special characters that are flags
-    // to Arguable that do not belong in the usage message printed to `stdout`.
-    usage.usage = usage.usage.map(function (line) {
-        var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/
-        if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
-            out = $[0], terse = $[1] || '-\t'
-                      , verbose = $[2]
-                      , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
-                      , line = line.substring(out.length)
-            arrayed = ~out.indexOf('@') ? '@' : ':'
-            usage.pattern = usage.pat += terse + ',' + verbose + arrayed + type + '|'
-            if (!line.length) trim = /\s+$/
-        }
-        return (out.replace('@', ' ') + line).replace(trim, '')
-    }).join('\n')
+        // Extract a definition of the command line arguments from the usage message
+        // while tiding the usage message; removing special characters that are flags
+        // to Arguable that do not belong in the usage message printed to `stdout`.
+        usage.usage = usage.usage.map(function (line) {
+            var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/
+            if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
+                out = $[0], terse = $[1] || '-\t'
+                          , verbose = $[2]
+                          , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
+                          , line = line.substring(out.length)
+                arrayed = ~out.indexOf('@') ? '@' : ':'
+                usage.pattern = usage.pat += terse + ',' + verbose + arrayed + type + '|'
+                if (!line.length) trim = /\s+$/
+            }
+            return (out.replace('@', ' ') + line).replace(trim, '')
+        }).join('\n')
     })
 
+    var object = {
+        usage: usage,
+        commands: (function () {
+            var commands = {}
+            usage.forEach(function (usage) {
+                if (usage.command) {
+                    commands[usage.command] = true
+                }
+            })
+            return commands
+        })(),
+        chooseUsage: function () {
+            var vargs = slice.call(arguments), command = vargs.shift(), key = vargs.pop()
+            if (command) {
+                usages.push.apply(usages, this.usage.filter(function (usage) {
+                    return command == usage.command && !~vargs.indexOf(usage.lang)
+                }.bind(this)))
+            } else {
+                usages.push.apply(usages, this.usage.filter(function (usage) {
+                    return ! usage.command && !~vargs.indexOf(usage.lang)
+                }))
+            }
+            if (!usages.length) {
+                if (vargs.length == 1 && vargs[0] == this.usage[0].lang) {
+                    return null
+                } else {
+                    return this.chooseString(command, this.usage[0].lang, key)
+                }
+            }
+            return usages.shift()
+        },
+        chooseString: function () {
+            var vargs = slice.call(arguments), command = vargs.shift(), key = vargs.pop()
+            var usages = []
+            if (command) {
+                usages.push.apply(usages, this.usage.filter(function (usage) {
+                    return command == usage.command && !~vargs.indexOf(usage.lang)
+                }.bind(this)))
+            }
+            usages.push.apply(usages, this.usage.filter(function (usage) {
+                return ! usage.command && !~vargs.indexOf(usage.lang)
+            }))
+            var chosen = usages.filter(function (usage) {
+                return usage.strings[key]
+            }).shift()
+            if (!chosen) {
+                if (vargs.length == 1 && vargs[0] == this.usage[0].lang) {
+                    return null
+                } else {
+                    return this.chooseString(command, this.usage[0].lang, key)
+                }
+            } else {
+                return usage.strings[key]
+            }
+        }
+    }
 
-    return usage
+    return object
 }
 
 

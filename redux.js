@@ -6,7 +6,7 @@ var getopt = require('./getopt')
 module.exports = cadence(function (async, source, env, argv, io, main) {
     var options = {}, usage
     async([function () {
-        usage = createUsage('en_US', source, []).shift()
+        usage = createUsage('en_US', source, []).usage.shift()
         options.params = {}
         options.usage = usage.message
         options.abend = function () {
