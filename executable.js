@@ -1,6 +1,6 @@
 var stream = require('stream'),
     redux = require('./redux'),
-    propagate = require('./propagate'),
+    exit = require('./exit'),
     slice = [].slice
 
 function createStream (s) {
@@ -26,6 +26,6 @@ module.exports = function (module, source, program) {
             stdout: process.stdout,
             stdin: process.stdin,
             stderr: process.stderr
-        }, propagate)
+        }, exit)
     }
 }

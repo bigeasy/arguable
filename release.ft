@@ -1,4 +1,5 @@
 ### Issue by Issue
 
+ * Rename `propagate` to `exit`. #105.
  * Parse usage all the way through. #104.
  * Upgrade Proof to 0.0.50. #103.
