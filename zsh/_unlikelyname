@@ -1,0 +1,3 @@
+#compdef unlikelyname
+
+_arguments -s '-a[use the arrow pointer regardless]'
