@@ -8,8 +8,6 @@ function extractUsage (lang, source, argv) {
 
     var usage = _extractUsage(lang, source, argv)
 
-    if (!usage) return usage
-
     usage.forEach(function (usage) {
     usage.pattern = usage.pat = ''
 
