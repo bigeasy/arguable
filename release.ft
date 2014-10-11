@@ -1,5 +1,6 @@
 ### Issue by Issue
 
+ * Set exit code on exit. #106.
  * Rename `propagate` to `exit`. #105.
  * Parse usage all the way through. #104.
  * Upgrade Proof to 0.0.50. #103.

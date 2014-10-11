@@ -26,6 +26,6 @@ module.exports = function (module, source, program) {
             stdout: process.stdout,
             stdin: process.stdin,
             stderr: process.stderr
-        }, exit)
+        }, exit(process))
     }
 }
