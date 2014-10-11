@@ -21,6 +21,7 @@ require('proof')(9, cadence(function (async, assert) {
     var redux = require('../../redux'), io
     redux(__filename, {}, [], {}, cadence(function (async, options) {
     }), function (error, code) {
+        if (error) throw error
         assert(code, 0, 'exit zero')
     })
     redux(__filename, {}, [], {}, cadence(function (async, options) {

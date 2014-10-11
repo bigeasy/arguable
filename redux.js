@@ -13,18 +13,25 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     async([function () {
 
         // parse usage
-        usage = createUsage(source).usage.shift()
-        if (!usage) {
+        var usage = createUsage(source)
+        if (!usage.usage.length) {
             throw new Error('no usage found')
         }
 
         // use environment `LANG` or else language of first usage definition
-        var lang = env.LANG ? env.LANG.split('.')[0] : usage.lang
+        var lang = env.LANG ? env.LANG.split('.')[0] : usage.usage[0].lang
+
+        // see if the first argument is a sub-command
+        var command = usage.commands[argv[0]] ? argv.shift() : null
+
+        // pick a language for round these parts
+        var l10n = usage.chooseUsage(command, lang)
 
         // set options object properties
+        options.command = command
         options.argv = argv = argv.slice()
         options.params = {}
-        options.usage = usage.message
+        options.usage = l10n.usage
         options.stdout = io.stdout
         options.stderr = io.stderr
         options.stdin = io.stdin
@@ -32,7 +39,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         // format messages using strings.
         options.format = function () {
             var vargs = slice.call(arguments), key = vargs.shift()
-            var message = usage.strings[key] || { text: key, order: [] }
+            var message = usage.chooseString(this.command, lang, key) || { text: key, order: [] }
             var ordered = []
             for (var i = 0; i < vargs.length; i++) {
                 ordered[i] = vargs[i < message.order.length ? +(message.order[i]) - 1 : i]
@@ -56,7 +63,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.help = function () {
             this._redirect = 'stdout'
             this._code = 0
-            throw this._thrown = new Error(usage.usage)
+            throw this._thrown = new Error(this.usage)
         }
         // exit helper stops execution and exits with the given code
         options.exit = function (code) {
@@ -65,7 +72,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         }
 
         // parse arguments
-        options.given = getopt(usage.pattern, options.params, argv, function (message) {
+        options.given = getopt(l10n.pattern, options.params, argv, function (message) {
             options.abend(message)
         })
 

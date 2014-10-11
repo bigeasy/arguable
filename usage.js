@@ -41,14 +41,15 @@ function extractUsage (source) {
             return commands
         })(),
         chooseUsage: function () {
-            var vargs = slice.call(arguments), command = vargs.shift(), key = vargs.pop()
+            var vargs = slice.call(arguments), command = vargs.shift()
+            var usages = []
             if (command) {
                 usages.push.apply(usages, this.usage.filter(function (usage) {
-                    return command == usage.command && !~vargs.indexOf(usage.lang)
+                    return command == usage.command && ~vargs.indexOf(usage.lang)
                 }.bind(this)))
             } else {
                 usages.push.apply(usages, this.usage.filter(function (usage) {
-                    return ! usage.command && !~vargs.indexOf(usage.lang)
+                    return ! usage.command && ~vargs.indexOf(usage.lang)
                 }))
             }
             if (!usages.length) {
@@ -69,7 +70,7 @@ function extractUsage (source) {
                 }.bind(this)))
             }
             usages.push.apply(usages, this.usage.filter(function (usage) {
-                return ! usage.command && !~vargs.indexOf(usage.lang)
+                return ! usage.command && ~vargs.indexOf(usage.lang)
             }))
             var chosen = usages.filter(function (usage) {
                 return usage.strings[key]
@@ -81,7 +82,7 @@ function extractUsage (source) {
                     return this.chooseString(command, this.usage[0].lang, key)
                 }
             } else {
-                return usage.strings[key]
+                return chosen.strings[key]
             }
         }
     }
