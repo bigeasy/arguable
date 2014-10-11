@@ -1,5 +1,5 @@
 var stream = require('stream'),
-    redux = require('./redux'),
+    run = require('./run'),
     exit = require('./exit'),
     slice = [].slice
 
@@ -12,17 +12,17 @@ module.exports = function (module, source, program) {
         program = source
         source = module.filename
     }
-    var run = module.exports = function (env, argv, options, callback) {
+    var invoke = module.exports = function (env, argv, options, callback) {
         var io = {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr)
         }
-        redux(source, env, argv, io, program, callback)
+        run(source, env, argv, io, program, callback)
         return io
     }
     if (module === require.main) {
-        run(process.env, process.argv.slice(2), {
+        invoke(process.env, process.argv.slice(2), {
             stdout: process.stdout,
             stdin: process.stdin,
             stderr: process.stderr

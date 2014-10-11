@@ -19,7 +19,7 @@ require('proof')(11, cadence(function (async, assert) {
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
                 ''
-    var redux = require('../../redux'), io
+    var redux = require('../../run'), io
     redux(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, options) {
     }), function (error, code) {
         assert(error.message, 'no usage found', 'no usage found')
