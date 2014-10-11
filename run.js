@@ -99,6 +99,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
 
         } else {
 
+            // yoiks, and away!
             throw errors
         }
 
