@@ -11,7 +11,6 @@
   usage: basic [files]
 
   ___ strings ___
-
     multi line:
       One line.
 
