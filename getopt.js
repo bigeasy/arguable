@@ -30,7 +30,7 @@ function getopt (pat, opts, argv, abend) {
             if (arg[1][1] != '-') {
                 argv.unshift('-' + arg[2])
             } else {
-                abend('toggle argument', arg[1][1] != '-' ? arg[1] : '--' + opt)
+                abend('toggle argument', '--' + opt)
             }
         }
         given[opt] = true

@@ -55,5 +55,5 @@ require('proof')(22, function (assert) {
     failed([ '--p', 2, '--p', 3 ], 'scalar argument', 'duplicate argument')
     failed([ '--c' ], 'missing argument', 'verbose inferred missing')
     failed([ '--a' ], 'ambiguous argument', 'ambiguous')
-    failed([ '--ambiguous=1' ], 'toggle argument', 'value to toggle')
+    failed([ '--ambiguous=1' ], 'toggle argument', 'value to long toggle')
 })
