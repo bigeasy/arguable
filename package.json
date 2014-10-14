@@ -19,6 +19,7 @@
                         "type": "git",
                         "url": "git://github.com/bigeasy/arguable.git"
     },
+    "main":             "arguable",
     "devDependencies":
     {
                         "proof":    "0.0.50"

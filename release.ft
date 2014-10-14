@@ -12,6 +12,7 @@ Exits are now more orderly. If you're using a control-flow library like Cadence,
 
 ### Issue by Issue
 
+ * Rename `executable.js` to `arguable.js`. #108.
  * Remove unused arguments to `createUsage`. #107.
  * Set exit code on exit. #106.
  * Rename `propagate` to `exit`. #105.
