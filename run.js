@@ -35,6 +35,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.stdout = io.stdout
         options.stderr = io.stderr
         options.stdin = io.stdin
+        options.events = io.events
 
         // format messages using strings.
         options.format = function () {
@@ -69,6 +70,11 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         options.exit = function (code) {
             this._code = code
             throw this._thrown = new Error
+        }
+        // register a signal handler you can test with the event emitter.
+        options.signal = function (signal, handler) {
+            this.events.on(signal, handler)
+            process.on(signal, handler)
         }
 
         // null localization means no such command found and no default action

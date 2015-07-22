@@ -13,10 +13,11 @@
 */
 
 var stream = require('stream'),
+    events = require('events'),
     path = require('path'),
     cadence = require('cadence')
 
-require('proof')(18, cadence(function (async, assert) {
+require('proof')(19, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -105,4 +106,14 @@ require('proof')(18, cadence(function (async, assert) {
     }), function (error, code) {
         if (error) throw error
     })
+    run(__filename, {}, [], io = {
+        events: new events.EventEmitter
+    }, cadence(function (async, options) {
+        var callback = async()
+        options.signal('SIGINT', function () { callback() })
+    }), function (error, code) {
+        if (error) throw error
+        assert(code, 0, 'signal handler')
+    })
+    io.events.emit('SIGINT')
 }))
