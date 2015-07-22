@@ -1,4 +1,5 @@
 var stream = require('stream'),
+    events = require('events'),
     run = require('./run'),
     exit = require('./exit'),
     slice = [].slice
@@ -16,7 +17,8 @@ module.exports = function (module, source, program) {
         var io = {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
-            stderr: createStream(options.stderr)
+            stderr: createStream(options.stderr),
+            events: new events.EventEmitter
         }
         run(source, env, argv, io, program, callback)
         return io
