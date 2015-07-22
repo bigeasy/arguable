@@ -13,7 +13,7 @@ for file in $(find t -name \*.t.js); do
   fi
 done
 
-node_modules/.bin/istanbul cover -x 't/**' t/arguable/fixtures/echo.js > /dev/null 2>&1
+node_modules/.bin/istanbul cover -x 't/**' t/arguable/fixtures/echo-1.js > /dev/null 2>&1
 
 node_modules/.bin/istanbul report --root coverage --dir coverage > /dev/null
 

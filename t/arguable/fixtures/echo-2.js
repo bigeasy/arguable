@@ -1,0 +1,20 @@
+/*
+  ___ usage: en_US ___
+  usage: executable <args>
+
+    Echo arguments to standard out.
+  ___ usage ___
+*/
+
+require('../../..')(module, module.filename, function (options, callback) {
+    if (options.argv.length) {
+        var separator = ''
+        options.argv.forEach(function (arg) {
+            options.stdout.write(separator)
+            options.stdout.write(arg)
+            separator = ' '
+        })
+        options.stdout.write('\n')
+    }
+    callback()
+})
