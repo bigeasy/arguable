@@ -1,5 +1,5 @@
 var util = require('util'),
-    cadence = require('cadence'),
+    cadence = require('cadence/redux'),
     slice = [].slice
 var createUsage = require('./usage')
 var getopt = require('./getopt')
@@ -10,7 +10,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     var options = {}, usage
 
     // wrap in a Cadence try/catch block
-    async([function () {
+    var block = async([function () {
 
         // parse usage
         var usage = createUsage(source)
@@ -90,7 +90,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         // run program
         main(options, async())
 
-    }, function (errors, error) {
+    }, function (error) {
 
         // if we threw the error, write it to the console, otherwise rethrow
         if (error === options._thrown) {
@@ -102,19 +102,19 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             }
 
             // exit with error code
-            return [ async, options._code ]
+            return [ block, options._code ]
 
         } else {
 
             // yoiks, and away!
-            throw errors
+            throw error
         }
 
     }], function () {
 
         // zero exit code
-        return 0
+        return [ block, 0 ]
 
-    })
+    })()
 
 })
