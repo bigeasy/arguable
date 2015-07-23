@@ -22,7 +22,7 @@
     "main":             "arguable",
     "devDependencies":
     {
-                        "proof":    "0.0.50"
+                        "proof":    "0.0.52"
     },
     "dependencies":
     {
