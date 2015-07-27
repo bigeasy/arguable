@@ -8,11 +8,7 @@
                         "command", "option", "parser", "prompt", "cli",
                         "stdin", "args", "arguments", "console", "glob"
     ],
-    "licenses":
-    [{
-                        "type": "MIT",
-                        "url": "http://github.com/bigeasy/arguable/raw/master/LICENSE"
-    }],
+    "license":          "MIT",
     "homepage":         "http://bigeasy.github.io/arguable",
     "repository":
     {
