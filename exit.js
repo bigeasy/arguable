@@ -12,18 +12,18 @@ module.exports = function (process) {
             code = interrupt.rescue(function (error) {
                 switch (error.type) {
                 case 'abend':
-                    io.stderr.write(error.context.message)
-                    io.stderr.write('\n')
+                    process.stderr.write(error.context.message)
+                    process.stderr.write('\n')
                     break
                 case 'help':
-                    io.stdout.write(error.context.message)
-                    io.stdout.write('\n')
+                    process.stdout.write(error.context.message)
+                    process.stdout.write('\n')
                     break
                 }
                 return error.context.code || 0
             })(error)
         }
-        process.on('exit', function () {
+        process.once('exit', function () {
             process.exit(code)
         })
     }
