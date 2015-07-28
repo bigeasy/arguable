@@ -83,5 +83,9 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     })
 
     // run program
-    main(options, async())
+    async(function () {
+        main(options, async())
+    }, function () {
+        return 0
+    })
 })

@@ -22,7 +22,7 @@ require('proof')(19, cadence(function (async, assert) {
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
                 ''
-    var run = require('../../run'), io
+    var run = require('../../invoke'), io
     run(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, options) {
     }), function (error, code) {
         assert(error.message, 'no usage found', 'no usage found')
@@ -41,57 +41,52 @@ require('proof')(19, cadence(function (async, assert) {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('badness')
-    }), function (error, code) {
-        if (error) throw error
-        assert(io.stderr.read().toString(), 'A bad thing happened.\n', 'error')
-        assert(code, 1, 'error code')
+    }), function (error) {
+        assert(error.context.message, 'A bad thing happened.', 'error')
+        assert(error.context.code, 1, 'error code')
     })
     run(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend(127, 'badness')
     }), function (error, code) {
-        if (error) throw error
-        assert(io.stderr.read().toString(), 'A bad thing happened.\n', 'error with code')
-        assert(code, 127, 'code for error with code')
+        assert(error.context.message, 'A bad thing happened.', 'error with code')
+        assert(error.context.code, 127, 'code for error with code')
     })
     run(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('nogoodness')
     }), function (error, code) {
-        if (error) throw error
-        assert(io.stderr.read().toString(), 'nogoodness\n', 'error string missing')
-        assert(code, 1, 'error string missing code')
+        assert(error.context.message, 'nogoodness', 'error string missing')
+        assert(error.context.code, 1, 'error string missing code')
     })
     run(__filename, {}, [ '-x' ], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('nogoodness')
     }), function (error, code) {
-        assert(io.stderr.read().toString(), 'unknown argument\n', 'unknown argument')
-        assert(code, 1, 'unknown argument code')
+        assert(error.context.message, 'unknown argument', 'unknown argument')
+        assert(error.context.code, 1, 'unknown argument code')
     })
     run(__filename, {}, [], io = {
     }, cadence(function (async, options) {
         options.exit(0)
     }), function (error, code) {
-        if (error) throw error
-        assert(code, 0, 'normal exit')
+        assert(error.context.code, 0, 'normal exit')
     })
     run(__filename, {}, [], io = {
         stdout: new stream.PassThrough
     }, cadence(function (async, options) {
         options.help()
     }), function (error) {
-        if (error) throw error
-        assert(io.stdout.read().toString(), usage, 'help')
+        assert(error.context.message + '\n', usage, 'help')
     })
     run(path.join(__dirname, 'sub.js'), {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
     }), function (error, code) {
-        assert(io.stderr.read().toString(), 'command required\n', 'command missing')
+        assert(error.context.message, 'command required', 'command missing')
     })
     run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3 ],  {
     }, cadence(function (async, options) {
