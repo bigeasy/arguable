@@ -1,6 +1,6 @@
 var stream = require('stream'),
     events = require('events'),
-    run = require('./run'),
+    run = require('./invoke'),
     exit = require('./exit'),
     slice = [].slice
 
