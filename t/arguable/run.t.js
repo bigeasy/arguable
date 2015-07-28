@@ -84,6 +84,7 @@ require('proof')(19, cadence(function (async, assert) {
     }, cadence(function (async, options) {
         options.help()
     }), function (error) {
+        if (error) throw error
         assert(io.stdout.read().toString(), usage, 'help')
     })
     run(path.join(__dirname, 'sub.js'), {}, [], io = {

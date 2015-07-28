@@ -22,7 +22,8 @@
     },
     "dependencies":
     {
-                        "cadence":  "0.0.56"
+                        "cadence":  "0.0.56",
+                        "interrupt": "0.0.7"
     },
     "scripts":
     {

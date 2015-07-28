@@ -3,8 +3,11 @@ var createUsage = require('./usage')
 var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
+var interrupt = require('./interrupt')
 
-module.exports = cadence(function (async, options, source, env, argv, io, main) {
+module.exports = cadence(function (async, source, env, argv, io, main) {
+    var options = {}
+
     // parse usage
     var usage = createUsage(source)
     if (!usage.usage.length) {
@@ -51,18 +54,17 @@ module.exports = cadence(function (async, options, source, env, argv, io, main) 
         }
         var message = this.format.apply(this, [ key ].concat(vargs))
         this._redirect = 'stderr'
-        throw this._thrown = new Error(message)
+        interrupt.panic(new Error, 'abend', { key: key, message: message, code: this._code })
     }
     // help helper prints stops execution and prints the help message
     options.help = function () {
         this._redirect = 'stdout'
         this._code = 0
-        throw this._thrown = new Error(this.usage)
+        interrupt.panic(new Error, 'help', { message: this.usage, code: this._code })
     }
     // exit helper stops execution and exits with the given code
     options.exit = function (code) {
-        this._code = code
-        throw this._thrown = new Error
+        interrupt.panic(new Error, 'exit', { code: code })
     }
     // register a signal handler you can test with the event emitter.
     options.signal = function (signal, handler) {

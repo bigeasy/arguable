@@ -4,6 +4,7 @@ var util = require('util'),
 var createUsage = require('./usage')
 var getopt = require('./getopt')
 var invoke = require('./invoke')
+var interrupt = require('./interrupt')
 
 module.exports = cadence(function (async, source, env, argv, io, main) {
 
@@ -13,28 +14,24 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     // wrap in a Cadence try/catch block
     var block = async([function () {
 
-        invoke(options, source, env, argv, io, main, async())
+        invoke(source, env, argv, io, main, async())
 
     }, function (error) {
-
-        // if we threw the error, write it to the console, otherwise rethrow
-        if (error === options._thrown) {
-
-            // write message if message
-            if (error.message) {
-                io[options._redirect].write(error.message)
-                io[options._redirect].write('\n')
+        return interrupt.rescue(function (error) {
+            switch (error.type) {
+            case 'abend':
+                io.stderr.write(error.context.message)
+                io.stderr.write('\n')
+                return [ block, error.context.code ]
+                break
+            case 'help':
+                io.stdout.write(error.context.message)
+                io.stdout.write('\n')
+                break
+            case 'exit':
+                return [ block, error.context.code ]
             }
-
-            // exit with error code
-            return [ block, options._code ]
-
-        } else {
-
-            // yoiks, and away!
-            throw error
-        }
-
+        })(error)
     }], function () {
 
         // zero exit code
