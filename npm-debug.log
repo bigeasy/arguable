@@ -1,0 +1,103 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/alan/.usr/Cellar/node/0.12.7/bin/node',
+1 verbose cli   '/Users/alan/.usr/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@2.11.3
+3 info using node@v0.12.7
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec { raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/alan/git/ecma/arguable',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/alan/.npm/arguable/0.0.24/package.tgz not in flight; packing
+9 verbose tar pack [ '/Users/alan/.npm/arguable/0.0.24/package.tgz',
+9 verbose tar pack   '/Users/alan/git/ecma/arguable' ]
+10 verbose tarball /Users/alan/.npm/arguable/0.0.24/package.tgz
+11 verbose folder /Users/alan/git/ecma/arguable
+12 info prepublish arguable@0.0.24
+13 verbose addLocalTarball adding from inside cache /Users/alan/.npm/arguable/0.0.24/package.tgz
+14 silly cache afterAdd arguable@0.0.24
+15 verbose afterAdd /Users/alan/.npm/arguable/0.0.24/package/package.json not in flight; writing
+16 verbose afterAdd /Users/alan/.npm/arguable/0.0.24/package/package.json written
+17 silly publish { name: 'arguable',
+17 silly publish   description: 'Usage-first argument parser.',
+17 silly publish   author: { name: 'Alan Gutierrez', email: 'alan@prettyrobots.com' },
+17 silly publish   version: '0.0.24',
+17 silly publish   keywords:
+17 silly publish    [ 'command',
+17 silly publish      'option',
+17 silly publish      'parser',
+17 silly publish      'prompt',
+17 silly publish      'cli',
+17 silly publish      'stdin',
+17 silly publish      'args',
+17 silly publish      'arguments',
+17 silly publish      'console',
+17 silly publish      'glob' ],
+17 silly publish   license: 'MIT',
+17 silly publish   homepage: 'http://bigeasy.github.io/arguable',
+17 silly publish   repository: { type: 'git', url: 'git://github.com/bigeasy/arguable.git' },
+17 silly publish   main: 'arguable',
+17 silly publish   dependencies: { cadence: '0.2.3', interrupt: '0.0.7' },
+17 silly publish   devDependencies: { proof: '0.0.52' },
+17 silly publish   scripts: { test: 'proof platform win32 && proof test */*/*.t.js || t/test' },
+17 silly publish   readme: 'Arguable\n\nUsage first argument parser for Node.js.\n\n    http://bigeasy.github.io/arguable/\n',
+17 silly publish   readmeFilename: 'README',
+17 silly publish   gitHead: '279e4d0ba892270e39ae552f42c34c4c9a4c2b84',
+17 silly publish   bugs: { url: 'https://github.com/bigeasy/arguable/issues' },
+17 silly publish   _id: 'arguable@0.0.24',
+17 silly publish   _shasum: '5f70a0cda6b243f3158f6c345588f29b6f6db983',
+17 silly publish   _from: '.' }
+18 verbose getPublishConfig undefined
+19 silly mapToRegistry name arguable
+20 silly mapToRegistry using default registry
+21 silly mapToRegistry registry https://registry.npmjs.org/
+22 silly mapToRegistry uri https://registry.npmjs.org/arguable
+23 verbose publish registryBase https://registry.npmjs.org/
+24 silly publish uploading /Users/alan/.npm/arguable/0.0.24/package.tgz
+25 verbose request uri https://registry.npmjs.org/arguable
+26 verbose request sending authorization for write operation
+27 info attempt registry request try #1 at 12:52:17
+28 verbose request id a429cd9ec87c658f
+29 http request PUT https://registry.npmjs.org/arguable
+30 http 403 https://registry.npmjs.org/arguable
+31 verbose headers { 'content-type': 'application/json',
+31 verbose headers   'cache-control': 'max-age=60',
+31 verbose headers   'content-length': '96',
+31 verbose headers   'accept-ranges': 'bytes',
+31 verbose headers   date: 'Thu, 30 Jul 2015 17:52:18 GMT',
+31 verbose headers   via: '1.1 varnish',
+31 verbose headers   connection: 'keep-alive',
+31 verbose headers   'x-served-by': 'cache-dfw1826-DFW',
+31 verbose headers   'x-cache': 'MISS',
+31 verbose headers   'x-cache-hits': '0',
+31 verbose headers   'x-timer': 'S1438278737.418680,VS0,VE1383' }
+32 verbose request invalidating /Users/alan/.npm/registry.npmjs.org/arguable on PUT
+33 error publish Failed PUT 403
+34 verbose stack Error: "You cannot publish over the previously published version 0.0.24." : arguable
+34 verbose stack     at CachingRegistryClient.<anonymous> (/Users/alan/.usr/Cellar/node/0.12.7/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:247:14)
+34 verbose stack     at Request._callback (/Users/alan/.usr/Cellar/node/0.12.7/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:170:14)
+34 verbose stack     at Request.self.callback (/Users/alan/.usr/Cellar/node/0.12.7/lib/node_modules/npm/node_modules/request/request.js:354:22)
+34 verbose stack     at Request.emit (events.js:110:17)
+34 verbose stack     at Request.<anonymous> (/Users/alan/.usr/Cellar/node/0.12.7/lib/node_modules/npm/node_modules/request/request.js:1207:14)
+34 verbose stack     at Request.emit (events.js:129:20)
+34 verbose stack     at IncomingMessage.<anonymous> (/Users/alan/.usr/Cellar/node/0.12.7/lib/node_modules/npm/node_modules/request/request.js:1153:12)
+34 verbose stack     at IncomingMessage.emit (events.js:129:20)
+34 verbose stack     at _stream_readable.js:908:16
+34 verbose stack     at process._tickCallback (node.js:355:11)
+35 verbose statusCode 403
+36 verbose pkgid arguable
+37 verbose cwd /Users/alan/git/ecma/arguable
+38 error Darwin 14.3.0
+39 error argv "/Users/alan/.usr/Cellar/node/0.12.7/bin/node" "/Users/alan/.usr/bin/npm" "publish"
+40 error node v0.12.7
+41 error npm  v2.11.3
+42 error code E403
+43 error "You cannot publish over the previously published version 0.0.24." : arguable
+44 error If you need help, you may report this error at:
+44 error     <https://github.com/npm/npm/issues>
+45 verbose exit [ 1, true ]
