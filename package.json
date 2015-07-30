@@ -16,14 +16,14 @@
                         "url": "git://github.com/bigeasy/arguable.git"
     },
     "main":             "arguable",
-    "devDependencies":
-    {
-                        "proof":    "0.0.52"
-    },
     "dependencies":
     {
                         "cadence":  "0.0.56",
                         "interrupt": "0.0.7"
+    },
+    "devDependencies":
+    {
+                        "proof":    "0.0.52"
     },
     "scripts":
     {
