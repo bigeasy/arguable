@@ -1,4 +1,4 @@
-var cadence = require('cadence/redux')
+var cadence = require('cadence')
 var createUsage = require('./usage')
 var getopt = require('./getopt')
 var util = require('util')
