@@ -52,7 +52,10 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         } else {
             this._code = 1
         }
-        var message = this.format.apply(this, [ key ].concat(vargs))
+        var message
+        if (key) {
+            message = this.format.apply(this, [ key ].concat(vargs))
+        }
         this._redirect = 'stderr'
         interrupt.panic(new Error, 'abend', { key: key, message: message, code: this._code })
     }

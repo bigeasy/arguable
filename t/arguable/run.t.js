@@ -17,7 +17,7 @@ var stream = require('stream'),
     path = require('path'),
     cadence = require('cadence')
 
-require('proof')(19, cadence(function (async, assert) {
+require('proof')(21, cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -44,6 +44,13 @@ require('proof')(19, cadence(function (async, assert) {
     }), function (error) {
         assert(error.context.message, 'A bad thing happened.', 'error')
         assert(error.context.code, 1, 'error code')
+    })
+    run(__filename, {}, [], io = {
+    }, cadence(function (async, options) {
+        options.abend()
+    }), function (error) {
+        assert(!error.context.message, 'messageless error')
+        assert(error.context.code, 1, 'messageless error code')
     })
     run(__filename, {}, [], io = {
         stderr: new stream.PassThrough

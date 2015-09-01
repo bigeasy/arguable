@@ -12,8 +12,10 @@ module.exports = function (process) {
             code = interrupt.rescue(function (error) {
                 switch (error.type) {
                 case 'abend':
-                    process.stderr.write(error.context.message)
-                    process.stderr.write('\n')
+                    if (error.context.message) {
+                        process.stderr.write(error.context.message)
+                        process.stderr.write('\n')
+                    }
                     break
                 case 'help':
                     process.stdout.write(error.context.message)
