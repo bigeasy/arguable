@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 
 /*
-  ___ usage: en_US ___
+  ___ usage ___ en_US ___
   usage: basic [options] [files]
-    -c, --config <key=value> @
+    -c, --config <key=value>
         --longonly
 
-  ___ usage ___
+  ___ ___ ___
 */
 
-require('proof')(16, function (assert) {
+require('proof')(4, prove)
+
+function prove (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
@@ -19,7 +21,14 @@ require('proof')(16, function (assert) {
                   '      --longonly\n' +
                   ''
 
-    var usage = extractUsage(__filename)
+    var usage = extractUsage(__filename, 'en_US', [])
+    assert(usage.chooseUsage('en_US', []), message, 'usage')
+    assert(usage.getPattern([]), '-c,--config:$|-\t,--longonly:!|', 'pattern')
+    assert(usage.chooseUsage('en_GB', []), message, 'usage')
+
+    var usage = extractUsage(path.join(__dirname, 'sub.js'), 'en_US', [])
+    assert(usage.getCommand([ 'foo', 'bar' ]), [ 'foo', 'bar' ], 'non executable path')
+    return
     var extracted = usage.usage
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
     assert(extracted[0].usage, message, 'extracted message')
@@ -65,4 +74,4 @@ require('proof')(16, function (assert) {
 
     var none = extractUsage(path.join(__dirname, 'endless.js')).usage
     assert(none, [], 'endless')
-})
+}

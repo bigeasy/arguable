@@ -10,38 +10,23 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
 
     // parse usage
     var usage = createUsage(source)
-    if (!usage.usage.length) {
+    if (!usage) {
         throw new Error('no usage found')
     }
 
     // use environment `LANG` or else language of first usage definition
-    var lang = env.LANG ? env.LANG.split('.')[0] : usage.usage[0].lang
+    var lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
-    // see if the first argument is a sub-command
-    var command = usage.commands[argv[0]] ? argv.shift() : null
-
-    // pick a language for round these parts, null if no such command
-    var l10n = usage.chooseUsage(command, lang)
-
-    // set options object properties
-    options.command = command
     options.argv = argv = argv.slice()
     options.params = {}
-    options.usage = l10n && l10n.usage
     options.stdout = io.stdout
     options.stderr = io.stderr
     options.stdin = io.stdin
     options.events = io.events
 
     // format messages using strings.
-    options.format = function () {
-        var vargs = slice.call(arguments), key = vargs.shift()
-        var message = usage.chooseString(this.command, lang, key) || { text: key, order: [] }
-        var ordered = []
-        for (var i = 0; i < vargs.length; i++) {
-            ordered[i] = vargs[i < message.order.length ? +(message.order[i]) - 1 : i]
-        }
-        return util.format.apply(util, [ message.text ].concat(ordered))
+    options.format = function (key) {
+        return usage.format(lang, command, key, slice.call(arguments, 1))
     }
     // abend helper stops execution and prints a message
     options.abend = function () {
@@ -54,7 +39,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         }
         var message
         if (key) {
-            message = this.format.apply(this, [ key ].concat(vargs))
+            message = usage.format(lang, command, key, vargs)
         }
         this._redirect = 'stderr'
         interrupt.panic(new Error, 'abend', { key: key, message: message, code: this._code })
@@ -63,7 +48,8 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     options.help = function () {
         this._redirect = 'stdout'
         this._code = 0
-        interrupt.panic(new Error, 'help', { message: this.usage, code: this._code })
+        interrupt.panic(new Error, 'help', {
+            message: usage.chooseUsage(lang, command), code: this._code })
     }
     // exit helper stops execution and exits with the given code
     options.exit = function (code) {
@@ -75,15 +61,25 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         process.on(signal, handler)
     }
 
-    // null localization means no such command found and no default action
-    if (!l10n) {
+    // see if the first argument is a sub-command
+    var command = usage.getCommand(argv)
+    if (!command) {
+        command = []
         options.abend('command required')
     }
+    options.command = command
+
+    // set options object properties
+    options.command = command
 
     // parse arguments
-    options.given = getopt(l10n.pattern, options.params, argv, function (message) {
+    options.given = getopt(usage.getPattern(command), options.params, argv.slice(command.length), function (message) {
         options.abend(message)
     })
+    options.param = {}
+    for (var key in options.params) {
+        options.param[key] = options.params[key][options.params[key].length - 1]
+    }
 
     // run program
     async(function () {
