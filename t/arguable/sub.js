@@ -2,7 +2,7 @@
 
 /*
 
-  ___ run _ usage: en_US ___
+  ___ run, usage ___ en_US ___
   usage: frobinate run [options] [file...] [file]
 
   options:
@@ -16,7 +16,7 @@
   files, optional in parallel. The `--processes` option is the number of
   processes to run concurrently, defaulting to zero.
 
-  ___ compile _ usage: en_US ___
+  ___ compile, usage ___ en_US ___
   usage: frobinate compile [options] [file...] [file]
 
   options:
@@ -31,8 +31,8 @@
   `frobinate compile` will accelerate frobination by compling it to
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
-  ___ strings ___
+  ___ compile, $ ___ en_US  ___
   example: This is an example.
-  ___ usage ___
+  ___ ___ ___
 
 */

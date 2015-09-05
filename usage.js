@@ -1,3 +1,4 @@
+var synonymous = require('synonymous')
 var fs = require('fs'), slice = [].slice
 
 // The regular expression to match usage markdown.
@@ -184,4 +185,8 @@ function strings (lines) {
     return strings
 }
 
-module.exports = extractUsage
+module.exports = function (source) {
+    var dictionary = synonymous(fs.readFileSync(source, 'utf8'))
+    var language = dictionary.getLanguages()[0]
+    console.log(dictionary.getKeys('en_US', []))
+}
