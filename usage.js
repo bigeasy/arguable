@@ -1,4 +1,4 @@
-var synonymous = require('synonymous')
+var Dictionary = require('synonymous')
 var fs = require('fs'), slice = [].slice
 
 // The regular expression to match usage markdown.
@@ -89,6 +89,38 @@ function extractUsage (source) {
     }
 
     return object
+}
+
+function Usage () {
+}
+
+Usage.prototype.commands = function () {
+    var commands = {}
+    this.branch.children.forEach(function (child) { commands[child.name] = true })
+    return commands
+}
+
+Usage.prototype.chooseUsage = function (command, language) {
+    var path = command ? [ command ] : []
+    var found = this.dictionary.getText(language, path)
+    if (!found) {
+        found = this.dictionary.getText(this.language, path)
+    }
+    return found.body
+}
+
+Usage.prototype.chooseString = function (command, language, key) {
+    var path = command ? [ command ] : []
+    var languages = [ language, this.language ]
+    while (langauges.length) {
+        var traverse = path.slice()
+        do {
+            // getstring
+            if (string) {
+                return string
+            }
+        } while (traverse.pop() != null)
+    }
 }
 
 
@@ -185,8 +217,23 @@ function strings (lines) {
     return strings
 }
 
+function gatherPaths (dictionary, language, path, branch) {
+    dictionary.getKeys(language, path).forEach(function (name) {
+        if (name == 'usage') {
+            branch.executable = true
+        } else {
+            gatherPaths(dictionary, language, path.concat(name), {
+                name: name,
+                executable: false,
+                children: {}
+            })
+        }
+    })
+}
+
 module.exports = function (source) {
-    var dictionary = synonymous(fs.readFileSync(source, 'utf8'))
+    var dictionary = new Dictionary, branch = { executable: false, children: {} }
+    dictionary.load(fs.readFileSync(source, 'utf8'))
     var language = dictionary.getLanguages()[0]
-    console.log(dictionary.getKeys('en_US', []))
+    gatherPaths(dictionary, language, [], branch)
 }

@@ -20,7 +20,7 @@
     {
                         "cadence":  "0.4.0",
                         "interrupt": "0.0.7",
-                        "synonymous": "0.0.4"
+                        "synonymous": "0.0.5"
     },
     "devDependencies":
     {
