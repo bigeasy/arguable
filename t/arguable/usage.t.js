@@ -19,7 +19,9 @@ require('proof')(16, function (assert) {
                   '      --longonly\n' +
                   ''
 
-    var usage = extractUsage(__filename)
+    var usage = extractUsage(__filename, 'en_US', [])
+    console.log(usage)
+    return
     var extracted = usage.usage
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
     assert(extracted[0].usage, message, 'extracted message')

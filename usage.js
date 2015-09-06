@@ -91,7 +91,9 @@ function extractUsage (source) {
     return object
 }
 
-function Usage () {
+function Usage (branch, dictionary) {
+    this.branch = branch
+    this.dictionary = dictionary
 }
 
 Usage.prototype.commands = function () {
@@ -231,9 +233,12 @@ function gatherPaths (dictionary, language, path, branch) {
     })
 }
 
-module.exports = function (source) {
+module.exports = function (source, language, argv) {
     var dictionary = new Dictionary, branch = { executable: false, children: {} }
     dictionary.load(fs.readFileSync(source, 'utf8'))
     var language = dictionary.getLanguages()[0]
     gatherPaths(dictionary, language, [], branch)
+    for (var i = 0, I = argv.length; i < I; i++) {
+    }
+    return new Usage(branch, dictionary)
 }
