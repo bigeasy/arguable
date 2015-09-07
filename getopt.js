@@ -34,9 +34,8 @@ function getopt (pat, opts, argv, abend) {
             }
         }
         given[opt] = true
-        if ($[1] == '@') opts[opt].push(arg[2])
-        else if (opts[opt] != null) abend('scalar argument', arg[1])
-        else opts[opt] = arg[2]
+        if (opts[opt]) opts[opt].push(arg[2])
+        else opts[opt] = [ arg[2] ]
     }
     return Object.keys(given)
 }

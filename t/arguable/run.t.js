@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /*
-    ___ usage: en_US ___
+    ___ usage ___ en_US ___
     usage: basic [options] [files]
         -c, --config <key=value> @
             --longonly
-    ___ strings ___
+    ___ $ ___ en_US ___
     badness: A bad thing happened.
     ordered(2, 1): First %s then %s.
     unordered: First %s then %s.
-    ___ usage ___
+    ___ ___ ___
 */
 
 var stream = require('stream'),
@@ -17,7 +17,7 @@ var stream = require('stream'),
     path = require('path'),
     cadence = require('cadence')
 
-require('proof')(21, cadence(function (async, assert) {
+var prove = cadence(function (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -42,6 +42,7 @@ require('proof')(21, cadence(function (async, assert) {
     }, cadence(function (async, options) {
         options.abend('badness')
     }), function (error) {
+        assert(error.message, 'abend', 'official message')
         assert(error.context.message, 'A bad thing happened.', 'error')
         assert(error.context.code, 1, 'error code')
     })
@@ -119,4 +120,6 @@ require('proof')(21, cadence(function (async, assert) {
         assert(code, 0, 'signal handler')
     })
     io.events.emit('SIGINT')
-}))
+})
+
+require('proof')(21, prove)

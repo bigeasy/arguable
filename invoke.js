@@ -9,19 +9,19 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     var options = {}
 
     // parse usage
-    var usage = createUsage(source)
-    if (!usage.usage.length) {
+    var usage = createUsage(source, argv)
+    if (!usage) {
         throw new Error('no usage found')
     }
 
     // use environment `LANG` or else language of first usage definition
-    var lang = env.LANG ? env.LANG.split('.')[0] : usage.usage[0].lang
+    var lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
     // see if the first argument is a sub-command
     var command = usage.commands[argv[0]] ? argv.shift() : null
 
     // pick a language for round these parts, null if no such command
-    var l10n = usage.chooseUsage(command, lang)
+    var l10n = usage.chooseUsage(lang)
 
     // set options object properties
     options.command = command
@@ -54,7 +54,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         }
         var message
         if (key) {
-            message = this.format.apply(this, [ key ].concat(vargs))
+            message = usage.format(lang, key, vargs)
         }
         this._redirect = 'stderr'
         interrupt.panic(new Error, 'abend', { key: key, message: message, code: this._code })
@@ -81,7 +81,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     }
 
     // parse arguments
-    options.given = getopt(l10n.pattern, options.params, argv, function (message) {
+    options.given = getopt(usage.pattern, options.params, argv, function (message) {
         options.abend(message)
     })
 

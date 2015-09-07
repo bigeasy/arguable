@@ -3,13 +3,15 @@
 /*
   ___ usage ___ en_US ___
   usage: basic [options] [files]
-    -c, --config <key=value> @
+    -c, --config <key=value>
         --longonly
 
   ___ ___ ___
 */
 
-require('proof')(16, function (assert) {
+require('proof')(2, prove)
+
+function prove (assert) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../../usage'),
@@ -20,7 +22,8 @@ require('proof')(16, function (assert) {
                   ''
 
     var usage = extractUsage(__filename, 'en_US', [])
-    console.log(usage)
+    assert(usage.chooseUsage('en_US'), message, 'usage')
+    assert(usage.pattern, '-c,--config:$|-\t,--longonly:!|', 'pattern')
     return
     var extracted = usage.usage
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')
@@ -67,4 +70,4 @@ require('proof')(16, function (assert) {
 
     var none = extractUsage(path.join(__dirname, 'endless.js')).usage
     assert(none, [], 'endless')
-})
+}
