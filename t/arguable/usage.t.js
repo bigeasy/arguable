@@ -22,8 +22,8 @@ function prove (assert) {
                   ''
 
     var usage = extractUsage(__filename, 'en_US', [])
-    assert(usage.chooseUsage('en_US'), message, 'usage')
-    assert(usage.pattern, '-c,--config:$|-\t,--longonly:!|', 'pattern')
+    assert(usage.chooseUsage('en_US', []), message, 'usage')
+    assert(usage.getPattern([]), '-c,--config:$|-\t,--longonly:!|', 'pattern')
     return
     var extracted = usage.usage
     assert(extracted[0].pattern, '-c,--config@$|-\t,--longonly:!|', 'extracted pattern')

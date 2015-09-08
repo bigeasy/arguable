@@ -3,7 +3,7 @@
 /*
     ___ usage ___ en_US ___
     usage: basic [options] [files]
-        -c, --config <key=value> @
+        -c, --config <key=value>
             --longonly
     ___ $ ___ en_US ___
     badness: A bad thing happened.
@@ -98,7 +98,7 @@ var prove = cadence(function (async, assert) {
     })
     run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3 ],  {
     }, cadence(function (async, options) {
-        assert(options.params.processes, 3, 'correct sub command arguments pattern')
+        assert(options.param.processes, 3, 'correct sub command arguments pattern')
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
@@ -122,4 +122,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(21, prove)
+require('proof')(22, prove)

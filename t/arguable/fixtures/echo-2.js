@@ -1,9 +1,9 @@
 /*
-  ___ usage: en_US ___
+  ___ usage ___ en_US ___
   usage: executable <args>
 
     Echo arguments to standard out.
-  ___ usage ___
+  ___ ___ ___
 */
 
 require('../../..')(module, module.filename, function (options, callback) {
