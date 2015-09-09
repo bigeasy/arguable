@@ -28,6 +28,7 @@ var prove = cadence(function (async, assert) {
         assert(error.message, 'no usage found', 'no usage found')
     })
     run(__filename, {}, [], {}, cadence(function (async, options) {
+        return 0
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'exit zero')
@@ -73,6 +74,7 @@ var prove = cadence(function (async, assert) {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('nogoodness')
+        return 0
     }), function (error, code) {
         assert(error.context.message, 'unknown argument', 'unknown argument')
         assert(error.context.code, 1, 'unknown argument code')
@@ -80,6 +82,7 @@ var prove = cadence(function (async, assert) {
     run(__filename, {}, [], io = {
     }, cadence(function (async, options) {
         options.exit(0)
+        return 0
     }), function (error, code) {
         assert(error.context.code, 0, 'normal exit')
     })
@@ -93,12 +96,14 @@ var prove = cadence(function (async, assert) {
     run(path.join(__dirname, 'sub.js'), {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
+        return 0
     }), function (error, code) {
         assert(error.context.message, 'command required', 'command missing')
     })
     run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3 ],  {
     }, cadence(function (async, options) {
         assert(options.param.processes, 3, 'correct sub command arguments pattern')
+        return 0
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
