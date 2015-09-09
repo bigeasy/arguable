@@ -19,6 +19,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
 
     options.argv = argv = argv.slice()
     options.params = {}
+    options.env = env
     options.stdout = io.stdout
     options.stderr = io.stderr
     options.stdin = io.stdin
