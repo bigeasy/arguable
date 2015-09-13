@@ -52,6 +52,13 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         interrupt.panic(new Error, 'help', {
             message: usage.chooseUsage(lang, command), code: this._code })
     }
+    options.required = function () {
+        slice.call(arguments).forEach(function (param) {
+            if (!(param in options.param)) {
+                options.abend(param + ' is required')
+            }
+        })
+    }
     // exit helper stops execution and exits with the given code
     options.exit = function (code) {
         interrupt.panic(new Error, 'exit', { code: code })

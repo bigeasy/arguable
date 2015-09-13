@@ -108,6 +108,12 @@ var prove = cadence(function (async, assert) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
     })
+    run(path.join(__dirname, 'sub.js'), {}, [ 'run' ],  {
+    }, cadence(function (async, options) {
+        options.required('processes')
+    }), function (error) {
+        assert(error.context.message, 'processes is required', 'required')
+    })
     run(__filename, {}, [],  {
     }, cadence(function (async, options) {
         assert(options.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
@@ -127,4 +133,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(22, prove)
+require('proof')(23, prove)
