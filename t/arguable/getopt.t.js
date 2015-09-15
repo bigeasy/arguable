@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-require('proof')(21, function (assert) {
+require('proof')(17, function (assert) {
     var pattern = '-a,--ambiguous:!|-A,--arbitrary:!|-N,--name:$|' +
-        '-p,--processes:#|-c,--config@$|-h,--help:!|'
+        '-p,--processes:$|-c,--config@$|-h,--help:!|'
     var getopt = require('../../getopt'), params
     var given = getopt(pattern, params = {}, [ '-N', 'steve'])
     assert(given, [ 'name' ], 'string given')
@@ -27,13 +27,6 @@ require('proof')(21, function (assert) {
     getopt(pattern, params = {}, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ])
     assert(params, { config: [ 'one=1', 'two=2', 'three=3' ] }, 'array')
 
-    getopt(pattern, params = {}, [ '-p', '3' ])
-    assert(params, { config: [], processes: [ 3 ] }, 'terse numeric')
-    getopt(pattern, params = {}, [ '-p3' ])
-    assert(params, { config: [], processes: [ 3 ] }, 'terse mushed numeric')
-    getopt(pattern, params = {}, [ '--p', '3' ])
-    assert(params, { config: [], processes: [ 3 ] }, 'verbose numeric')
-
     var argv = [ '-p', 3, '--', '-A' ]
     getopt(pattern, params = {}, argv)
     assert(argv, [ '-A' ], 'stop on double hyphens')
@@ -49,7 +42,6 @@ require('proof')(21, function (assert) {
         }
     }
 
-    failed([ '--p', 'x' ], 'numeric argument', 'numeric argument')
     failed([ '-x' ], 'unknown argument', 'unknown')
     failed([ '-c' ], 'missing argument', 'terse missing')
 //    failed([ '--p', 2, '--p', 3 ], 'scalar argument', 'duplicate argument')

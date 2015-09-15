@@ -25,7 +25,6 @@ function getopt (pat, opts, argv, abend) {
                 if (!argv.length) abend('missing argument',  arg[1][1] != '-' ? arg[1] : '--' + opt)
                 arg[2] = argv.shift()
             }
-            if ($[2] == '#' && isNaN(arg[2] = parseFloat(arg[2]))) abend('numeric argument', '--' + opt)
         } else if (arg[0]) {
             if (arg[1][1] != '-') {
                 argv.unshift('-' + arg[2])

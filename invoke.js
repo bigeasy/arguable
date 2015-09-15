@@ -59,6 +59,19 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             }
         })
     }
+    options.validate = function (test) {
+        var vargs = slice.call(arguments)
+        var format = vargs.shift()
+        var test = vargs.pop()
+        var f = test instanceof RegExp ? function (value) {
+            return test.test(value)
+        } : test
+        vargs.forEach(function (param) {
+            if ((param in options.param) && !f(options.param[param])) {
+                options.abend(util.format(format, param))
+            }
+        })
+    }
     // exit helper stops execution and exits with the given code
     options.exit = function (code) {
         interrupt.panic(new Error, 'exit', { code: code })

@@ -108,11 +108,19 @@ var prove = cadence(function (async, assert) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run' ],  {
+    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
     }, cadence(function (async, options) {
-        options.required('processes')
+        options.required('level', 'processes')
     }), function (error) {
         assert(error.context.message, 'processes is required', 'required')
+    })
+    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    }, cadence(function (async, options) {
+        options.validate('%s is not an integer', 'processes', /^\d+$/)
+        options.validate('%s is not copacetic', 'level', function () { return true })
+        options.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+    }), function (error) {
+        assert(error.context.message, 'level is not an integer', 'validate')
     })
     run(__filename, {}, [],  {
     }, cadence(function (async, options) {
@@ -133,4 +141,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(23, prove)
+require('proof')(24, prove)
