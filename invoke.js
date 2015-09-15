@@ -5,6 +5,8 @@ var util = require('util')
 var slice = [].slice
 var interrupt = require('./interrupt')
 
+function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
+
 module.exports = cadence(function (async, source, env, argv, io, main) {
     var options = {}
 
@@ -59,7 +61,11 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             }
         })
     }
-    options.validate = function (test) {
+    options.numeric = function () {
+        this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
+                                                         .concat(isNumeric))
+    }
+    options.validate = function () {
         var vargs = slice.call(arguments)
         var format = vargs.shift()
         var test = vargs.pop()

@@ -122,6 +122,12 @@ var prove = cadence(function (async, assert) {
     }), function (error) {
         assert(error.context.message, 'level is not an integer', 'validate')
     })
+    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    }, cadence(function (async, options) {
+        options.numeric('processes', 'level')
+    }), function (error) {
+        assert(error.context.message, 'level is not numeric', 'numeric')
+    })
     run(__filename, {}, [],  {
     }, cadence(function (async, options) {
         assert(options.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
@@ -141,4 +147,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(24, prove)
+require('proof')(25, prove)
