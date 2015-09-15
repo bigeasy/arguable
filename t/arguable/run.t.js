@@ -86,12 +86,20 @@ var prove = cadence(function (async, assert) {
     }), function (error, code) {
         assert(error.context.code, 0, 'normal exit')
     })
-    run(__filename, {}, [], io = {
-        stdout: new stream.PassThrough
-    }, cadence(function (async, options) {
+    run(__filename, {}, [], {}, cadence(function (async, options) {
         options.help()
     }), function (error) {
         assert(error.context.message + '\n', usage, 'help')
+    })
+    run(__filename, {}, [], {}, cadence(function (async, options) {
+        options.helpIf(true)
+    }), function (error) {
+        assert(error.message, 'help', 'help if')
+    })
+    run(__filename, {}, [], {}, cadence(function (async, options) {
+        options.helpIf(false)
+    }), function (error) {
+        assert(!error, 'help if not')
     })
     run(path.join(__dirname, 'sub.js'), {}, [], io = {
         stderr: new stream.PassThrough
@@ -147,4 +155,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(25, prove)
+require('proof')(27, prove)

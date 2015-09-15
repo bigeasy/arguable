@@ -78,6 +78,9 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
             }
         })
     }
+    options.helpIf = function (help) {
+        if (help) this.help()
+    }
     // exit helper stops execution and exits with the given code
     options.exit = function (code) {
         interrupt.panic(new Error, 'exit', { code: code })
