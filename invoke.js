@@ -101,9 +101,9 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
 
     // set options object properties
     options.command = command
-
+    options.argv = argv.slice(command.length)
     // parse arguments
-    options.given = getopt(usage.getPattern(command), options.params, argv.slice(command.length), function (message) {
+    options.given = getopt(usage.getPattern(command), options.params, options.argv, function (message) {
         options.abend(message)
     })
     options.param = {}

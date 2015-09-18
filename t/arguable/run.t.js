@@ -108,8 +108,9 @@ var prove = cadence(function (async, assert) {
     }), function (error, code) {
         assert(error.context.message, 'command required', 'command missing')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3 ],  {
+    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, 'x' ],  {
     }, cadence(function (async, options) {
+        assert(options.argv, [ 'x' ], 'correct sub command argv')
         assert(options.param.processes, 3, 'correct sub command arguments pattern')
         return 0
     }), function (error, code) {
@@ -155,4 +156,4 @@ var prove = cadence(function (async, assert) {
     io.events.emit('SIGINT')
 })
 
-require('proof')(27, prove)
+require('proof')(28, prove)
