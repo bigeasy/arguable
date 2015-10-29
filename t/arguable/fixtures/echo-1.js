@@ -3,7 +3,7 @@
   usage: executable <args>
 
     Echo arguments to standard out.
-  ___ ___ ___
+  ___ . ___
 */
 
 require('../../..')(module, function (options, callback) {

@@ -6,7 +6,7 @@
     -c, --config <key=value>
         --longonly
 
-  ___ ___ ___
+  ___ . ___
 */
 
 require('proof')(4, prove)

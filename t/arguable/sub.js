@@ -36,6 +36,6 @@
   example: This is an example.
   ___ foo, bar, usage ___ en_US  ___
   usage: foo bar <baz>
-  ___ ___ ___
+  ___ . ___
 
 */

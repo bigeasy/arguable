@@ -9,7 +9,7 @@
     badness: A bad thing happened.
     ordered(2, 1): First %s then %s.
     unordered: First %s then %s.
-    ___ ___ ___
+    ___ . ___
 */
 
 var stream = require('stream'),
