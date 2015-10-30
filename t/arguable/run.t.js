@@ -17,7 +17,7 @@ var stream = require('stream'),
     path = require('path'),
     cadence = require('cadence')
 
-var prove = cadence(function (async, assert) {
+function prove (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -154,6 +154,6 @@ var prove = cadence(function (async, assert) {
         assert(code, 0, 'signal handler')
     })
     io.events.emit('SIGINT')
-})
+}
 
-require('proof')(28, prove)
+require('proof')(28, cadence(prove))
