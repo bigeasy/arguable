@@ -147,8 +147,9 @@ function prove (async, assert) {
     createProgram(__filename, {}, [], io = {
         events: new events.EventEmitter
     }, cadence(function (async, program) {
-        var callback = async()
-        program.signal('SIGINT', function () { callback() })
+        var on = async(), once = async()
+        program.on('SIGINT', function () { on() })
+        program.once('SIGINT', function () { once() })
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'signal handler')

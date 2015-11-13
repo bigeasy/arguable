@@ -18,7 +18,7 @@ module.exports = function (module, source, program) {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
-            events: new events.EventEmitter
+            events: options.events || new events.EventEmitter
         }
         createProgram(source, env, argv, io, program, callback)
         return io
@@ -27,7 +27,8 @@ module.exports = function (module, source, program) {
         invoke(process.env, process.argv.slice(2), {
             stdout: process.stdout,
             stdin: process.stdin,
-            stderr: process.stderr
+            stderr: process.stderr,
+            events: process
         }, exit(process))
     }
 }

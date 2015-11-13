@@ -4,6 +4,7 @@ var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
 var interrupt = require('./interrupt')
+var events = require('events')
 
 function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
 
@@ -19,7 +20,8 @@ function Program (usage, env, argv, io) {
     this.stdout = io.stdout
     this.stderr = io.stderr
     this.stdin = io.stdin
-    this.events = io.events
+    this._process = io.events
+    this._hooked = {}
 
     // see if the first argument is a sub-command
     var command = usage.getCommand(argv)
@@ -39,6 +41,26 @@ function Program (usage, env, argv, io) {
     this.param = {}
     for (var key in this.params) {
         this.param[key] = this.params[key][this.params[key].length - 1]
+    }
+}
+util.inherits(Program, events.EventEmitter)
+
+Program.prototype.on = function (event, listener) {
+    this._hook(event)
+    events.EventEmitter.prototype.on.call(this, event, listener)
+}
+
+Program.prototype.once = function (event, listener) {
+    this._hook(event)
+    events.EventEmitter.prototype.once.call(this, event, listener)
+}
+
+Program.prototype._hook = function (event) {
+    if (!this._hooked[event]) {
+        this._process.on(event, function () {
+            this.emit.apply(this, [ event ].concat(slice.call(arguments)))
+        }.bind(this))
+        this._hooked[event] = true
     }
 }
 
@@ -106,12 +128,6 @@ Program.prototype.helpIf = function (help) {
 // exit helper stops execution and exits with the given code
 Program.prototype.exit = function (code) {
     interrupt.panic(new Error, 'exit', { code: code })
-}
-
-// register a signal handler you can test with the event emitter.
-Program.prototype.signal = function (signal, handler) {
-    this.events.on(signal, handler)
-    process.on(signal, handler)
 }
 
 module.exports = cadence(function (async, source, env, argv, io, main) {
