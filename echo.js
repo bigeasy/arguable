@@ -1,11 +1,9 @@
-require('arguable')(__filename, require('cadence')(function (options, callback) {
+var cadence = require('cadence')
 
-}), function (completions) {
+var completions = require('arguable')(module, cadence(function (async, program) {
+}))
 
-    completions
-        .on('files', function (callback) {
-            completions.glob('*/*/*.t.js', callback)
-        })
-        .on('commands', [ 'run', 'this', 'that' ])
+completions.when('files', cadence(function (async) {
+}))
 
-})
+completions.when('command:run', [ 'run', 'this', 'that' ])
