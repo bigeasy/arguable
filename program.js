@@ -29,7 +29,7 @@ function Program (usage, env, argv, io) {
     }
     this.command = command
 
-    // set options object properties
+    // set program object properties
     this.command = command
     this.argv = argv.slice(command.length)
     // parse arguments
@@ -121,11 +121,11 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         throw new Error('no usage found')
     }
 
-    var options = new Program(createUsage(source), env, argv, io)
+    var program = new Program(createUsage(source), env, argv, io)
 
     // run program
     async(function () {
-        main(options, async())
+        main(program, async())
     }, function (code) {
         return code == null ? 0 : code
     })
