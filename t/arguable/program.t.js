@@ -22,23 +22,23 @@ function prove (async, assert) {
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
                 ''
-    var run = require('../../invoke'), io
-    run(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, options) {
+    var createProgram = require('../../program.js'), io
+    createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, options) {
     }), function (error, code) {
         assert(error.message, 'no usage found', 'no usage found')
     })
-    run(__filename, {}, [], {}, cadence(function (async, options) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, options) {
         return 0
     }), function (error, code) {
         if (error) throw error
         assert(code, 0, 'exit zero')
     })
-    run(__filename, {}, [], {}, cadence(function (async, options) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, options) {
         throw new Error('raw')
     }), function (error) {
         assert(error.message, 'raw', 'raw exception')
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('badness')
@@ -47,14 +47,14 @@ function prove (async, assert) {
         assert(error.context.message, 'A bad thing happened.', 'error')
         assert(error.context.code, 1, 'error code')
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
     }, cadence(function (async, options) {
         options.abend()
     }), function (error) {
         assert(!error.context.message, 'messageless error')
         assert(error.context.code, 1, 'messageless error code')
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend(127, 'badness')
@@ -62,7 +62,7 @@ function prove (async, assert) {
         assert(error.context.message, 'A bad thing happened.', 'error with code')
         assert(error.context.code, 127, 'code for error with code')
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('nogoodness')
@@ -70,7 +70,7 @@ function prove (async, assert) {
         assert(error.context.message, 'nogoodness', 'error string missing')
         assert(error.context.code, 1, 'error string missing code')
     })
-    run(__filename, {}, [ '-x' ], io = {
+    createProgram(__filename, {}, [ '-x' ], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         options.abend('nogoodness')
@@ -79,36 +79,36 @@ function prove (async, assert) {
         assert(error.context.message, 'unknown argument', 'unknown argument')
         assert(error.context.code, 1, 'unknown argument code')
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
     }, cadence(function (async, options) {
         options.exit(0)
         return 0
     }), function (error, code) {
         assert(error.context.code, 0, 'normal exit')
     })
-    run(__filename, {}, [], {}, cadence(function (async, options) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, options) {
         options.help()
     }), function (error) {
         assert(error.context.message + '\n', usage, 'help')
     })
-    run(__filename, {}, [], {}, cadence(function (async, options) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, options) {
         options.helpIf(true)
     }), function (error) {
         assert(error.message, 'help', 'help if')
     })
-    run(__filename, {}, [], {}, cadence(function (async, options) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, options) {
         options.helpIf(false)
     }), function (error) {
         assert(!error, 'help if not')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [], io = {
+    createProgram(path.join(__dirname, 'sub.js'), {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, options) {
         return 0
     }), function (error, code) {
         assert(error.context.message, 'command required', 'command missing')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, 'x' ],  {
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, 'x' ],  {
     }, cadence(function (async, options) {
         assert(options.argv, [ 'x' ], 'correct sub command argv')
         assert(options.param.processes, 3, 'correct sub command arguments pattern')
@@ -117,13 +117,13 @@ function prove (async, assert) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
     }, cadence(function (async, options) {
         options.required('level', 'processes')
     }), function (error) {
         assert(error.context.message, 'processes is required', 'required')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, options) {
         options.validate('%s is not an integer', 'processes', /^\d+$/)
         options.validate('%s is not copacetic', 'level', function () { return true })
@@ -131,20 +131,20 @@ function prove (async, assert) {
     }), function (error) {
         assert(error.context.message, 'level is not an integer', 'validate')
     })
-    run(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, options) {
         options.numeric('processes', 'level')
     }), function (error) {
         assert(error.context.message, 'level is not numeric', 'numeric')
     })
-    run(__filename, {}, [],  {
+    createProgram(__filename, {}, [],  {
     }, cadence(function (async, options) {
         assert(options.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
         assert(options.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
     }), function (error, code) {
         if (error) throw error
     })
-    run(__filename, {}, [], io = {
+    createProgram(__filename, {}, [], io = {
         events: new events.EventEmitter
     }, cadence(function (async, options) {
         var callback = async()

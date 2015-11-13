@@ -7,7 +7,7 @@ var interrupt = require('./interrupt')
 
 function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
 
-function Options (usage, env, argv, io) {
+function Program (usage, env, argv, io) {
     this._usage = usage
 
     // use environment `LANG` or else language of first usage definition
@@ -43,12 +43,12 @@ function Options (usage, env, argv, io) {
 }
 
 // format messages using strings.
-Options.prototype.format = function (key) {
+Program.prototype.format = function (key) {
     return this._usage.format(this.lang, this.command, key, slice.call(arguments, 1))
 }
 
 // abend helper stops execution and prints a message
-Options.prototype.abend = function () {
+Program.prototype.abend = function () {
     var vargs = slice.call(arguments), key = vargs.shift(), code
     if (typeof key == 'number') {
         this._code = key
@@ -65,14 +65,14 @@ Options.prototype.abend = function () {
 }
 
 // help helper prints stops execution and prints the help message
-Options.prototype.help = function () {
+Program.prototype.help = function () {
     this._redirect = 'stdout'
     this._code = 0
     interrupt.panic(new Error, 'help', {
         message: this._usage.chooseUsage(this.lang, this.command), code: this._code })
 }
 
-Options.prototype.required = function () {
+Program.prototype.required = function () {
     slice.call(arguments).forEach(function (param) {
         if (!(param in this.param)) {
             this.abend(param + ' is required')
@@ -80,12 +80,12 @@ Options.prototype.required = function () {
     }, this)
 }
 
-Options.prototype.numeric = function () {
+Program.prototype.numeric = function () {
     this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
                                                      .concat(isNumeric))
 }
 
-Options.prototype.validate = function () {
+Program.prototype.validate = function () {
     var vargs = slice.call(arguments)
     var format = vargs.shift()
     var test = vargs.pop()
@@ -99,17 +99,17 @@ Options.prototype.validate = function () {
     }, this)
 }
 
-Options.prototype.helpIf = function (help) {
+Program.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
 // exit helper stops execution and exits with the given code
-Options.prototype.exit = function (code) {
+Program.prototype.exit = function (code) {
     interrupt.panic(new Error, 'exit', { code: code })
 }
 
 // register a signal handler you can test with the event emitter.
-Options.prototype.signal = function (signal, handler) {
+Program.prototype.signal = function (signal, handler) {
     this.events.on(signal, handler)
     process.on(signal, handler)
 }
@@ -121,8 +121,7 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         throw new Error('no usage found')
     }
 
-    var options = new Options(createUsage(source), env, argv, io)
-
+    var options = new Program(createUsage(source), env, argv, io)
 
     // run program
     async(function () {

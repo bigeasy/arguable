@@ -1,6 +1,6 @@
 var stream = require('stream'),
     events = require('events'),
-    run = require('./invoke'),
+    createProgram = require('./program'),
     exit = require('./exit'),
     slice = [].slice
 
@@ -20,7 +20,7 @@ module.exports = function (module, source, program) {
             stderr: createStream(options.stderr),
             events: new events.EventEmitter
         }
-        run(source, env, argv, io, program, callback)
+        createProgram(source, env, argv, io, program, callback)
         return io
     }
     if (module === require.main) {
