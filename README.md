@@ -97,19 +97,17 @@ performed by the program itself.
 
 */
 
-require('arguable')(module, function (program) {
+require('arguable')(module, function (program, callback) {
   program.helpIf(program.param.help)
   var processes = options.processes || options.threads || 1
-  frobinate(processes, options.verbose, options.$argv);
+  frobinate(processes, program.param.verbose, program.argv, callback)
 });
 ```
 
-**TK**: Add an example of type checking &mdash; integer &mdash; to the example
-above.
+*Ed: Add an example of type checking &mdash; integer &mdash; to the example
+above.*
 
-**TK**: The error checking example would also show how to report errors.
-
-**TK**: End of last edit.
+*Ed: The error checking example would also show how to report errors.*
 
 ## Commands with Sub-Commands
 
@@ -120,7 +118,7 @@ select the correct help message based on the program arguments.
 ```javascript
 /*
 
-  ___ run _ usage: en_US ___
+  ___ run, usage ___ en_US ___
   usage: frobinate run [options] [file...] [file]
 
   options:
@@ -134,7 +132,7 @@ select the correct help message based on the program arguments.
   files, optional in parallel. The `--processes` option is the number of
   processes to run concurrently, defaulting to zero.
 
-  ___ compile _ usage: en_US ___
+  ___ compile, usage ___ en_US ___
   usage: frobinate compile [options] [file...] [file]
 
   options:
@@ -150,7 +148,7 @@ select the correct help message based on the program arguments.
   intermediate output interpreted code (IOIC) then frobinating the hell
   out it.
 
-  ___ usage ___
+  ___ . ___
 
 */
 
@@ -159,20 +157,20 @@ var arguable = require('arguable')
   , icoc
   ;
 
-arguable(__filename, function (options) {
-  if (options.help) options.abend();
-  switch (options.command) {
-  case 'compile':
-    ioic = frobinator.prepare(options.strict, option.prefix, options.$argv);
-    frobinator.frobinator(ioic);
-    break
-  case 'run':
-    frobinator.frobinate(options.processes, options.$argv);
-    break;
-  default:
-    abend('unknown command', e.usage);
+require('arguable')(module, function (program, callback) {
+    program.helpIf(program.param.help)
+    switch (program.command) {
+    case 'compile':
+        ioic = frobinator.prepare(program.param.strict, program.param.prefix, program.argv)
+        frobinator.frobinator(ioic, callback)
+        break
+    case 'run':
+        frobinator.frobinate(program.param.processes, program.argv, callback)
+        break
+    default:
+        program.abend('unknown command')
   }
-});
+})
 ```
 
 ## Internationalization
@@ -186,22 +184,22 @@ passing the current locale string as the first argument.
 
 /*
 
-___ usage: en_US ___
+___ usage ___ en_US ___
 usage: awaken
 
   Good morning!
-___ usage: fi_FI ___
+___ usage ___ fi_FI ___
 käyttö: awaken
 
   Hyvää huomenta!
-___ usage ___
+___ . ___
 
 */
 
-var parse = require('arguable').parse
-  , options = parse(process.env.lang, __filename, []);
-
-console.log(options.$usage);
+require('arguable')(module, function (program, callback) {
+    console.log(program.usage)
+    callback()
+})
 ```
 
 We can run the above program with our `LANG` environment variable set to one of
@@ -280,7 +278,7 @@ is not English.
 
 /*
 
-  ___ usage: en_US ___
+  ___ usage ___ en_US ___
   usage: frobinate [options] [file...] [file]
 
   options:
@@ -295,101 +293,23 @@ is not English.
   of processes to run concurrently, defaulting to one. Note that you
   cannot run more than four processes at time.
 
-  ___ strings ___
+  ___ $ ___
 
     too many processes (2, 1):
       You choose frobinate %s using %d processes, but the maximum is 4.
 
-  ___ usage ___
+  ___ . ___
 
 */
 
-require('arguable')(__filename, function (options) {
-  if (options.help) throw new Error("usage");
-  if (options.processes > 4) {
-    options.abend('too many processes', options.processes, options.argv[0]);
-  }
-  require('../lib/frobinator').frobinate(options.processes, options.argv);
-});
-```
-
-## The Fatal Callback
-
-Your appliation may want to report an error through Arguable after the initial
-Arguable callback has completed. It is often the case in Node.js that it only
-gets interesting after you've invoked a few callbacks.
-
-When you plan on using `help` or `abend` in a callback, you're going to want to
-make sure that the error propagates out to the `fatal` function of the `options`
-object.
-
-How you propagate your errors is up to you. Here we use the `"domain"` package
-to propagte errors.
-
-```javascript
-#!/usr/bin/node
-
-/*
-
-  ___ usage: en_US ___
-  usage: frobinate [options]
-
-  options:
-
-  -h, --help                  display this message
-  -p, --processes   [count]   number of processes to run in parallel
-  -f, --file        [path]    the file to frobinate
-
-  description:
-
-
-  frobinate will reticuatle the splines in all of your transmogrifier
-  files, optionally in parallel. The `--processes` option is the number
-  of processes to run concurrently, defaulting to one. Note that you
-  cannot run more than four processes at time. The `--file` option is path to
-  the file to frobinate and it is required.
-
-  ___ strings ___
-
-    too many processes (2, 1):
-      You choose frobinate %s using %d processes, but the maximum is 4.
-
-    file missing:
-      cannot find the file to frobinate: %s.
-
-  ___ usage ___
-
-*/
-
-require('arguable')(__filename, function (options) {
-  var d = require('domain').create();
-  d.on('error', options.fatal);
-  d.run(function () {
-    var fs = require('fs');
-
-    if (options.help) options.help();
-
-    if (options.processes > 4) {
-      options.abend('too many processes', options.processes, options.argv[0]);
+require('arguable')(module, function (program, callback) {
+    program.helpIf(program.param.help)
+    if (program.param..processes > 4) {
+        program.abend('too many processes', program.param.processes, options.argv[0])
     }
-
-    // Read a file.
-    fs.readFile(options.file, d.intercept(function (result) {
-      // Here we either call abend or rethrow the error, either way we'll
-      // propagate to our `options.fatal` function..
-      if (error) {
-        if (error.code == 'ENOENT') options.abend('file missing', options.file);
-        else throw error;
-      }
-      // Good to go.
-      require('../lib/frobinator').frobinate(options.processes, options.argv);
-    }));
-  });
-});
+    require('../lib/frobinator').frobinate(program.param.processes, program.argv, callback)
+})
 ```
-
-You could use `process.on("uncaughtException")` for a quicker and dirtier
-implementation that would work just as well.
 
 ## Contributors
 
@@ -401,7 +321,7 @@ implementation that would work just as well.
 
 ## Change Log
 
-todo: Move this into GitHub Releases?
+*todo: Move this into GitHub Releases!*
 
 Changes for each release.
 
