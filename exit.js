@@ -7,9 +7,9 @@ var interrupt = require('./interrupt')
 // to able to stop it's own event loops.
 
 module.exports = function (process) {
-    return function (error, code) {
+    return function (error, exitCode) {
         if (error) {
-            code = interrupt.rescue(function (error) {
+            exitCode = interrupt.rescue(function (error) {
                 switch (error.type) {
                 case 'abend':
                     if (error.context.message) {
@@ -25,8 +25,8 @@ module.exports = function (process) {
                 return error.context.code || 0
             })(error)
         }
-        process.once('exit', function () {
-            process.exit(code)
-        })
+        if (exitCode != null) {
+            process.exitCode = exitCode
+        }
     }
 }
