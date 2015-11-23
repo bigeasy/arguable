@@ -1,1 +1,1 @@
-module.exports = require('interrupt')()
+module.exports = require('interrupt').createInterrupter()

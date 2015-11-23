@@ -83,14 +83,14 @@ Program.prototype.abend = function () {
         message = this._usage.format(this.lang, this.command, key, vargs)
     }
     this._redirect = 'stderr'
-    interrupt.panic(new Error, 'abend', { key: key, message: message, code: this._code })
+    interrupt.raise(new Error, 'abend', { key: key, message: message, code: this._code })
 }
 
 // help helper prints stops execution and prints the help message
 Program.prototype.help = function () {
     this._redirect = 'stdout'
     this._code = 0
-    interrupt.panic(new Error, 'help', {
+    interrupt.raise(new Error, 'help', {
         message: this._usage.chooseUsage(this.lang, this.command), code: this._code })
 }
 
@@ -127,7 +127,7 @@ Program.prototype.helpIf = function (help) {
 
 // exit helper stops execution and exits with the given code
 Program.prototype.exit = function (code) {
-    interrupt.panic(new Error, 'exit', { code: code })
+    interrupt.raise(new Error, 'exit', { code: code })
 }
 
 module.exports = cadence(function (async, source, env, argv, io, main) {

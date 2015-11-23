@@ -19,7 +19,7 @@
     "dependencies":
     {
                         "cadence":  "0.4.1",
-                        "interrupt": "0.0.7",
+                        "interrupt": "0.0.8",
                         "synonymous": "0.0.8"
     },
     "devDependencies":
