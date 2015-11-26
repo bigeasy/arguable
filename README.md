@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bigeasy/arguable.svg?branch=master)](https://travis-ci.org/bigeasy/arguable) [![Coverage Status](https://coveralls.io/repos/bigeasy/arguable/badge.svg?branch=master&service=github)](https://coveralls.io/github/bigeasy/arguable?branch=master)
+
 Usage first argument parser for Node.js.
 
 **Arguable** is a command line parser that lends structure to your command line
