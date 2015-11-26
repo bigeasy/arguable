@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('proof')(8, function (assert) {
+require('proof')(9, function (assert) {
     var exit = require('../../exit'),
         events = require('events'),
         stream = require('stream'),
@@ -30,4 +30,6 @@ require('proof')(8, function (assert) {
     exit(process)(interrupt.error(new Error, 'abend', { code: 0x77 }))
     assert(process.stdout.read(), null, 'no message')
     assert(process.exitCode, 0x77, 'no message exit code')
+    exit(process)(null)
+    assert(process.exitCode, 0x77, 'exit code with no error')
 })
