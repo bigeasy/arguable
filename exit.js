@@ -9,21 +9,20 @@ var interrupt = require('./interrupt')
 module.exports = function (process) {
     return function (error, exitCode) {
         if (error) {
-            exitCode = interrupt.rescue(function (error) {
-                switch (error.type) {
-                case 'abend':
-                    if (error.context.message) {
-                        process.stderr.write(error.context.message)
+            exitCode = interrupt.rescue([
+                'bigeasy.arguable.abend', function () {
+                    if (error.stderr) {
+                        process.stderr.write(error.stderr)
                         process.stderr.write('\n')
                     }
-                    break
-                case 'help':
-                    process.stdout.write(error.context.message)
+                    return error.code || 1
+                },
+                'bigeasy.arguable.help', function () {
+                    process.stdout.write(error.stdout)
                     process.stdout.write('\n')
-                    break
+                    return error.code || 0
                 }
-                return error.context.code || 0
-            })(error)
+            ])(error)
         }
         if (exitCode != null) {
             process.exitCode = exitCode

@@ -3,7 +3,7 @@ var createUsage = require('./usage')
 var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
-var interrupt = require('./interrupt')
+var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var events = require('events')
 
 function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
@@ -83,15 +83,16 @@ Program.prototype.abend = function () {
         message = this._usage.format(this.lang, this.command, key, vargs)
     }
     this._redirect = 'stderr'
-    interrupt.raise(new Error, 'abend', { key: key, message: message, code: this._code })
+    throw interrupt(new Error('abend'), { key: key, stderr: message, code: this._code })
 }
 
 // help helper prints stops execution and prints the help message
 Program.prototype.help = function () {
-    this._redirect = 'stdout'
     this._code = 0
-    interrupt.raise(new Error, 'help', {
-        message: this._usage.chooseUsage(this.lang, this.command), code: this._code })
+    throw interrupt(new Error('help'), {
+        stdout: this._usage.chooseUsage(this.lang, this.command),
+        code: this._code
+    })
 }
 
 Program.prototype.required = function () {
@@ -128,7 +129,7 @@ Program.prototype.helpIf = function (help) {
 // exit helper stops execution and exits with the given code, hmm...
 // TODO This ought to be testable, how do I test this?
 Program.prototype.exit = function (code) {
-    interrupt.raise(new Error, 'exit', { code: code })
+    throw interrupt(new Error('exit'), { code: code })
 }
 
 module.exports = cadence(function (async, source, env, argv, io, main) {
