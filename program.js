@@ -125,7 +125,8 @@ Program.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
-// exit helper stops execution and exits with the given code
+// exit helper stops execution and exits with the given code, hmm...
+// TODO This ought to be testable, how do I test this?
 Program.prototype.exit = function (code) {
     interrupt.raise(new Error, 'exit', { code: code })
 }
