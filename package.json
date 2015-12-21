@@ -18,7 +18,7 @@
     "main":             "arguable",
     "dependencies":
     {
-                        "cadence":  "0.4.1",
+                        "cadence":  "0.4.3",
                         "interrupt": "0.0.10",
                         "synonymous": "0.0.8"
     },
