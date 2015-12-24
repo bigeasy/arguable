@@ -1,4 +1,4 @@
-var interrupt = require('./interrupt')
+var interrupt = require('interrupt')
 
 // We do not set the code by calling `process.exit` immediately. We instead set
 // set the exit code by hooking the exit event. This means that we're not going
