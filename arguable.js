@@ -14,11 +14,15 @@ module.exports = function (module, source, program) {
         source = module.filename
     }
     var invoke = module.exports = function (env, argv, options, callback) {
+        var send = options.send || options.events && options.events.send && function () {
+            options.events.send.apply(options.events, slice.call(arguments))
+        }
         var io = {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
-            events: options.events || new events.EventEmitter
+            events: options.events || new events.EventEmitter,
+            send: send || null
         }
         createProgram(source, env, argv, io, program, callback)
         return io

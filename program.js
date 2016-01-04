@@ -20,6 +20,7 @@ function Program (usage, env, argv, io) {
     this.stdout = io.stdout
     this.stderr = io.stderr
     this.stdin = io.stdin
+    this.send = io.send
     this._process = io.events
     this._hooked = {}
 
