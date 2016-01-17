@@ -57,3 +57,43 @@ the interface, which pleases me.
 
 You should use an error-first callback, providing a callback that will abend if
 there is an error, but that does not need to be called to end the program.
+
+## Expanding Variables<a id="expand"></a>
+
+Thoughts on less than simple implementation.
+
+```
+program.expand('bind', function (name, value, defaultAddress, defaultPort) {
+    program.validate(/^(?:\d+(?:\.d+){3}:(\d+)|(\d+))$/.test(value), name + ' invalid bind')
+    var split = value.split(':'), binding
+    if (/^\d+$/.test(split[0])) {
+        binding = {
+            address: defaultAddress,
+            port: +split[0]
+        }
+    } else if (split.length == 2) {
+        binding =  {
+            address: split[0],
+            port: +split[1]
+        }
+    } else {
+        binding = {
+            address: split[0],
+            port: defaultPort
+        }
+    }
+    assert(validAddress(binding.address), name + ' invalid address')
+    assert(validPort(binding.port), name + ' invalid port')
+    return binding
+}, '0.0.0.0', 8080)
+
+```
+
+This turns `program.param.bind` into a bidning object. It is a function you
+provide to program, it is not built into program. Thus, in Node.js fashion you
+can bundle up validations into modules, include them as needed.
+
+Noticing that string matching for errors is getting a bit convoluted. Typing
+"`--foo` is a required argument", "`--bar` is a required argument" is tedious to
+read and maintain. Need some way to parameterize common arguments and either
+match specifically or match generally.
