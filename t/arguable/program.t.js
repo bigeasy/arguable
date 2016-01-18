@@ -65,6 +65,14 @@ function prove (async, assert) {
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
+        program.assert(true, 'badness')
+        program.assert(false, 'badness')
+    }), function (error, code) {
+        assert(error.stderr, 'A bad thing happened.', 'failed assertion')
+    })
+    createProgram(__filename, {}, [], io = {
+        stderr: new stream.PassThrough
+    }, cadence(function (async, program) {
         program.abend('nogoodness')
     }), function (error, code) {
         assert(error.stderr, 'nogoodness', 'error string missing')
@@ -157,4 +165,4 @@ function prove (async, assert) {
     io.events.emit('SIGINT')
 }
 
-require('proof')(28, cadence(prove))
+require('proof')(29, cadence(prove))

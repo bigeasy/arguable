@@ -104,6 +104,10 @@ Program.prototype.required = function () {
     }, this)
 }
 
+Program.prototype.assert = function (condition, message) {
+    if (!condition) this.abend(message)
+}
+
 Program.prototype.numeric = function () {
     this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
                                                      .concat(isNumeric))
