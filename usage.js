@@ -17,7 +17,7 @@ Usage.prototype.getPattern = function (command) {
     // while tiding the usage message; removing special characters that are flags
     // to Arguable that do not belong in the usage message printed to `stdout`.
     this.chooseUsage(this.language, command).split(/\r?\n/).forEach(function (line) {
-        var verbose, terse = '-\t', type = '!', arrayed, out = '', $, trim = /^$/
+        var verbose, terse = '-\t', type = '!', out = '', $, trim = /^$/
         if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
             out = $[0], terse = $[1] || '-\t'
                       , verbose = $[2]
