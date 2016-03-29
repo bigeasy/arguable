@@ -14,6 +14,8 @@ function Program (usage, env, argv, io) {
     // use environment `LANG` or else language of first usage definition
     this.lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
+    this.command_ = this._createCommand(usage, argv.slice())
+
     this.argv = argv = argv.slice()
     this.params = {}
     this.env = env
@@ -48,6 +50,39 @@ function Program (usage, env, argv, io) {
     }
 }
 util.inherits(Program, events.EventEmitter)
+
+Program.prototype._createCommand = function (usage, argv) {
+    var state, root, parent = {}, path = [], command
+    root = parent
+    for (;;) {
+        state = usage.getCommandRedux(argv, state)
+        if (!state) {
+            break
+        }
+        argv = argv.slice(state.command.length)
+        while (state.command.length != 0) {
+            command = state.command.shift()
+            path.push(command)
+            parent.command = {
+                command: command, given: [], params: {}, param: {}
+            }
+            parent = parent.command
+        }
+        var params = {}
+        var opt = getopt(usage.getPattern(path), argv)
+        parent.command = {
+            name: command,
+            given: opt.given,
+            params: opt.params,
+            param: {}
+        }
+        parent = parent.command
+        for (var key in parent.params) {
+            parent.param[key] = parent.params[key][parent.params[key].length - 1]
+        }
+    }
+    return root.command
+}
 
 Program.prototype.on = function (event, listener) {
     this._hook(event)

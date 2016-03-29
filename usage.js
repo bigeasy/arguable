@@ -85,6 +85,24 @@ Usage.prototype.getCommand = function (argv) {
     return command
 }
 
+Usage.prototype.getCommandRedux = function (argv, previous) {
+    var branch = previous ? previous.branch : this.branch, command = (!previous && branch.executable) ? [] : null
+    for (var i = 0, I = argv.length; i < I; i++) {
+        var child = branch.children[argv[i]]
+        if (!child) {
+            break
+        }
+        if (child.executable) {
+            command = argv.slice(0, i + 1)
+        }
+        branch = child
+    }
+    if (command) {
+        return { branch: branch, command: command }
+    }
+    return null
+}
+
 module.exports = function (source) {
     var dictionary = new Dictionary, branch = { executable: false, children: {} }
     dictionary.load(fs.readFileSync(source, 'utf8'))
