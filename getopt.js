@@ -7,8 +7,8 @@ function regular (text) { return text.replace(REGEX, '\\$1') }
 // manipulations of GNU `getopt`, parsing long options, short options, long
 // options who's value is delimited by an equal sign, short options all mushed
 // together, etc.
-function getopt (pat, opts, argv, abend) {
-    var arg, i = 0, $, arg, opt, l, alts, given = {}
+function getopt (pat, argv, abend) {
+    var arg, i = 0, $, arg, opt, l, alts, given = {}, opts = {}
     pat.replace(/--([^-]+)@/, function ($1, verbose) { opts[verbose] = [] })
     while (!(i >= argv.length || (argv[i] == '--' && argv.shift()) || !/^--?[^-]/.test(argv[i]))) {
         arg = argv.shift()
@@ -17,26 +17,35 @@ function getopt (pat, opts, argv, abend) {
                   .replace(/-[^,],--[^|]+\|/g, '')
                   .replace(/^.*((?:^|\|),[^|]+\|).*$/g, '$1')   // unambiguous match of short opt
                   .split('|')
-        if ((l = alts.length - 1) != 1) abend(l ? 'ambiguous argument' : 'unknown argument', arg[1])
+        if ((l = alts.length - 1) != 1) return {
+            abend: l ? 'ambiguous argument' : 'unknown argument',
+            context: arg[1]
+        }
         opt = (arg[1] + /,([^:@]*)/.exec(alts[0])[1]).replace(/^(-[^-]+)?--/, '').replace(/-/g, '')
         $ = /([:@])(.)$/.exec(alts[0])
         if ($[2] != '!') {
             if (!arg[0]) {
-                if (!argv.length) abend('missing argument',  arg[1][1] != '-' ? arg[1] : '--' + opt)
+                if (!argv.length) return {
+                    abend: 'missing argument',
+                    context: arg[1][1] != '-' ? arg[1] : '--' + opt
+                }
                 arg[2] = argv.shift()
             }
         } else if (arg[0]) {
             if (arg[1][1] != '-') {
                 argv.unshift('-' + arg[2])
             } else {
-                abend('toggle argument', '--' + opt)
+                return {
+                    abend: 'toggle argument',
+                    context: '--' + opt
+                }
             }
         }
         given[opt] = true
         if (opts[opt]) opts[opt].push(arg[2])
         else opts[opt] = [ arg[2] ]
     }
-    return Object.keys(given)
+    return { given: Object.keys(given), params: opts }
 }
 
 module.exports = getopt

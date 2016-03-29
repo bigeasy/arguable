@@ -36,9 +36,12 @@ function Program (usage, env, argv, io) {
     this.command = command
     this.argv = argv.slice(command.length)
     // parse arguments
-    this.given = getopt(usage.getPattern(command), this.params, this.argv, function (message) {
-        this.abend(message)
-    }.bind(this))
+    var gotopt = getopt(usage.getPattern(command), this.argv)
+    if (gotopt.abend) {
+        this.abend(gotopt.abend, gotopt.context)
+    }
+    this.params = gotopt.params
+    this.given = gotopt.params
     this.param = {}
     for (var key in this.params) {
         this.param[key] = this.params[key][this.params[key].length - 1]
