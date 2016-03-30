@@ -9,7 +9,7 @@
   ___ . ___
 */
 
-require('proof')(4, prove)
+require('proof')(5, prove)
 
 function prove (assert) {
     var fs = require('fs'),
@@ -27,4 +27,5 @@ function prove (assert) {
 
     var usage = extractUsage(path.join(__dirname, 'sub.js'), 'en_US', [])
     assert(usage.getCommand([ 'foo', 'bar' ]), [ 'foo', 'bar' ], 'non executable path')
+    assert(usage.getCommandRedux([ 'foo', 'bar' ]).command, [ 'foo', 'bar' ], 'non executable path')
 }
