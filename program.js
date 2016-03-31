@@ -14,7 +14,7 @@ function Program (usage, env, argv, io) {
     // use environment `LANG` or else language of first usage definition
     this.lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
-    this.command_ = this._createCommand(usage, argv.slice())
+    this.command = this._createCommand(usage, argv.slice())
 
     this.argv = argv = argv.slice()
     this.params = {}

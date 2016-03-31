@@ -118,8 +118,8 @@ function prove (async, assert) {
     })
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, 'x' ],  {
     }, cadence(function (async, program) {
-        assert(program.command_.command.name, 'run', 'sub command name')
-        assert(program.command_.command.param.processes, 3, 'sub command name')
+        assert(program.command.command.name, 'run', 'sub command name')
+        assert(program.command.command.param.processes, 3, 'sub command name')
         assert(program.argv, [ 'x' ], 'correct sub command argv')
         assert(program.param.processes, 3, 'correct sub command arguments pattern')
         return 0
