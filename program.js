@@ -29,13 +29,12 @@ function Program (usage, env, argv, io) {
     // see if the first argument is a sub-command
     var command = usage.getCommand(argv)
     if (!command) {
-        this.command = []
+        this.path = []
         this.abend('command required')
     }
-    this.command = command
+    this.path = command
 
     // set program object properties
-    this.command = command
     this.argv = argv.slice(command.length)
     // parse arguments
     var gotopt = getopt(usage.getPattern(command), this.argv)
@@ -105,7 +104,7 @@ Program.prototype._hook = function (event) {
 
 // format messages using strings.
 Program.prototype.format = function (key) {
-    return this._usage.format(this.lang, this.command, key, slice.call(arguments, 1))
+    return this._usage.format(this.lang, this.path, key, slice.call(arguments, 1))
 }
 
 // abend helper stops execution and prints a message
@@ -119,7 +118,7 @@ Program.prototype.abend = function () {
     }
     var message
     if (key) {
-        message = this._usage.format(this.lang, this.command, key, vargs)
+        message = this._usage.format(this.lang, this.path, key, vargs)
     }
     this._redirect = 'stderr'
     throw interrupt(new Error('abend'), { key: key, stderr: message, code: this._code })
@@ -129,7 +128,7 @@ Program.prototype.abend = function () {
 Program.prototype.help = function () {
     this._code = 0
     throw interrupt(new Error('help'), {
-        stdout: this._usage.chooseUsage(this.lang, this.command),
+        stdout: this._usage.chooseUsage(this.lang, this.path),
         code: this._code
     })
 }
