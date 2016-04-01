@@ -42,11 +42,11 @@ function Program (usage, env, argv, io) {
         this.abend(gotopt.abend, gotopt.context)
     }
     this.params = gotopt.params
-    this.given = gotopt.params
+    this.given = gotopt.given
     this.param = {}
-    for (var key in this.params) {
+    this.given.forEach(function (key) {
         this.param[key] = this.params[key][this.params[key].length - 1]
-    }
+    }, this)
 }
 util.inherits(Program, events.EventEmitter)
 

@@ -1,51 +1,107 @@
-var REGEX = new RegExp('(\\' + '/ . * + ? | ( ) [ ] { } \\'.split(' ').join('|\\') + ')', 'g')
+function getopt (pat, argv) {
+    var patterns = pat
 
-// Create a regular expression that matches a specific string.
-function regular (text) { return text.replace(REGEX, '\\$1') }
-
-// A regex rocking argument parser implementation. It can do most of the
-// manipulations of GNU `getopt`, parsing long options, short options, long
-// options who's value is delimited by an equal sign, short options all mushed
-// together, etc.
-function getopt (pat, argv, abend) {
-    var arg, i = 0, $, arg, opt, l, alts, given = {}, opts = {}
-    pat.replace(/--([^-]+)@/, function ($1, verbose) { opts[verbose] = [] })
-    while (!(i >= argv.length || (argv[i] == '--' && argv.shift()) || !/^--?[^-]/.test(argv[i]))) {
-        arg = argv.shift()
-        arg = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true]
-        alts = pat.replace(new RegExp(regular(arg[1]), 'g'), '')
-                  .replace(/-[^,],--[^|]+\|/g, '')
-                  .replace(/^.*((?:^|\|),[^|]+\|).*$/g, '$1')   // unambiguous match of short opt
-                  .split('|')
-        if ((l = alts.length - 1) != 1) return {
-            abend: l ? 'ambiguous argument' : 'unknown argument',
-            context: arg[1]
-        }
-        opt = (arg[1] + /,([^:@]*)/.exec(alts[0])[1]).replace(/^(-[^-]+)?--/, '').replace(/-/g, '')
-        $ = /([:@])(.)$/.exec(alts[0])
-        if ($[2] != '!') {
-            if (!arg[0]) {
-                if (!argv.length) return {
-                    abend: 'missing argument',
-                    context: arg[1][1] != '-' ? arg[1] : '--' + opt
-                }
-                arg[2] = argv.shift()
+    if (typeof pat == 'string') {
+        patterns = pat.split('|')
+        patterns.pop()
+        patterns = patterns.map(function (argument) {
+            var typed = argument.split(/[:@]/)
+            var args = typed[0].split(',')
+            if (args.length == 1) {
+                args.unshift('\u0000')
             }
-        } else if (arg[0]) {
-            if (arg[1][1] != '-') {
-                argv.unshift('-' + arg[2])
-            } else {
-                return {
-                    abend: 'toggle argument',
-                    context: '--' + opt
-                }
+            return {
+                arguable: typed[1] != '!',
+                short: args[0],
+                long: args[1],
+                key: args[1].slice(2)
             }
-        }
-        given[opt] = true
-        if (opts[opt]) opts[opt].push(arg[2])
-        else opts[opt] = [ arg[2] ]
+        })
     }
-    return { given: Object.keys(given), params: opts }
+
+    var params = {}
+
+    patterns.filter(function (pattern) {
+        return pattern.arguable
+    }).map(function (pattern) {
+        params[pattern.key] = []
+    })
+
+    var i = 0, unshifted = null
+    for (;;) {
+        if (argv[0] == '--') {
+            argv.shift()
+            break
+        }
+        if (argv.length == 0 || !/^--?[^-]/.test(argv[0])) {
+            break
+        }
+        var arg = argv.shift()
+        var $ = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true]
+        var catenated = !! $[0]
+        var parameter = $[1]
+        var value = $[2]
+        var isLong = parameter[1] == '-'
+        var alternates = patterns.filter(function (pattern) {
+            return pattern.long.startsWith(parameter) || pattern.short.startsWith(parameter)
+        })
+        if (alternates.length != 1) {
+            return {
+                abend: alternates.length ? 'ambiguous argument' : 'unknown argument',
+                context: parameter
+            }
+        }
+
+        unshifted = null
+
+        var pattern = alternates.shift()
+        if (pattern.arguable) {
+            if (!catenated) {
+                if (argv.length == 0) {
+                    return {
+                        abend: 'missing argument',
+                        context: arg[1][1] != '-' ? arg[1] : '--' + opt
+                    }
+                }
+                value = argv.shift()
+            }
+        } else if (catenated) {
+            if (isLong) {
+                return {
+                    abend: 'unexpected argument value',
+                    context: pattern.long
+                }
+            } else {
+                argv.unshift('-' + value)
+                unshifted = pattern.short
+            }
+        }
+
+        if (!params[pattern.key]) {
+            params[pattern.key] = [ value ]
+        } else {
+            params[pattern.key].push(value)
+        }
+
+        i++
+    }
+
+    // TODO Implement `--no-foo`.
+    if (unshifted) {
+        return {
+            abend: 'unexpected argument value',
+            context: unshifted
+        }
+    }
+
+    return {
+        params: params,
+        given: patterns.filter(function (pattern) {
+            return params[pattern.key] && params[pattern.key].length != 0
+        }).map(function (pattern) {
+            return pattern.key
+        })
+    }
 }
 
 module.exports = getopt
