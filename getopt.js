@@ -43,7 +43,8 @@ function getopt (pat, argv) {
         var value = $[2]
         var isLong = parameter[1] == '-'
         var alternates = patterns.filter(function (pattern) {
-            return pattern.long.startsWith(parameter) || pattern.short.startsWith(parameter)
+            return pattern.long.lastIndexOf(parameter, 0) == 0
+                || pattern.short.lastIndexOf(parameter, 0) == 0
         })
         if (alternates.length != 1) {
             return {
