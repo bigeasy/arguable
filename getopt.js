@@ -8,16 +8,25 @@ function getopt (pat, argv) {
             var typed = argument.split(/[:@]/)
             var args = typed[0].split(',')
             if (args.length == 1) {
-                args.unshift('\u0000')
+                args.unshift('-')
             }
             return {
                 arguable: typed[1] != '!',
-                short: args[0],
-                long: args[1],
+                short: args[0].slice(1),
+                long: args[1].slice(2),
                 key: args[1].slice(2)
             }
         })
     }
+
+    patterns = patterns.map(function (pattern) {
+        return {
+            arguable: pattern.arguable,
+            long: '--' + pattern.long,
+            short: pattern.short ? '-' + pattern.short : '',
+            key: pattern.long
+        }
+    })
 
     var params = {}
 
