@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 
 require('proof')(17, function (assert) {
-    var pattern = '-a,--ambiguous:!|-A,--arbitrary:!|-N,--name:$|' +
-        '-p,--processes:$|-c,--config@$|-h,--help:!|'
+    var pattern = [
+        { short: 'a', long: 'ambiguous' },
+        { short: 'A', long: 'arbitrary' },
+        { short: 'N', long: 'name', arguable: true },
+        { short: 'p', long: 'processes', arguable: true },
+        { short: 'c', long: 'config', arguable: true },
+        { short: 'h', long: 'help', arguable: false }
+    ]
     var getopt = require('../../getopt'), params
     var given = getopt(pattern, [ '-N', 'steve']).given
     assert(given, [ 'name' ], 'string given')
