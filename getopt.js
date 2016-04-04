@@ -70,7 +70,7 @@ function getopt (pat, argv) {
                 if (argv.length == 0) {
                     return {
                         abend: 'missing argument',
-                        context: arg[1][1] != '-' ? arg[1] : '--' + opt
+                        context: isLong ? pattern.long : pattern.short
                     }
                 }
                 value = argv.shift()
