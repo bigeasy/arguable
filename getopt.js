@@ -1,24 +1,4 @@
-function getopt (pat, argv) {
-    var patterns = pat
-
-    if (typeof pat == 'string') {
-        patterns = pat.split('|')
-        patterns.pop()
-        patterns = patterns.map(function (argument) {
-            var typed = argument.split(/[:@]/)
-            var args = typed[0].split(',')
-            if (args.length == 1) {
-                args.unshift('-')
-            }
-            return {
-                arguable: typed[1] != '!',
-                short: args[0].slice(1),
-                long: args[1].slice(2),
-                key: args[1].slice(2)
-            }
-        })
-    }
-
+function getopt (patterns, argv) {
     patterns = patterns.map(function (pattern) {
         return {
             arguable: pattern.arguable,
