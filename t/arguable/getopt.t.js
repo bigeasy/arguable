@@ -44,7 +44,7 @@ require('proof')(17, function (assert) {
         assert(outcome.abend, expected, message)
     }
 
-    failed([ '-x' ], 'unknown argument', 'unknown')
+    failed([ '-ax' ], 'unknown argument', 'unknown')
     failed([ '-c' ], 'missing argument', 'terse missing')
 //    failed([ '--p', 2, '--p', 3 ], 'scalar argument', 'duplicate argument')
     failed([ '--c' ], 'missing argument', 'verbose inferred missing')
