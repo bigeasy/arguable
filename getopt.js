@@ -36,7 +36,7 @@ function getopt (pat, argv) {
         params[pattern.key] = []
     })
 
-    var i = 0, unshifted = null
+    var i = 0
     for (;;) {
         if (argv[0] == '--') {
             argv.shift()
@@ -62,8 +62,6 @@ function getopt (pat, argv) {
             }
         }
 
-        unshifted = null
-
         var pattern = alternates.shift()
         if (pattern.arguable) {
             if (!catenated) {
@@ -83,7 +81,6 @@ function getopt (pat, argv) {
                 }
             } else {
                 argv.unshift('-' + value)
-                unshifted = pattern.short
             }
         }
 
@@ -97,13 +94,6 @@ function getopt (pat, argv) {
     }
 
     // TODO Implement `--no-foo`.
-    if (unshifted) {
-        return {
-            abend: 'unexpected argument value',
-            context: unshifted
-        }
-    }
-
     return {
         params: params,
         given: patterns.filter(function (pattern) {
