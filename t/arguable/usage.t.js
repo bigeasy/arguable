@@ -22,7 +22,16 @@ function prove (assert) {
 
     var usage = extractUsage(__filename, 'en_US', [])
     assert(usage.chooseUsage('en_US', []), message, 'usage')
-    assert(usage.getPattern([]), '-c,--config:$|-\t,--longonly:!|', 'pattern')
+    assert(usage.getPattern([]), [
+    {
+        short: 'c',
+        long: 'config',
+        arguable: true,
+    }, {
+        short: null,
+        long: 'longonly',
+        arguable: false
+    }], 'patterns')
     assert(usage.chooseUsage('en_GB', []), message, 'usage')
 
     var usage = extractUsage(path.join(__dirname, 'sub.js'), 'en_US', [])

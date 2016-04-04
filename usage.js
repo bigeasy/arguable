@@ -12,22 +12,26 @@ function Usage (language, branch, dictionary, command) {
 }
 
 Usage.prototype.getPattern = function (command) {
-    var pattern = ''
+    var patterns = []
     // Extract a definition of the command line arguments from the usage message
     // while tiding the usage message; removing special characters that are flags
     // to Arguable that do not belong in the usage message printed to `stdout`.
     this.chooseUsage(this.language, command).split(/\r?\n/).forEach(function (line) {
         var verbose, terse = '-\t', type = '!', out = '', $, trim = /^$/
         if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
-            out = $[0], terse = $[1] || '-\t'
-                      , verbose = $[2]
+            out = $[0], terse = $[1] ? $[1].substring(1) : null
+                      , verbose = $[2].substring(2)
                       , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
                       , line = line.substring(out.length)
-            pattern +=  terse + ',' + verbose + ':' + type + '|'
+            patterns.push({
+                short: terse,
+                long: verbose,
+                arguable: type != '!'
+            })
             if (!line.length) trim = /\s+$/
         }
     }, this)
-    return pattern
+    return patterns
 }
 
 Usage.prototype.chooseUsage = function (language, command) {
