@@ -7,7 +7,7 @@ require('proof')(17, function (assert) {
         { short: 'N', long: 'name', arguable: true },
         { short: 'p', long: 'processes', arguable: true },
         { short: 'c', long: 'config', arguable: true },
-        { short: 'h', long: 'help', arguable: false }
+        { long: 'help', arguable: false }
     ]
     var getopt = require('../../getopt'), params
     var given = getopt(pattern, [ '-N', 'steve']).given
