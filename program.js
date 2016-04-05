@@ -168,6 +168,31 @@ Program.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
+Program.prototype.delegate = cadence(function (async, prefix) {
+    var argv = this.argv.slice()
+    var sub = argv.shift()
+    var pkg = [ prefix, sub ].join('.')
+    var f
+
+    try {
+        f = require(pkg)
+    } catch (error) {
+        if (error.code == 'MODULE_NOT_FOUND') {
+            this.abend('cannot find executable command', this.path.concat(sub).join(' '))
+        } else {
+            throw error
+        }
+    }
+
+    var io = {
+        stdout: this.stdout,
+        stdin: this.stdin,
+        stderr: this.stderr,
+        events: this.events
+    }
+    f(this.env, argv, io, async())
+})
+
 // exit helper stops execution and exits with the given code, hmm...
 // TODO This ought to be testable, how do I test this?
 Program.prototype.exit = function (code) {

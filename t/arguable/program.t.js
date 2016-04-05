@@ -127,6 +127,28 @@ function prove (async, assert) {
         if (error) throw error
         assert(code, 0, 'sub command normal exit')
     })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [
+        'run', 'found'
+    ], {}, cadence(function (async, program) {
+        program.delegate('delegated', async())
+    }), function (error, code) {
+        if (error) throw error
+        assert(code, 0, 'delegated command normal exit')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [
+        'run', 'unfound'
+    ], {}, cadence(function (async, program) {
+        program.delegate('delegated', async())
+    }), function (error, code) {
+        assert(error.stderr, 'cannot find executable command', 'delgated not found')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [
+        'run', 'broken'
+    ], {}, cadence(function (async, program) {
+        program.delegate('delegated', async())
+    }), function (error, code) {
+        assert(error.message, 'x is not defined', 'delgated program broken')
+    })
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
     }, cadence(function (async, program) {
         program.required('level', 'processes')
