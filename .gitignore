@@ -1,6 +1,7 @@
 /.imdone
-/node_modules
+/node_modules/*
 !/node_modules/delegated.found.js
+!/node_modules/delegated.broken.js
 /.proof.out
 /coverage
 /npm-debug.log
