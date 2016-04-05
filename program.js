@@ -8,49 +8,52 @@ var events = require('events')
 
 function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
 
+function Command (program, name, gotopts) {
+    this.program = program
+    this.name = name
+    this.given = gotopts.given
+    this.params = gotopts.params
+    this.param = {}
+    this.given.forEach(function (key) {
+        this.param[key] = this.params[key][this.params[key].length - 1]
+    }, this)
+}
+
+Command.prototype.required = function () {
+    slice.call(arguments).forEach(function (param) {
+        if (!(param in this.param)) {
+            this.program.abend(param + ' is required')
+        }
+    }, this)
+}
+
+Command.prototype.numeric = function () {
+    this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
+                                                     .concat(isNumeric))
+}
+
+Command.prototype.validate = function () {
+    var vargs = slice.call(arguments)
+    var format = vargs.shift()
+    var test = vargs.pop()
+    var f = test instanceof RegExp ? function (value) {
+        return test.test(value)
+    } : test
+    vargs.forEach(function (param) {
+        if ((param in this.param) && !f(this.param[param])) {
+            this.program.abend(util.format(format, param))
+        }
+    }, this)
+}
+
 function Program (usage, env, argv, io) {
     this._usage = usage
 
     // use environment `LANG` or else language of first usage definition
     this.lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
-    this.command = this._createCommand(usage, argv.slice())
+    this.path = []
 
-    this.argv = argv = argv.slice()
-    this.params = {}
-    this.env = env
-    this.stdout = io.stdout
-    this.stderr = io.stderr
-    this.stdin = io.stdin
-    this.send = io.send
-    this._process = io.events
-    this._hooked = {}
-
-    // see if the first argument is a sub-command
-    var command = usage.getCommand(argv)
-    if (!command) {
-        this.path = []
-        this.abend('command required')
-    }
-    this.path = command
-
-    // set program object properties
-    this.argv = argv.slice(command.length)
-    // parse arguments
-    var gotopt = getopt(usage.getPattern(command), this.argv)
-    if (gotopt.abend) {
-        this.abend(gotopt.abend, gotopt.context)
-    }
-    this.params = gotopt.params
-    this.given = gotopt.given
-    this.param = {}
-    this.given.forEach(function (key) {
-        this.param[key] = this.params[key][this.params[key].length - 1]
-    }, this)
-}
-util.inherits(Program, events.EventEmitter)
-
-Program.prototype._createCommand = function (usage, argv) {
     var state, root, parent = {}, path = [], command
     root = parent
     for (;;) {
@@ -62,26 +65,41 @@ Program.prototype._createCommand = function (usage, argv) {
         while (state.command.length != 0) {
             command = state.command.shift()
             path.push(command)
-            parent.command = {
-                command: command, given: [], params: {}, param: {}
-            }
+            parent.command = new Command(this, command, { given: [], params: {} })
             parent = parent.command
         }
         var params = {}
         var opt = getopt(usage.getPattern(path), argv)
-        parent.command = {
-            name: command,
-            given: opt.given,
-            params: opt.params,
-            param: {}
+        if (opt.abend) {
+            this.abend(opt.abend, opt.context)
         }
+        parent.command = new Command(this, command, opt)
         parent = parent.command
-        for (var key in parent.params) {
-            parent.param[key] = parent.params[key][parent.params[key].length - 1]
-        }
     }
-    return root.command
+    this.command = root.command
+    if (!this.command) {
+        this.path = []
+        this.abend('command required')
+    }
+    var path = [], iterator = this.command
+    while (iterator.command) {
+        path.push(iterator.command.name)
+        iterator = iterator.command
+    }
+
+    this.argv = argv = argv.slice()
+    this.params = {}
+    this.env = env
+    this.stdout = io.stdout
+    this.stderr = io.stderr
+    this.stdin = io.stdin
+    this.send = io.send
+    this._process = io.events
+    this._hooked = {}
+
+    this.path = path
 }
+util.inherits(Program, events.EventEmitter)
 
 Program.prototype.on = function (event, listener) {
     this._hook(event)
@@ -133,35 +151,8 @@ Program.prototype.help = function () {
     })
 }
 
-Program.prototype.required = function () {
-    slice.call(arguments).forEach(function (param) {
-        if (!(param in this.param)) {
-            this.abend(param + ' is required')
-        }
-    }, this)
-}
-
 Program.prototype.assert = function (condition, message) {
     if (!condition) this.abend(message)
-}
-
-Program.prototype.numeric = function () {
-    this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
-                                                     .concat(isNumeric))
-}
-
-Program.prototype.validate = function () {
-    var vargs = slice.call(arguments)
-    var format = vargs.shift()
-    var test = vargs.pop()
-    var f = test instanceof RegExp ? function (value) {
-        return test.test(value)
-    } : test
-    vargs.forEach(function (param) {
-        if ((param in this.param) && !f(this.param[param])) {
-            this.abend(util.format(format, param))
-        }
-    }, this)
 }
 
 Program.prototype.helpIf = function (help) {

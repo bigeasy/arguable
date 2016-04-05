@@ -120,8 +120,6 @@ function prove (async, assert) {
     }, cadence(function (async, program) {
         assert(program.command.command.name, 'run', 'sub command name')
         assert(program.command.command.param.processes, 3, 'sub command name')
-        assert(program.argv, [ 'x' ], 'correct sub command argv')
-        assert(program.param.processes, 3, 'correct sub command arguments pattern')
         return 0
     }), function (error, code) {
         if (error) throw error
@@ -151,21 +149,21 @@ function prove (async, assert) {
     })
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
     }, cadence(function (async, program) {
-        program.required('level', 'processes')
+        program.command.command.required('level', 'processes')
     }), function (error) {
         assert(error.stderr, 'processes is required', 'required')
     })
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.validate('%s is not an integer', 'processes', /^\d+$/)
-        program.validate('%s is not copacetic', 'level', function () { return true })
-        program.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+        program.command.command.validate('%s is not an integer', 'processes', /^\d+$/)
+        program.command.command.validate('%s is not copacetic', 'level', function () { return true })
+        program.command.command.validate('%s is not an integer', 'other', 'level', /^\d+$/)
     }), function (error) {
         assert(error.stderr, 'level is not an integer', 'validate')
     })
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.numeric('processes', 'level')
+        program.command.command.numeric('processes', 'level')
     }), function (error) {
         assert(error.stderr, 'level is not numeric', 'numeric')
     })
@@ -189,4 +187,4 @@ function prove (async, assert) {
     io.events.emit('SIGINT')
 }
 
-require('proof')(31, cadence(prove))
+require('proof')(32, cadence(prove))

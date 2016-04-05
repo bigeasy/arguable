@@ -74,22 +74,7 @@ function gatherPaths (dictionary, language, path, branch) {
     })
 }
 
-Usage.prototype.getCommand = function (argv) {
-    var branch = this.branch, command = branch.executable ? [] : null
-    for (var i = 0, I = argv.length; i < I; i++) {
-        var child = branch.children[argv[i]]
-        if (!child) {
-            break
-        }
-        if (child.executable) {
-            command = argv.slice(0, i + 1)
-        }
-        branch = child
-    }
-    return command
-}
-
-Usage.prototype.getCommandRedux = function (argv, previous) {
+Usage.prototype.getCommand = function (argv, previous) {
     var branch = previous ? previous.branch : this.branch, command = (!previous && branch.executable) ? [] : null
     for (var i = 0, I = argv.length; i < I; i++) {
         var child = branch.children[argv[i]]
