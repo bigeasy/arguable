@@ -57,7 +57,7 @@ function Program (usage, env, argv, io) {
     var state, root, parent = {}, path = [], command
     root = parent
     for (;;) {
-        state = usage.getCommandRedux(argv, state)
+        state = usage.getCommand(argv, state)
         if (!state) {
             break
         }
