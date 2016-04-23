@@ -2,9 +2,9 @@ function getopt (patterns, argv) {
     patterns = patterns.map(function (pattern) {
         return {
             arguable: pattern.arguable,
-            long: '--' + pattern.long,
-            short: pattern.short ? '-' + pattern.short : '',
-            key: pattern.long
+            verbose: '--' + pattern.verbose,
+            terse: pattern.terse ? '-' + pattern.terse : '',
+            key: pattern.verbose
         }
     })
 
@@ -32,8 +32,8 @@ function getopt (patterns, argv) {
         var value = $[2]
         var isLong = parameter[1] == '-'
         var alternates = patterns.filter(function (pattern) {
-            return pattern.long.lastIndexOf(parameter, 0) == 0
-                || pattern.short.lastIndexOf(parameter, 0) == 0
+            return pattern.verbose.lastIndexOf(parameter, 0) == 0
+                || pattern.terse.lastIndexOf(parameter, 0) == 0
         })
         if (alternates.length != 1) {
             return {
@@ -48,7 +48,7 @@ function getopt (patterns, argv) {
                 if (argv.length == 0) {
                     return {
                         abend: 'missing argument',
-                        context: isLong ? pattern.long : pattern.short
+                        context: isLong ? pattern.verbose : pattern.terse
                     }
                 }
                 value = argv.shift()
@@ -57,7 +57,7 @@ function getopt (patterns, argv) {
             if (isLong) {
                 return {
                     abend: 'unexpected argument value',
-                    context: pattern.long
+                    context: pattern.verbose
                 }
             } else {
                 argv.unshift('-' + value)

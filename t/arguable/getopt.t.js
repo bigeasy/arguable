@@ -2,12 +2,12 @@
 
 require('proof')(17, function (assert) {
     var pattern = [
-        { short: 'a', long: 'ambiguous' },
-        { short: 'A', long: 'arbitrary' },
-        { short: 'N', long: 'name', arguable: true },
-        { short: 'p', long: 'processes', arguable: true },
-        { short: 'c', long: 'config', arguable: true },
-        { long: 'help', arguable: false }
+        { terse: 'a', verbose: 'ambiguous' },
+        { terse: 'A', verbose: 'arbitrary' },
+        { terse: 'N', verbose: 'name', arguable: true },
+        { terse: 'p', verbose: 'processes', arguable: true },
+        { terse: 'c', verbose: 'config', arguable: true },
+        { verbose: 'help', arguable: false }
     ]
     var getopt = require('../../getopt'), params
     var given = getopt(pattern, [ '-N', 'steve']).given

@@ -24,12 +24,12 @@ function prove (assert) {
     assert(usage.chooseUsage('en_US', []), message, 'usage')
     assert(usage.getPattern([]), [
     {
-        short: 'c',
-        long: 'config',
+        terse: 'c',
+        verbose: 'config',
         arguable: true,
     }, {
-        short: null,
-        long: 'longonly',
+        terse: null,
+        verbose: 'longonly',
         arguable: false
     }], 'patterns')
     assert(usage.chooseUsage('en_GB', []), message, 'usage')

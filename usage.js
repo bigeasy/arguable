@@ -24,8 +24,8 @@ Usage.prototype.getPattern = function (command) {
                       , type = $[3] && (numeric.test($[3]) ? '#' : '$') || '!'
                       , line = line.substring(out.length)
             patterns.push({
-                short: terse,
-                long: verbose,
+                terse: terse,
+                verbose: verbose,
                 arguable: type != '!'
             })
             if (!line.length) trim = /\s+$/
