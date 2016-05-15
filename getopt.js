@@ -8,7 +8,7 @@ function getopt (patterns, argv) {
         }
     })
 
-    var params = {}
+    var params = {}, ordered = []
 
     patterns.filter(function (pattern) {
         return pattern.arguable
@@ -64,6 +64,8 @@ function getopt (patterns, argv) {
             }
         }
 
+        ordered.push({ name: pattern.key, value: value })
+
         if (!params[pattern.key]) {
             params[pattern.key] = [ value ]
         } else {
@@ -83,7 +85,8 @@ function getopt (patterns, argv) {
             return params[pattern.key] && params[pattern.key].length != 0
         }).map(function (pattern) {
             return pattern.key
-        })
+        }),
+        ordered: ordered
     }
 }
 
