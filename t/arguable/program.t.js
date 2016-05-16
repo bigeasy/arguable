@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// TODO Much tidy.
+
 /*
     ___ usage ___ en_US ___
     usage: basic [options] [files]
@@ -185,6 +187,40 @@ function prove (async, assert) {
         assert(code, 0, 'signal handler')
     })
     io.events.emit('SIGINT')
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', 'FRED' ],  {
+    }, cadence(function (async, program) {
+        program.command.command.bind('bind')
+    }), function (error) {
+        assert(error.stderr, 'bind is not bindable', 'bind port')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '0.0.1:8888' ],  {
+    }, cadence(function (async, program) {
+        program.command.command.bind('bind')
+    }), function (error) {
+        assert(error.stderr, 'bind is not bindable', 'bind address not enough parts')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', 'x.0.0.1:8888' ],  {
+    }, cadence(function (async, program) {
+        program.command.command.bind('bind')
+    }), function (error) {
+        assert(error.stderr, 'bind is not bindable', 'bind address not numeric')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '8888' ],  {
+    }, cadence(function (async, program) {
+// TODO Throw an exception here and try to figure out how it becomes uncaught in
+// a fully assembled arguable.
+        var bind = program.command.command.bind('bind')
+        assert(bind, { address: '0.0.0.0', port: 8888 }, 'bind all interfaces')
+    }), function (e) {
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '127.0.0.1:8888' ],  {
+    }, cadence(function (async, program) {
+// TODO Throw an exception here and try to figure out how it becomes uncaught in
+// a fully assembled arguable.
+        var bind = program.command.command.bind('bind')
+        assert(bind, { address: '127.0.0.1', port: 8888 }, 'bind specific interface')
+    }), function (e) {
+    })
 }
 
-require('proof')(32, cadence(prove))
+require('proof')(37, cadence(prove))

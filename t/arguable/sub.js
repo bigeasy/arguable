@@ -10,6 +10,7 @@
   -h, --help                  display this message
   -p, --processes     [count] number of processes to run in parallel
   -l, --level         [count] frobination level
+  -b, --bind   [address:port] address and port to listen to
 
   description:
 
