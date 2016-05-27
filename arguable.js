@@ -30,6 +30,16 @@ module.exports = function (module, require, source, program) {
         }
     }
     var invoke = module.exports = function (env, argv, options, callback) {
+        if (Array.isArray(env)) {
+            callback = options
+            options = argv
+            argv = env
+            env = options.env || {}
+        }
+        if (typeof options == 'function') {
+            callback = options
+            options = {}
+        }
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
