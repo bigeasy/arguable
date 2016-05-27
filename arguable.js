@@ -21,21 +21,18 @@ module.exports = function (module, source, program) {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
-            stdio: [],
             events: options.events || new events.EventEmitter,
             send: send || null
         }
-        io.stdio.push(io.stdin, io.stdot, io.stderr)
-        io.stdio.push.apply(io.stdio, options.stdio || [])
         createProgram(source, env, argv, io, program, callback)
         return io
     }
     if (module === require.main) {
         invoke(process.env, process.argv.slice(2), {
+// No. Stop! There is no `process.stdio`. Do not addd one. (Again.)
             stdout: process.stdout,
             stdin: process.stdin,
             stderr: process.stderr,
-            stdio: process.stdio,
             events: process
         }, exit(process))
     }
