@@ -14,7 +14,7 @@ require('proof')(4, prove)
 function prove (assert) {
     var fs = require('fs'),
         path = require('path'),
-        extractUsage = require('../../usage'),
+        extractUsage = require('../usage'),
         message = 'usage: basic [options] [files]\n' +
                   '  -c, --config <key=value>\n' +
                   '      --longonly\n' +

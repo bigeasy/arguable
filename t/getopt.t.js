@@ -9,7 +9,7 @@ require('proof')(18, function (assert) {
         { terse: 'c', verbose: 'config', arguable: true },
         { verbose: 'help', arguable: false }
     ]
-    var getopt = require('../../getopt'), params
+    var getopt = require('../getopt'), params
     var given = getopt(pattern, [ '-N', 'steve']).given
     assert(given, [ 'name' ], 'string given')
     var params = getopt(pattern, [ '-N', 'steve']).params

@@ -24,7 +24,7 @@ function prove (async, assert) {
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
                 ''
-    var createProgram = require('../../program.js'), io
+    var createProgram = require('../program.js'), io
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
     }), function (error, code) {
         assert(error.message, 'no usage found', 'no usage found')

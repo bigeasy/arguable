@@ -6,7 +6,7 @@
   ___ . ___
 */
 
-require('../../..')(module, function (options, callback) {
+require('../..')(module, function (options, callback) {
     options.send({ key: 'value' })
     callback()
 })

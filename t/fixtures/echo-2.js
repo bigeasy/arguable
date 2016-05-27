@@ -6,7 +6,7 @@
   ___ . ___
 */
 
-require('../../..')(module, module.filename, function (options, callback) {
+require('../..')(module, module.filename, function (options, callback) {
     if (options.argv.length) {
         var separator = ''
         options.argv.forEach(function (arg) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 require('proof')(9, function (assert) {
-    var exit = require('../../exit'),
+    var exit = require('../exit'),
         events = require('events'),
         stream = require('stream'),
         interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
