@@ -27,7 +27,7 @@ module.exports = function (module, source, program) {
         createProgram(source, env, argv, io, program, callback)
         return io
     }
-    if (module === require.main) {
+    if (module === process.mainModule) {
         invoke(process.env, process.argv.slice(2), {
 // No. Stop! There is no `process.stdio`. Do not addd one. (Again.)
             stdout: process.stdout,
