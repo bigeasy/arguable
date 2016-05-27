@@ -184,7 +184,7 @@ Program.prototype.assert = function (condition, message) {
 }
 
 Program.prototype.require = function (moduleName) {
-    this._require.call(null, moduleName)
+    return this._require(moduleName)
 }
 
 Program.prototype.helpIf = function (help) {
