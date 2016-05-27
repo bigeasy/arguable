@@ -121,6 +121,7 @@ function Program (usage, env, argv, io) {
     this.stderr = io.stderr
     this.stdin = io.stdin
     this.send = io.send
+    this._require = io.require
     this._process = io.events
     this._hooked = {}
 
@@ -180,6 +181,10 @@ Program.prototype.help = function () {
 
 Program.prototype.assert = function (condition, message) {
     if (!condition) this.abend(message)
+}
+
+Program.prototype.require = function (moduleName) {
+    this._require.call(null, moduleName)
 }
 
 Program.prototype.helpIf = function (help) {
