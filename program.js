@@ -146,6 +146,14 @@ Program.prototype.disconnect = function () {
     }
 }
 
+Program.prototype.__defineSetter__('exitCode', function (exitCode) {
+    this._process.exitCode = exitCode
+})
+
+Program.prototype.__defineGetter__('exitCode', function (exitCode) {
+    this._process.exitCode = exitCode
+})
+
 Program.prototype._hook = function (event) {
     if (!this._hooked[event]) {
         this._process.on(event, function () {
@@ -236,12 +244,6 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
         throw new Error('no usage found')
     }
 
-    var program = new Program(createUsage(source), env, argv, io)
-
     // run program
-    async(function () {
-        main(program, async())
-    }, function (code) {
-        return code == null ? 0 : code
-    })
+    main(new Program(createUsage(source), env, argv, io), async())
 })

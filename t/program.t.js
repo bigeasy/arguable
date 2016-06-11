@@ -184,7 +184,7 @@ function prove (async, assert) {
         program.once('SIGINT', function () { once() })
     }), function (error, code) {
         if (error) throw error
-        assert(code, 0, 'signal handler')
+        assert(true, 'signal handler')
     })
     io.events.emit('SIGINT')
     createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', 'FRED' ],  {
