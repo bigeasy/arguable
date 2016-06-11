@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('proof')(18, function (assert) {
+require('proof')(19, function (assert) {
     var pattern = [
         { terse: 'a', verbose: 'ambiguous' },
         { terse: 'A', verbose: 'arbitrary' },
@@ -35,9 +35,10 @@ require('proof')(18, function (assert) {
     assert(params.config, [ 'one=1', 'two=2', 'three=3' ], 'array')
 
     var argv = [ '-p', 3, '--', '-A' ]
-    params = getopt(pattern, argv).params
+    var outcome = getopt(pattern, argv)
     assert(argv, [ '-A' ], 'stop on double hyphens')
-    assert(params.processes, [ '3' ], 'stop on double hyphens params')
+    assert(outcome.terminal, 'detect terminal')
+    assert(outcome.params.processes, [ '3' ], 'stop on double hyphens params')
 
     var argv = [ '-a', '-p', 3 ]
     assert(getopt(pattern, argv).ordered, [

@@ -16,9 +16,10 @@ function getopt (patterns, argv) {
         params[pattern.key] = []
     })
 
-    var i = 0
+    var i = 0, terminal = false
     for (;;) {
         if (argv[0] == '--') {
+            terminal = true
             argv.shift()
             break
         }
@@ -86,7 +87,8 @@ function getopt (patterns, argv) {
         }).map(function (pattern) {
             return pattern.key
         }),
-        ordered: ordered
+        ordered: ordered,
+        terminal: terminal
     }
 }
 
