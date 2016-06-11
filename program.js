@@ -31,6 +31,7 @@ function Command (program, name, gotopts) {
     this.given = gotopts.given
     this.params = gotopts.params
     this.ordered = gotopts.ordered
+    this.terminal = gotopts.terminal
     this.param = {}
     this.given.forEach(function (key) {
         this.param[key] = this.params[key][this.params[key].length - 1]
