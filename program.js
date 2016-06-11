@@ -120,6 +120,7 @@ function Program (usage, env, argv, io) {
     this.stdout = io.stdout
     this.stderr = io.stderr
     this.stdin = io.stdin
+    this.params = io.params
     this.send = io.send
     this._require = io.require
     this._process = io.events
@@ -137,6 +138,12 @@ Program.prototype.on = function (event, listener) {
 Program.prototype.once = function (event, listener) {
     this._hook(event)
     events.EventEmitter.prototype.once.call(this, event, listener)
+}
+
+Program.prototype.disconnect = function () {
+    if (this._process.connected) {
+        this._process.disconnect()
+    }
 }
 
 Program.prototype._hook = function (event) {

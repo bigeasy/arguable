@@ -8,10 +8,15 @@ function createStream (s) {
     return s || new stream.PassThrough
 }
 
-module.exports = function (module, require, source, program) {
+module.exports = function (module, require, source, program, params) {
     var vargs = slice.call(arguments)
     module = vargs.shift()
+    params = {}
     program = vargs.pop()
+    if (typeof program == 'object') {
+        params = program
+        program = vargs.pop()
+    }
     source = module.filename
     require = function (moduleName) {
         return module.require(moduleName)
@@ -43,6 +48,9 @@ module.exports = function (module, require, source, program) {
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
+        for (var param in options.params) {
+            params[param] = options.params[param]
+        }
         var io = {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
@@ -55,7 +63,8 @@ module.exports = function (module, require, source, program) {
                 } else {
                     return require(moduleName)
                 }
-            } : require
+            } : require,
+            params: params
         }
         createProgram(source, env, argv, io, program, callback)
         return io
