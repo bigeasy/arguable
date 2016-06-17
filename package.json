@@ -19,7 +19,7 @@
     "dependencies":
     {
                         "cadence":  "1.x",
-                        "interrupt": "1.x",
+                        "interrupt": "1.0.x",
                         "synonymous": "1.x"
     },
     "devDependencies":
