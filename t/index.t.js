@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+require('proof')(6, require('cadence')(prove))
 
-require('proof')(6, require('cadence')(function (async, assert) {
+function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
     var echo2 = require('./fixtures/echo-2')
     var send = require('./fixtures/send')
@@ -30,4 +30,4 @@ require('proof')(6, require('cadence')(function (async, assert) {
     }, function () {
         assert(true, 'send called back')
     })
-}))
+}

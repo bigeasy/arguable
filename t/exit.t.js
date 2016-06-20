@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+require('proof')(9, prove)
 
-require('proof')(9, function (assert) {
+function prove (assert) {
     var exit = require('../exit'),
         events = require('events'),
         stream = require('stream'),
@@ -32,4 +32,4 @@ require('proof')(9, function (assert) {
     assert(process.exitCode, 1, 'no exit code')
     exit(process)(null)
     assert(process.exitCode, 1, 'exit code with no error')
-})
+}

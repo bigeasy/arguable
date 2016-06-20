@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-// TODO Much tidy.
+require('proof')(39, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -14,12 +12,11 @@
     ___ . ___
 */
 
-var stream = require('stream'),
-    events = require('events'),
-    path = require('path'),
-    cadence = require('cadence')
-
 function prove (async, assert) {
+    var stream = require('stream'),
+        events = require('events'),
+        path = require('path'),
+        cadence = require('cadence')
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
@@ -226,5 +223,3 @@ function prove (async, assert) {
     }), function (e) {
     })
 }
-
-require('proof')(39, cadence(prove))

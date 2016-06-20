@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+require('proof')(19, prove)
 
-require('proof')(19, function (assert) {
+function prove (assert) {
     var pattern = [
         { terse: 'a', verbose: 'ambiguous' },
         { terse: 'A', verbose: 'arbitrary' },
@@ -57,4 +57,4 @@ require('proof')(19, function (assert) {
     failed([ '--c' ], 'missing argument', 'verbose inferred missing')
     failed([ '--a' ], 'ambiguous argument', 'ambiguous')
     failed([ '--ambiguous=1' ], 'unexpected argument value', 'value to long toggle')
-})
+}

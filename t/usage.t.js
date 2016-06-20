@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+require('proof')(4, prove)
 
 /*
   ___ usage ___ en_US ___
@@ -8,8 +8,6 @@
 
   ___ . ___
 */
-
-require('proof')(4, prove)
 
 function prove (assert) {
     var fs = require('fs'),
