@@ -142,9 +142,7 @@ Program.prototype.once = function (event, listener) {
 }
 
 Program.prototype.disconnect = function () {
-    if (this._process.connected) {
-        this._process.disconnect()
-    }
+    this._process.disconnect()
 }
 
 Program.prototype.__defineSetter__('exitCode', function (exitCode) {
@@ -153,6 +151,10 @@ Program.prototype.__defineSetter__('exitCode', function (exitCode) {
 
 Program.prototype.__defineGetter__('exitCode', function () {
     return this._process.exitCode
+})
+
+Program.prototype.__defineGetter__('connected', function () {
+    return this._process.connected
 })
 
 Program.prototype._hook = function (event) {
