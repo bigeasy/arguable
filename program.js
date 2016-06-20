@@ -151,8 +151,8 @@ Program.prototype.__defineSetter__('exitCode', function (exitCode) {
     this._process.exitCode = exitCode
 })
 
-Program.prototype.__defineGetter__('exitCode', function (exitCode) {
-    this._process.exitCode = exitCode
+Program.prototype.__defineGetter__('exitCode', function () {
+    return this._process.exitCode
 })
 
 Program.prototype._hook = function (event) {

@@ -29,11 +29,15 @@ function prove (async, assert) {
     }), function (error, code) {
         assert(error.message, 'no usage found', 'no usage found')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-        return 0
-    }), function (error, code) {
+    createProgram(__filename, {}, [], io = {
+        events: { exitCode: 0 }
+    }, cadence(function (async, program) {
+        assert(program.exitCode, 0, 'exit code get')
+        program.exitCode = 1
+        assert(program.exitCode, 1, 'exit code set')
+    }), function (error) {
         if (error) throw error
-        assert(code, 0, 'exit zero')
+        assert(io.events.exitCode, 1, 'exit non-zero')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         throw new Error('raw')
@@ -223,4 +227,4 @@ function prove (async, assert) {
     })
 }
 
-require('proof')(37, cadence(prove))
+require('proof')(39, cadence(prove))
