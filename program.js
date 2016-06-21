@@ -145,6 +145,12 @@ Program.prototype.disconnect = function () {
     this._process.disconnect()
 }
 
+Program.prototype.disconnectIf = function () {
+    if (this.connected) {
+        this.disconnect()
+    }
+}
+
 Program.prototype.__defineSetter__('exitCode', function (exitCode) {
     this._process.exitCode = exitCode
 })

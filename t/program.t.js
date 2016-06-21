@@ -40,7 +40,8 @@ function prove (async, assert) {
         events: { connected: true, disconnect: function () { this.connected = false } }
     }, cadence(function (async, program) {
         assert(program.connected, 'connected')
-        program.disconnect()
+        program.disconnectIf()
+        program.disconnectIf()
         assert(!program.connected, 'not connected')
     }), function (error) {
         if (error) throw error
