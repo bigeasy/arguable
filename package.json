@@ -2,7 +2,7 @@
     "name":             "arguable",
     "description":      "Usage-first argument parser.",
     "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "version":          "2.5.7",
+    "version":          "2.5.8",
     "keywords":
     [
                         "command", "option", "parser", "prompt", "cli",
