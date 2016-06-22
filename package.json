@@ -21,7 +21,8 @@
     "dependencies":
     {
                             "cadence":                      "1.0.x",
-                            "interrupt":                    "1.0.x",
+                            "interrupt":                    "2.1.x",
+                            "rescue":                       "2.2.x",
                             "synonymous":                   "1.0.x"
     },
     "devDependencies":

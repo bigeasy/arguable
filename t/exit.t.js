@@ -19,15 +19,23 @@ function prove (assert) {
     assert(process.exitCode, 0xaa, 'exit code set')
 
     process.stderr = new stream.PassThrough
-    exit(process)(interrupt(new Error('abend'), { code: 0x77, stderr: 'abended' }))
+    exit(process)(interrupt({
+        name: 'abend',
+        context: { code: 0x77, stderr: 'abended' }
+    }))
     assert(process.stderr.read().toString(), 'abended\n', 'abend error message')
     assert(process.exitCode, 0x77, 'abend exit code')
     process.stdout = new stream.PassThrough
-    exit(process)(interrupt(new Error('help'), { stdout: 'usage' }))
+    exit(process)(interrupt({
+        name: 'help',
+        context: {
+            stdout: 'usage'
+        }
+    }))
     assert(process.stdout.read().toString(), 'usage\n', 'help message')
     assert(process.exitCode, 0, 'help exit code')
     process.stdout = new stream.PassThrough
-    exit(process)(interrupt(new Error('abend'), {}))
+    exit(process)(interrupt({ name: 'abend' }))
     assert(process.stdout.read(), null, 'no message')
     assert(process.exitCode, 1, 'no exit code')
     exit(process)(null)

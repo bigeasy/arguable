@@ -57,7 +57,7 @@ function prove (async, assert) {
     }, cadence(function (async, program) {
         program.abend('badness')
     }), function (error) {
-        assert(error.message, 'abend', 'official message')
+        assert(/^bigeasy.arguable#abend$/m.test(error.message), 'official message')
         assert(error.stderr, 'A bad thing happened.', 'error')
         assert(error.code, 1, 'error code')
     })
@@ -116,7 +116,7 @@ function prove (async, assert) {
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.helpIf(true)
     }), function (error) {
-        assert(error.message, 'help', 'help if')
+        assert(error.method, 'help', 'help if')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.helpIf(false)

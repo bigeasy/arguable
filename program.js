@@ -191,15 +191,27 @@ Program.prototype.abend = function () {
         message = this._usage.format(this.lang, this.path, key, vargs)
     }
     this._redirect = 'stderr'
-    throw interrupt(new Error('abend'), { key: key, stderr: message, code: this._code })
+    throw interrupt({
+        name: 'abend',
+        context: {
+            key: key,
+            method: 'abend',
+            stderr: message,
+            code: this._code
+        }
+    })
 }
 
 // help helper prints stops execution and prints the help message
 Program.prototype.help = function () {
     this._code = 0
-    throw interrupt(new Error('help'), {
-        stdout: this._usage.chooseUsage(this.lang, this.path),
-        code: this._code
+    throw interrupt({
+        name: 'help',
+        context: {
+            method: 'help',
+            stdout: this._usage.chooseUsage(this.lang, this.path),
+            code: this._code
+        }
     })
 }
 
@@ -243,7 +255,7 @@ Program.prototype.delegate = cadence(function (async, prefix) {
 // exit helper stops execution and exits with the given code, hmm...
 // TODO This ought to be testable, how do I test this?
 Program.prototype.exit = function (code) {
-    throw interrupt(new Error('exit'), { code: code })
+    throw interrupt({ name: 'exit', context: { code: code } })
 }
 
 module.exports = cadence(function (async, source, env, argv, io, main) {

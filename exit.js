@@ -1,4 +1,4 @@
-var interrupt = require('interrupt')
+var rescue = require('rescue')
 
 // We do not set the code by calling `process.exit` immediately. We instead set
 // set the exit code by hooking the exit event. This means that we're not going
@@ -9,17 +9,18 @@ var interrupt = require('interrupt')
 module.exports = function (process) {
     return function (error, exitCode) {
         if (error) {
-            exitCode = interrupt.rescue([
-                'bigeasy.arguable.abend', function () {
+            exitCode = rescue([
+                /^bigeasy.arguable#abend$/m, function () {
                     if (error.stderr) {
                         process.stderr.write(error.stderr)
                         process.stderr.write('\n')
                     }
                     return error.code || 1
                 },
-                'bigeasy.arguable.help', function () {
+                /^bigeasy.arguable#help$/m, function () {
                     process.stdout.write(error.stdout)
                     process.stdout.write('\n')
+// TODO Rename to `exitCode` in Program.
                     return error.code || 0
                 }
             ])(error)
