@@ -1,13 +1,16 @@
 {
     "name":                 "arguable",
-    "description":          "Usage-first argument parser.",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "description":
+
+      "Usage-first argument parser.",
+
     "version":              "2.5.8",
     "keywords":
     [
                             "command", "option", "parser", "prompt", "cli",
                             "stdin", "args", "arguments", "console", "glob"
     ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "license":              "MIT",
     "homepage":             "http://bigeasy.github.io/arguable",
     "repository":
@@ -15,7 +18,6 @@
                             "type": "git",
                             "url": "git://github.com/bigeasy/arguable.git"
     },
-    "main":                 "arguable",
     "dependencies":
     {
                             "cadence":                      "1.0.x",
@@ -26,6 +28,7 @@
     {
                             "proof":                        "1.0.x"
     },
+    "main":                 "arguable",
     "scripts":
     {
                             "test": "proof platform win32 && proof test */*/*.t.js || t/test"
