@@ -4,7 +4,7 @@
 
       "Usage-first argument parser.",
 
-    "version":              "2.6.1",
+    "version":              "2.6.2",
     "keywords":
     [
                             "command", "option", "parser", "prompt", "cli",
