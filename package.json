@@ -1,33 +1,33 @@
 {
-    "name":             "arguable",
-    "description":      "Usage-first argument parser.",
-    "author":           "Alan Gutierrez <alan@prettyrobots.com>",
-    "version":          "2.5.8",
+    "name":                 "arguable",
+    "description":          "Usage-first argument parser.",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "version":              "2.5.8",
     "keywords":
     [
-                        "command", "option", "parser", "prompt", "cli",
-                        "stdin", "args", "arguments", "console", "glob"
+                            "command", "option", "parser", "prompt", "cli",
+                            "stdin", "args", "arguments", "console", "glob"
     ],
-    "license":          "MIT",
-    "homepage":         "http://bigeasy.github.io/arguable",
+    "license":              "MIT",
+    "homepage":             "http://bigeasy.github.io/arguable",
     "repository":
     {
-                        "type": "git",
-                        "url": "git://github.com/bigeasy/arguable.git"
+                            "type": "git",
+                            "url": "git://github.com/bigeasy/arguable.git"
     },
-    "main":             "arguable",
+    "main":                 "arguable",
     "dependencies":
     {
-                        "cadence":  "1.x",
-                        "interrupt": "1.0.x",
-                        "synonymous": "1.x"
+                            "cadence":                      "1.0.x",
+                            "interrupt":                    "1.0.x",
+                            "synonymous":                   "1.0.x"
     },
     "devDependencies":
     {
-                        "proof":    "1.x"
+                            "proof":                        "1.0.x"
     },
     "scripts":
     {
-                        "test": "proof platform win32 && proof test */*/*.t.js || t/test"
+                            "test": "proof platform win32 && proof test */*/*.t.js || t/test"
     }
 }
