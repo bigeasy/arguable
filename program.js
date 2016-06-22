@@ -194,8 +194,9 @@ Program.prototype.abend = function () {
     throw interrupt({
         name: 'abend',
         context: {
-            key: key,
             method: 'abend',
+            key: key,
+            vargs: vargs,
             stderr: message,
             code: this._code
         }
