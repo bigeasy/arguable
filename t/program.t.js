@@ -191,9 +191,11 @@ function prove (async, assert) {
     createProgram(__filename, {}, [], io = {
         events: new events.EventEmitter
     }, cadence(function (async, program) {
-        var on = async(), once = async()
-        program.on('SIGINT', function () { on() })
-        program.once('SIGINT', function () { once() })
+        var first = async(), second = async(), third = async(), fourth = async()
+        program.once('SIGINT', function () { first() })
+        program.once('SIGINT', function () { second() })
+        program.once('shutdown', function () { third() })
+        program.once('shutdown', function () { fourth() })
     }), function (error, code) {
         if (error) throw error
         assert(true, 'signal handler')

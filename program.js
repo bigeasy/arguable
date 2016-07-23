@@ -7,6 +7,44 @@ var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var events = require('events')
 var Command = require('./command')
 
+function newListener (eventName) {
+    switch (eventName) {
+    case 'shutdown':
+        if (this._shutdown.count == 0) {
+            this._process.on('SIGINT', this._shutdown.listener)
+            this._process.on('SIGTERM', this._shutdown.listener)
+        }
+        this._shutdown.count++
+        break
+    default:
+        this._getListenerProxy(eventName).count++
+        break
+    }
+}
+
+function removeListener (eventName) {
+    switch (eventName) {
+    case 'shutdown':
+        this._shutdown.count--
+        if (this._shutdown.count == 0) {
+            this._process.removeListener('SIGINT', this._shutdown.listener)
+            this._process.removeListener('SIGTERM', this._shutdown.listener)
+        }
+        break
+    default:
+        var proxy = this._getListenerProxy(eventName)
+        proxy.count--
+        if (proxy.count == 0) {
+            this._process.removeListener(eventName, proxy.listener)
+            delete this._proxies[eventName]
+        }
+        break
+    }
+}
+
+// This will never be pretty. Let it be ugly. Let it swallow all the sins before
+// they enter your program, so that your program can be a garden of pure
+// ideology.
 function Program (usage, env, argv, io) {
     this._usage = usage
 
@@ -61,17 +99,30 @@ function Program (usage, env, argv, io) {
     this._hooked = {}
 
     this.path = path
+
+    events.EventEmitter.call(this)
+
+    this._proxies = {}
+    this._shutdown = {
+        count: 0,
+        listener: function () { this.emit('shutdown') }.bind(this)
+    }
+
+    this.on('removeListener', removeListener.bind(this))
+    this.on('newListener', newListener.bind(this))
 }
 util.inherits(Program, events.EventEmitter)
 
-Program.prototype.on = function (event, listener) {
-    this._hook(event)
-    events.EventEmitter.prototype.on.call(this, event, listener)
-}
-
-Program.prototype.once = function (event, listener) {
-    this._hook(event)
-    events.EventEmitter.prototype.once.call(this, event, listener)
+Program.prototype._getListenerProxy = function (eventName) {
+    var proxy = this._proxies[eventName]
+    if (proxy == null) {
+        var listener = function () {
+            this.emit.apply(this, [ eventName ].concat(slice.call(arguments)))
+        }.bind(this)
+        this._process.addListener(eventName, listener)
+        proxy = this._proxies[eventName] = { listener: listener, count: 0 }
+    }
+    return proxy
 }
 
 Program.prototype.disconnect = function () {
@@ -95,15 +146,6 @@ Program.prototype.__defineGetter__('exitCode', function () {
 Program.prototype.__defineGetter__('connected', function () {
     return this._process.connected
 })
-
-Program.prototype._hook = function (event) {
-    if (!this._hooked[event]) {
-        this._process.on(event, function () {
-            this.emit.apply(this, [ event ].concat(slice.call(arguments)))
-        }.bind(this))
-        this._hooked[event] = true
-    }
-}
 
 // format messages using strings.
 Program.prototype.format = function (key) {
