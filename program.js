@@ -62,12 +62,24 @@ function removeListener (eventName) {
 function Program (usage, env, argv, io, module) {
     this._usage = usage
 
-    // use environment `LANG` or else language of first usage definition
+    // TODO Implement include in the language.
+    // ___ include ___ required/path ___
+    // TODO Implement adding to string tables, so you can add in include.
+
+    //
+
+    // Use environment `LANG` or else language of first usage definition.
     this.lang = env.LANG ? env.LANG.split('.')[0] : usage.language
 
     this.path = []
 
-    var gotopts = getopt(usage.getPattern(), argv)
+    var patterns = usage.getPattern()
+    this.arguable = patterns.filter(function (pattern) {
+        return pattern.arguable
+    }).map(function (pattern) {
+        return pattern.name
+    })
+    var gotopts = getopt(patterns, argv)
     if (gotopts.abend) {
         this.abend(gotopts.abend, gotopts.context)
     }
@@ -108,6 +120,29 @@ function Program (usage, env, argv, io, module) {
 }
 util.inherits(Program, events.EventEmitter)
 
+Program.prototype._setParameters = function (ordered) {
+    this.given = ordered.map(function (parameter) {
+        return parameter.name
+    }).filter(function (value, index, arrayj) {
+        return arrayj.indexOf(value) == index
+    })
+    this.params = {}
+    this.arguable.forEach(function (name) {
+        this.params[name] = []
+    }, this)
+    this.ordered.forEach(function (parameter) {
+        var array = this.params[parameter.name]
+        if (array == null) {
+            array = this.params[parameter.name] = []
+        }
+        array.push(parameter.value)
+    }, this)
+    this.param = {}
+    this.given.forEach(function (key) {
+        this.param[key] = this.params[key][this.params[key].length - 1]
+    }, this)
+}
+
 Program.prototype._getListenerProxy = function (eventName) {
     var proxy = this._proxies[eventName]
     if (proxy == null) {
@@ -120,25 +155,6 @@ Program.prototype._getListenerProxy = function (eventName) {
     return proxy
 }
 
-function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
-
-// TODO IPv6.
-function isListen (value) {
-    var bind = value.split(':')
-    if (bind.length == 1) {
-        bind.unshift('0.0.0.0')
-    }
-    if (isNumeric(bind[1])) {
-        var parts = bind[0].split('.')
-        if (parts.length == 4) {
-            return parts.filter(function (part) {
-                return isNumeric(part) && 0 <= +part && +part <= 255
-            }).length == 4
-        }
-    }
-    return false
-}
-
 Program.prototype.required = function () {
     slice.call(arguments).forEach(function (param) {
         if (!(param in this.param)) {
@@ -147,32 +163,41 @@ Program.prototype.required = function () {
     }, this)
 }
 
-Program.prototype.numeric = function () {
-    this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
-                                                     .concat(isNumeric))
-}
-
-Program.prototype.bind = function (name) {
-    this.validate('%s is not bindable', name, isListen)
-    var bind = this.param[name].split(':')
-    if (bind.length == 1) {
-        bind.unshift('0.0.0.0')
-    }
-    return { address: bind[0], port: +bind[1] }
-}
-
 Program.prototype.validate = function () {
     var vargs = slice.call(arguments)
-    var format = vargs.shift()
-    var test = vargs.pop()
-    var f = test instanceof RegExp ? function (value) {
-        return test.test(value)
-    } : test
-    vargs.forEach(function (param) {
-        if ((param in this.param) && !f(this.param[param])) {
-            this.abend(util.format(format, param))
+    var validator = null
+    var type = typeof vargs[0]
+    if (type == 'string' && ~vargs[0].indexOf('%s')) {
+        var format = vargs.shift()
+        var test = vargs.pop()
+        var valid = test instanceof RegExp ? function (value) {
+            return test.test(value)
+        } : test
+        validator = function (value) {
+            if (!valid(value)) {
+                throw format
+            }
         }
-    }, this)
+    } else if (type == 'function') {
+        validator = vargs.shift()
+    } else {
+        validator = vargs.pop()
+    }
+    var ordered = this.ordered.map(function (parameter) {
+        try {
+            var value = validator(parameter.value, parameter.name, this)
+            if (value !== (void(0))) {
+                parameter.value = value
+            }
+            return parameter
+        } catch (error) {
+            if (!(typeof error == 'string' && ~error.indexOf('%s'))) {
+                throw error
+            }
+            this.abend(util.format(error, parameter.name), parameter.value, parameter.name)
+        }
+    }.bind(this))
+    this._setParameters(ordered)
 }
 
 Program.prototype.disconnect = function () {
