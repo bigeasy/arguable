@@ -35,6 +35,7 @@ module.exports = function (module, require, source, program, params) {
         }
     }
     var invoke = module.exports = function (env, argv, options, callback) {
+// TODO `env` is an option, assert only three arguments.
         if (Array.isArray(env)) {
             callback = options
             options = argv
@@ -66,7 +67,7 @@ module.exports = function (module, require, source, program, params) {
             } : require,
             params: params
         }
-        createProgram(source, env, argv, io, program, callback)
+        createProgram(source, env, argv, io, program, module, callback)
         return io
     }
     if (module === process.mainModule) {

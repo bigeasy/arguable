@@ -1,5 +1,6 @@
 var cadence = require('cadence')
 var createUsage = require('./usage')
+var assert = require('assert')
 var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
@@ -45,7 +46,7 @@ function removeListener (eventName) {
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
 // ideology.
-function Program (usage, env, argv, io) {
+function Program (usage, env, argv, io, module) {
     this._usage = usage
 
     // use environment `LANG` or else language of first usage definition
@@ -96,7 +97,8 @@ function Program (usage, env, argv, io) {
     this.send = io.send
     this._require = io.require
     this._process = io.events
-    this._hooked = {}
+    this._hooked = {} // TODO outgoing.
+    this._module = module
 
     this.path = path
 
@@ -203,30 +205,37 @@ Program.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
-Program.prototype.delegate = cadence(function (async, prefix) {
+Program.prototype.delegate = cadence(function (async, format) {
+    if (this.argv.length == 0) {
+        this.abend('sub command missing')
+    }
     var argv = this.argv.slice()
-    var sub = argv.shift()
-    var pkg = [ prefix, sub ].join('.')
-    var f
-
+    var command = argv.shift()
+    var pkg
+    if (typeof format == 'function') {
+        pkg = format(command, this)
+    } else if (typeof format == 'string') {
+        pkg = util.format(format, command)
+    }
+    var arguable
     try {
-        f = require(pkg)
+        arguable = this._module.require(pkg)
     } catch (error) {
         if (error.code == 'MODULE_NOT_FOUND') {
-            this.abend('cannot find executable command', this.path.concat(sub).join(' '))
+            this.abend('sub command not found', command, pkg)
         } else {
             throw error
         }
     }
-
-    var io = {
+    arguable(argv, {
         stdout: this.stdout,
+        env: this.env,
         stdin: this.stdin,
         stderr: this.stderr,
+// TODO Should be this, not _process, maybe rename `_parent`.
         events: this._process,
         send: this.send
-    }
-    f(this.env, argv, io, async())
+    }, async())
 })
 
 // exit helper stops execution and exits with the given code, hmm...
@@ -235,7 +244,8 @@ Program.prototype.exit = function (code) {
     throw interrupt({ name: 'exit', context: { code: code } })
 }
 
-module.exports = cadence(function (async, source, env, argv, io, main) {
+module.exports = cadence(function (async, source, env, argv, io, main, module) {
+    assert(arguments.length == 7)
     // parse usage
     var usage = createUsage(source)
     if (!usage) {
@@ -243,5 +253,5 @@ module.exports = cadence(function (async, source, env, argv, io, main) {
     }
 
     // run program
-    main(new Program(createUsage(source), env, argv, io), async())
+    main(new Program(createUsage(source), env, argv, io, module), async())
 })
