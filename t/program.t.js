@@ -29,7 +29,7 @@ function prove (async, assert) {
                 ''
     var createProgram = require('../program.js'), io
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.message, 'no usage found', 'no usage found')
     })
     createProgram(__filename, {}, [], io = {
@@ -65,54 +65,54 @@ function prove (async, assert) {
     }), null, function (error) {
         assert(/^bigeasy.arguable#abend$/m.test(error.message), 'official message')
         assert(error.stderr, 'A bad thing happened.', 'error')
-        assert(error.code, 1, 'error code')
+        assert(error.exitCode, 1, 'error code')
     })
     createProgram(__filename, {}, [], io = {
     }, cadence(function (async, program) {
         program.abend()
     }), null, function (error) {
         assert(!error.stderr, 'messageless error')
-        assert(error.code, 1, 'messageless error code')
+        assert(error.exitCode, 1, 'messageless error code')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend(127, 'badness')
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.stderr, 'A bad thing happened.', 'error with code')
-        assert(error.code, 127, 'code for error with code')
+        assert(error.exitCode, 127, 'code for error with code')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.assert(true, 'badness')
         program.assert(false, 'badness')
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.stderr, 'A bad thing happened.', 'failed assertion')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend('nogoodness')
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.stderr, 'nogoodness', 'error string missing')
-        assert(error.code, 1, 'error string missing code')
+        assert(error.exitCode, 1, 'error string missing code')
     })
     createProgram(__filename, {}, [ '-x' ], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend('nogoodness')
         return 0
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.stderr, 'unknown argument', 'unknown argument')
-        assert(error.code, 1, 'unknown argument code')
+        assert(error.exitCode, 1, 'unknown argument code')
     })
     createProgram(__filename, {}, [], io = {
     }, cadence(function (async, program) {
         program.exit(0)
         return 0
-    }), null, function (error, code) {
-        assert(error.code, 0, 'normal exit')
+    }), null, function (error) {
+        assert(error.exitCode, 0, 'normal exit')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.help()
@@ -131,29 +131,29 @@ function prove (async, assert) {
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
-    }), null, function (error, code) {
+    }), null, function (error) {
         assert(error.stderr, 'sub command missing', 'sub command missing')
     })
     createProgram(__filename, {}, [
         'found'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
-    }), module, function (error, code) {
+    }), module, function (error, exitCode) {
         if (error) throw error
-        assert(code, 0, 'delegated command normal exit')
+        assert(exitCode, 0, 'delegated command normal exit')
     })
     createProgram(__filename, {}, [
         'unfound'
     ], {}, cadence(function (async, program) {
         program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
-    }), module, function (error, code) {
+    }), module, function (error) {
         assert(error.stderr, 'sub command not found', 'delgated not found')
     })
     createProgram(__filename, {}, [
         'broken'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
-    }), module, function (error, code) {
+    }), module, function (error) {
         assert(error.message, 'x is not defined', 'delgated program broken')
     })
     createProgram(__filename, {}, [ '-l', 3 ],  {
@@ -180,7 +180,7 @@ function prove (async, assert) {
     }, cadence(function (async, program) {
         assert(program.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
         assert(program.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
-    }), null, function (error, code) {
+    }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [], io = {
@@ -191,7 +191,7 @@ function prove (async, assert) {
         program.once('SIGINT', function () { second() })
         program.once('shutdown', function () { third() })
         program.once('shutdown', function () { fourth() })
-    }), null, function (error, code) {
+    }), null, function (error) {
         if (error) throw error
         assert(true, 'signal handler')
     })

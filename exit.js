@@ -15,16 +15,17 @@ module.exports = function (process) {
                         process.stderr.write(error.stderr)
                         process.stderr.write('\n')
                     }
-                    return error.code || 1
+                    return error.exitCode || 1
                 },
                 /^bigeasy.arguable#help$/m, function () {
                     process.stdout.write(error.stdout)
                     process.stdout.write('\n')
-// TODO Rename to `exitCode` in Program.
-                    return error.code || 0
+                    return error.exitCode || 0
                 }
+// TODO Where is exit?
             ])(error)
         }
+// TODO We ignore this now. It is always set thorugh `program`.
         if (exitCode != null) {
             process.exitCode = exitCode
         }

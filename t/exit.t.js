@@ -21,7 +21,7 @@ function prove (assert) {
     process.stderr = new stream.PassThrough
     exit(process)(interrupt({
         name: 'abend',
-        context: { code: 0x77, stderr: 'abended' }
+        context: { exitCode: 0x77, stderr: 'abended' }
     }))
     assert(process.stderr.read().toString(), 'abended\n', 'abend error message')
     assert(process.exitCode, 0x77, 'abend exit code')

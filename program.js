@@ -206,10 +206,10 @@ Program.prototype.format = function (key) {
 Program.prototype.abend = function () {
     var vargs = slice.call(arguments), key = vargs.shift(), code
     if (typeof key == 'number') {
-        this._code = key
+        this._exitCode = key
         key = vargs.shift()
     } else {
-        this._code = 1
+        this._exitCode = 1
     }
     var message
     if (key) {
@@ -223,20 +223,20 @@ Program.prototype.abend = function () {
             key: key,
             vargs: vargs,
             stderr: message,
-            code: this._code
+            exitCode: this._exitCode
         }
     })
 }
 
 // help helper prints stops execution and prints the help message
 Program.prototype.help = function () {
-    this._code = 0
+    this._exitCode = 0
     throw interrupt({
         name: 'help',
         context: {
             method: 'help',
             stdout: this._usage.chooseUsage(this.lang),
-            code: this._code
+            exitCode: this._exitCode
         }
     })
 }
@@ -288,8 +288,8 @@ Program.prototype.delegate = cadence(function (async, format) {
 
 // Exit raises an exception to mimic `process.exit` behavior. Of course, this
 // can be defeated by an old catch block. Here's hoping the user rethrows.
-Program.prototype.exit = function (code) {
-    throw interrupt({ name: 'exit', context: { code: code } })
+Program.prototype.exit = function (exitCode) {
+    throw interrupt({ name: 'exit', context: { exitCode: exitCode } })
 }
 
 module.exports = cadence(function (async, source, env, argv, io, main, module) {
