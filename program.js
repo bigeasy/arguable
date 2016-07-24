@@ -8,8 +8,19 @@ var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var events = require('events')
 var Command = require('./command')
 
+// The program is an event emitter that proxies events from the Node.js
+// `Process` object with a single special event of its own.
+
+
+// The `newListner` function is used to hook the `"newListener"` event of the
+// `Program` object. It will set a proxy event on the parent Node.js `Process`
+// or Arguable `Program`.
+
+//
 function newListener (eventName) {
     switch (eventName) {
+    // The `"shutdown"` event is a convenience event that responds to both
+    // `SIGINT` and `SIGTERM`.
     case 'shutdown':
         if (this._shutdown.count == 0) {
             this._process.on('SIGINT', this._shutdown.listener)
@@ -17,6 +28,7 @@ function newListener (eventName) {
         }
         this._shutdown.count++
         break
+    // Default is to proxy the event on the parent `Process` or `Program`.
     default:
         this._getListenerProxy(eventName).count++
         break
@@ -46,6 +58,8 @@ function removeListener (eventName) {
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
 // ideology.
+
+//
 function Program (usage, env, argv, io, module) {
     this._usage = usage
 
