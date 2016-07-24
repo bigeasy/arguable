@@ -2,7 +2,6 @@
 <html>
 <meta charset="utf-8">
 <title>Arguable</title>
-<meta http-equiv="refresh" content="0;URL=https://github.com/bigeasy/arguable">
 <!--
 <link href='http://fonts.googleapis.com/css?family=Parisienne|Oxygen+Mono|PT+Mono|Offside|Nova+Mono|Averia+Serif+Libre|Alex+Brush|Autour+One|Share+Tech+Mono|Merriweather|Maven+Pro|Raleway' rel='stylesheet' type='text/css'>
 -->
@@ -21,37 +20,36 @@ absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribb
 programs. You can use Arguable as a simple command line parser, or you can use
 it to organize your program in a master program with any number of sub-commands
 in the style of <code>git</code>, <code>apt-get</code> or <code>yum</code>.</p>
-<h2>Usage First</h2>
+<h2 id="usage-first">Usage First</h2>
 <p><strong>Arguable</strong> starts with your usage message. It extracts the program arguments
 from the usage message. <strong>Arguable</strong> compels you to write a usage message in
 order to get your command line to parse.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
+<pre><code class="lang-javascript"><span class="hljs-meta">#!/usr/bin/env node</span>
 
-<span class="cm">/*</span>
+<span class="hljs-comment">/*
 
-<span class="cm">  ___ usage: en_US ___</span>
-<span class="cm">  usage: frobinate [options] [file...] [file]</span>
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes   [count]   number of processes to run in parallel</span>
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optionally in parallel. The `--processes` option is the number</span>
-<span class="cm">  of processes to run concurrently, defaulting to one.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;usage&quot;</span><span class="p">);</span>
-  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">).</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">$argv</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">if</span> (options.help) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;usage&quot;</span>);
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>).frobinate(options.processes, options.$argv);
+});
 </code></pre>
 <p>In the spirit of opinionated software <strong>Arguable</strong> starts with a full help
 message, because I believe that a full usage message is important for a command
@@ -60,325 +58,323 @@ line program.</p>
 having a lot of context at their disposal when they invoke <code>--help</code>. Windows
 users are without a decent manual page system, so they tend to rely on usage
 messages to discover what their software can do.</p>
-<p>I don&#39;t want my command line library to assemble a usage message from a method
+<p>I don&apos;t want my command line library to assemble a usage message from a method
 chained, declarative API. The usage message and arguments of a command line
 program are the user interface. I do not expect its implementation to be
 trivial. I do not want to delegate the details to a module.</p>
 <p>It would rather have spend time composing a nicely formatted usage message, with
 the ability to see the whole message, then work from that message.</p>
-<h2>Anatomy of a Usage Message</h2>
+<h2 id="anatomy-of-a-usage-message">Anatomy of a Usage Message</h2>
 <p>Your usage message must contain a long option for every option; short options
 are optional.</p>
 <p>If you have a synonym for one of your commands, simply declare it separately and
 document it separately.</p>
 <p>The only argument validation that <em>Arguable*</em> performs is to check that
-arguments that accept a parameter have a parameter; that arguments that don&#39;t
-accept a parameter don&#39;t have a parameter. Type checking is meant to be
+arguments that accept a parameter have a parameter; that arguments that don&apos;t
+accept a parameter don&apos;t have a parameter. Type checking is meant to be
 performed by the program itself.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
+<pre><code class="lang-javascript"><span class="hljs-meta">#!/usr/bin/env node</span>
 
-<span class="cm">/*</span>
+<span class="hljs-comment">/*
 
-<span class="cm">  ___ usage: en_US ___</span>
-<span class="cm">  usage: frobinate [options] [file...] [file]</span>
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes   [count]   number of processes to run in parallel</span>
-<span class="cm">  -t, --threads     [count]   same as `--proceses`</span>
-<span class="cm">  -v, --verbose               toggle verbose output</span>
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+  -t, --threads     [count]   same as `--proceses`
+  -v, --verbose               toggle verbose output
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optionally in parallel. The `--processes` option is the number</span>
-<span class="cm">  of processes to run concurrently, defaulting to one.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;usage&quot;</span><span class="p">);</span>
-  <span class="kd">var</span> <span class="nx">processes</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">processes</span> <span class="o">||</span> <span class="nx">options</span><span class="p">.</span><span class="nx">threads</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">).</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">verbose</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">$argv</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">if</span> (options.params.help) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;usage&quot;</span>);
+  <span class="hljs-keyword">var</span> processes = options.processes || options.threads || <span class="hljs-number">1</span>;
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>).frobinate(processes, options.verbose, options.$argv);
+});
 </code></pre>
-<p><strong>TK</strong>: Add an example of type checking — integer — to the example
+<p><strong>TK</strong>: Add an example of type checking &#x2014; integer &#x2014; to the example
 above.</p>
 <p><strong>TK</strong>: The error checking example would also show how to report errors.</p>
 <p><strong>TK</strong>: End of last edit.</p>
-<h2>Commands with Sub-Commands</h2>
+<h2 id="commands-with-sub-commands">Commands with Sub-Commands</h2>
 <p><strong>Arguable</strong> allows you to specify sub-commands in the style of <code>git</code>, <code>apt-get</code>
 or <code>yum</code>. Add the sub-command name to your usage description. <strong>Arguable</strong> will
 select the correct help message based on the program arguments.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="cm">/*</span>
+<pre><code class="lang-javascript"><span class="hljs-comment">/*
 
-<span class="cm">  ___ run _ usage: en_US ___</span>
-<span class="cm">  usage: frobinate run [options] [file...] [file]</span>
+  ___ run _ usage: en_US ___
+  usage: frobinate run [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes     [count] number of processes to run in parallel</span>
+  -h, --help                  display this message
+  -p, --processes     [count] number of processes to run in parallel
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optional in parallel. The `--processes` option is the number of</span>
-<span class="cm">  processes to run concurrently, defaulting to zero.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optional in parallel. The `--processes` option is the number of
+  processes to run concurrently, defaulting to zero.
 
-<span class="cm">  ___ compile _ usage: en_US ___</span>
-<span class="cm">  usage: frobinate compile [options] [file...] [file]</span>
+  ___ compile _ usage: en_US ___
+  usage: frobinate compile [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -s, --strict                strict interpretation of the ISO 33465</span>
-<span class="cm">                              Frobination Standard.</span>
-<span class="cm">  -p, --prefix                prefix for frobination identifiers</span>
+  -h, --help                  display this message
+  -s, --strict                strict interpretation of the ISO 33465
+                              Frobination Standard.
+  -p, --prefix                prefix for frobination identifiers
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  `frobinate compile` will accelerate frobination by compling it to</span>
-<span class="cm">  intermediate output interpreted code (IOIC) then frobinating the hell</span>
-<span class="cm">  out it.</span>
+  `frobinate compile` will accelerate frobination by compling it to
+  intermediate output interpreted code (IOIC) then frobinating the hell
+  out it.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="kd">var</span> <span class="nx">arguable</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)</span>
-  <span class="p">,</span> <span class="nx">frobinator</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">)</span>
-  <span class="p">,</span> <span class="nx">icoc</span>
-  <span class="p">;</span>
+<span class="hljs-keyword">var</span> arguable = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)
+  , frobinator = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>)
+  , icoc
+  ;
 
-<span class="nx">arguable</span><span class="p">(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="nx">options</span><span class="p">.</span><span class="nx">abend</span><span class="p">();</span>
-  <span class="k">switch</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">command</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">case</span> <span class="s1">&#39;compile&#39;</span><span class="o">:</span>
-    <span class="nx">ioic</span> <span class="o">=</span> <span class="nx">frobinator</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">strict</span><span class="p">,</span> <span class="nx">option</span><span class="p">.</span><span class="nx">prefix</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">$argv</span><span class="p">);</span>
-    <span class="nx">frobinator</span><span class="p">.</span><span class="nx">frobinator</span><span class="p">(</span><span class="nx">ioic</span><span class="p">);</span>
-    <span class="k">break</span>
-  <span class="k">case</span> <span class="s1">&#39;run&#39;</span><span class="o">:</span>
-    <span class="nx">frobinator</span><span class="p">.</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">$argv</span><span class="p">);</span>
-    <span class="k">break</span><span class="p">;</span>
-  <span class="k">default</span><span class="o">:</span>
-    <span class="nx">abend</span><span class="p">(</span><span class="s1">&#39;unknown command&#39;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">usage</span><span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">});</span>
-</pre></div>
+arguable(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">if</span> (options.help) options.abend();
+  <span class="hljs-keyword">switch</span> (options.command) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;compile&apos;</span>:
+    ioic = frobinator.prepare(options.strict, option.prefix, options.$argv);
+    frobinator.frobinator(ioic);
+    <span class="hljs-keyword">break</span>
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;run&apos;</span>:
+    frobinator.frobinate(options.processes, options.$argv);
+    <span class="hljs-keyword">break</span>;
+  <span class="hljs-keyword">default</span>:
+    abend(<span class="hljs-string">&apos;unknown command&apos;</span>, e.usage);
+  }
+});
 </code></pre>
-<h2>Internationalization</h2>
+<h2 id="internationalization">Internationalization</h2>
 <p><strong>Arguable</strong> supports internationalization. Simply write additional usage
 messages in other languages following the default language, marking the
 additional languages with their locale string. You can then invoke the parser
 passing the current locale string as the first argument.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="cm">/*</span>
+<pre><code class="lang-javascript">
+<span class="hljs-comment">/*
 
-<span class="cm">___ usage: en_US ___</span>
-<span class="cm">usage: awaken</span>
+___ usage: en_US ___
+usage: awaken
 
-<span class="cm">  Good morning!</span>
-<span class="cm">___ usage: fi_FI ___</span>
-<span class="cm">käyttö: awaken</span>
+  Good morning!
+___ usage: fi_FI ___
+k&#xE4;ytt&#xF6;: awaken
 
-<span class="cm">  Hyvää huomenta!</span>
-<span class="cm">___ usage ___</span>
+  Hyv&#xE4;&#xE4; huomenta!
+___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="kd">var</span> <span class="nx">parse</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">).</span><span class="nx">parse</span>
-  <span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">lang</span><span class="p">,</span> <span class="nx">__filename</span><span class="p">,</span> <span class="p">[]);</span>
+<span class="hljs-keyword">var</span> parse = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>).parse
+  , options = parse(process.env.lang, __filename, []);
 
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">$usage</span><span class="p">);</span>
-</pre></div>
+<span class="hljs-built_in">console</span>.log(options.$usage);
 </code></pre>
 <p>We can run the above program with our <code>LANG</code> environment variable set to one of
 the supported languages.</p>
 <pre><code class="lang-console">$ LANG=fi_FI.UTF-8 node awaken.js
-käyttö: awaken
+k&#xE4;ytt&#xF6;: awaken
 
-  Hyvää huomenta!</code></pre>
+  Hyv&#xE4;&#xE4; huomenta!
+</code></pre>
 <p>The above will print the Finnish version of the help message. You can pass the
 language specified in the users <code>LANG</code> environment variable directly to <code>parse</code>.
 If no such language translation exists, it falls back to the first translation
 encountered.</p>
 <p>Note that command names and switches are not internationalized. Changing the
-user&#39;s language preferences is not supposed change the program interface.</p>
-<h2>Error Messages</h2>
+user&apos;s language preferences is not supposed change the program interface.</p>
+<h2 id="error-messages">Error Messages</h2>
 <p>You can define internationalized error messages. Add a <code>strings</code> section to
 following your usage defintion</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/env node</span>
+<pre><code class="lang-javascript"><span class="hljs-meta">#!/usr/bin/env node</span>
 
-<span class="cm">/*</span>
+<span class="hljs-comment">/*
 
-<span class="cm">  ___ usage: en_US ___</span>
-<span class="cm">  usage: frobinate [options] [file...] [file]</span>
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes   [count]   number of processes to run in parallel</span>
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optionally in parallel. The `--processes` option is the number</span>
-<span class="cm">  of processes to run concurrently, defaulting to one. Note that you</span>
-<span class="cm">  cannot run more than four processes at time.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time.
 
-<span class="cm">  ___ strings ___</span>
+  ___ strings ___
 
-<span class="cm">    too many processes:</span>
-<span class="cm">      You choose %d processes to frobinate %s, but the maximum is 4.</span>
+    too many processes:
+      You choose %d processes to frobinate %s, but the maximum is 4.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;usage&quot;</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">options</span><span class="p">.</span><span class="nx">abend</span><span class="p">(</span><span class="s1">&#39;too many processes&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-  <span class="p">}</span>
-  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">).</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">if</span> (options.help) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;usage&quot;</span>);
+  <span class="hljs-keyword">if</span> (options.processes &gt; <span class="hljs-number">4</span>) {
+    options.abend(<span class="hljs-string">&apos;too many processes&apos;</span>, options.processes, options.argv[<span class="hljs-number">0</span>]);
+  }
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>).frobinate(options.processes, options.argv);
+});
 </code></pre>
 <p>Arguments are fed to <code>util.format</code> and the result is printed in your language
 message to standard out.</p>
-<p>Each language can have it&#39;s own message section. Your translation might need to
-reorder the arguments to fit a different sentence structure. Here&#39;s an example
-of reordering, however we&#39;re still in English, because it&#39;s really all I know.</p>
-<p>Oh, I&#39;d love a patch if you have an example in your language, and your language
+<p>Each language can have it&apos;s own message section. Your translation might need to
+reorder the arguments to fit a different sentence structure. Here&apos;s an example
+of reordering, however we&apos;re still in English, because it&apos;s really all I know.</p>
+<p>Oh, I&apos;d love a patch if you have an example in your language, and your language
 is not English.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/node</span>
+<pre><code class="lang-javascript"><span class="hljs-meta">#!/usr/bin/node</span>
 
-<span class="cm">/*</span>
+<span class="hljs-comment">/*
 
-<span class="cm">  ___ usage: en_US ___</span>
-<span class="cm">  usage: frobinate [options] [file...] [file]</span>
+  ___ usage: en_US ___
+  usage: frobinate [options] [file...] [file]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes   [count]   number of processes to run in parallel</span>
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
 
-<span class="cm">  description:</span>
+  description:
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optionally in parallel. The `--processes` option is the number</span>
-<span class="cm">  of processes to run concurrently, defaulting to one. Note that you</span>
-<span class="cm">  cannot run more than four processes at time.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time.
 
-<span class="cm">  ___ strings ___</span>
+  ___ strings ___
 
-<span class="cm">    too many processes (2, 1):</span>
-<span class="cm">      You choose frobinate %s using %d processes, but the maximum is 4.</span>
+    too many processes (2, 1):
+      You choose frobinate %s using %d processes, but the maximum is 4.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;usage&quot;</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">options</span><span class="p">.</span><span class="nx">abend</span><span class="p">(</span><span class="s1">&#39;too many processes&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-  <span class="p">}</span>
-  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">).</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">if</span> (options.help) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;usage&quot;</span>);
+  <span class="hljs-keyword">if</span> (options.processes &gt; <span class="hljs-number">4</span>) {
+    options.abend(<span class="hljs-string">&apos;too many processes&apos;</span>, options.processes, options.argv[<span class="hljs-number">0</span>]);
+  }
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>).frobinate(options.processes, options.argv);
+});
 </code></pre>
-<h2>The Fatal Callback</h2>
+<h2 id="the-fatal-callback">The Fatal Callback</h2>
 <p>Your appliation may want to report an error through Arguable after the initial
 Arguable callback has completed. It is often the case in Node.js that it only
-gets interesting after you&#39;ve invoked a few callbacks.</p>
-<p>When you plan on using <code>help</code> or <code>abend</code> in a callback, you&#39;re going to want to
+gets interesting after you&apos;ve invoked a few callbacks.</p>
+<p>When you plan on using <code>help</code> or <code>abend</code> in a callback, you&apos;re going to want to
 make sure that the error propagates out to the <code>fatal</code> function of the <code>options</code>
 object.</p>
+<p>TK: LOL! Domains! I was such a good boy trying to entertain everyone else&apos;s
+feeble stab at control-flow.</p>
 <p>How you propagate your errors is up to you. Here we use the <code>&quot;domain&quot;</code> package
 to propagte errors.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="">#</span><span class="o">!</span><span class="">/usr/bin/node</span>
+<pre><code class="lang-javascript"><span class="hljs-meta">#!/usr/bin/node</span>
 
-<span class="cm">/*</span>
+<span class="hljs-comment">/*
 
-<span class="cm">  ___ usage: en_US ___</span>
-<span class="cm">  usage: frobinate [options]</span>
+  ___ usage: en_US ___
+  usage: frobinate [options]
 
-<span class="cm">  options:</span>
+  options:
 
-<span class="cm">  -h, --help                  display this message</span>
-<span class="cm">  -p, --processes   [count]   number of processes to run in parallel</span>
-<span class="cm">  -f, --file        [path]    the file to frobinate</span>
+  -h, --help                  display this message
+  -p, --processes   [count]   number of processes to run in parallel
+  -f, --file        [path]    the file to frobinate
 
-<span class="cm">  description:</span>
+  description:
 
 
-<span class="cm">  frobinate will reticuatle the splines in all of your transmogrifier</span>
-<span class="cm">  files, optionally in parallel. The `--processes` option is the number</span>
-<span class="cm">  of processes to run concurrently, defaulting to one. Note that you</span>
-<span class="cm">  cannot run more than four processes at time. The `--file` option is path to</span>
-<span class="cm">  the file to frobinate and it is required.</span>
+  frobinate will reticuatle the splines in all of your transmogrifier
+  files, optionally in parallel. The `--processes` option is the number
+  of processes to run concurrently, defaulting to one. Note that you
+  cannot run more than four processes at time. The `--file` option is path to
+  the file to frobinate and it is required.
 
-<span class="cm">  ___ strings ___</span>
+  ___ strings ___
 
-<span class="cm">    too many processes (2, 1):</span>
-<span class="cm">      You choose frobinate %s using %d processes, but the maximum is 4.</span>
+    too many processes (2, 1):
+      You choose frobinate %s using %d processes, but the maximum is 4.
 
-<span class="cm">    file missing:</span>
-<span class="cm">      cannot find the file to frobinate: %s.</span>
+    file missing:
+      cannot find the file to frobinate: %s.
 
-<span class="cm">  ___ usage ___</span>
+  ___ usage ___
 
-<span class="cm">*/</span>
+*/</span>
 
-<span class="nx">require</span><span class="p">(</span><span class="s1">&#39;arguable&#39;</span><span class="p">)(</span><span class="nx">__filename</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">).</span><span class="nx">create</span><span class="p">();</span>
-  <span class="nx">d</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">fatal</span><span class="p">);</span>
-  <span class="nx">d</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;arguable&apos;</span>)(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+  <span class="hljs-keyword">var</span> d = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;domain&apos;</span>).create();
+  d.on(<span class="hljs-string">&apos;error&apos;</span>, options.fatal);
+  d.run(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;fs&apos;</span>);
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">)</span> <span class="nx">options</span><span class="p">.</span><span class="nx">help</span><span class="p">();</span>
+    <span class="hljs-keyword">if</span> (options.help) options.help();
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">options</span><span class="p">.</span><span class="nx">abend</span><span class="p">(</span><span class="s1">&#39;too many processes&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-    <span class="p">}</span>
+    <span class="hljs-keyword">if</span> (options.processes &gt; <span class="hljs-number">4</span>) {
+      options.abend(<span class="hljs-string">&apos;too many processes&apos;</span>, options.processes, options.argv[<span class="hljs-number">0</span>]);
+    }
 
-    <span class="c1">// Read a file.</span>
-    <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">file</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">intercept</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Here we either call abend or rethrow the error, either way we&#39;ll</span>
-      <span class="c1">// propagate to our `options.fatal` function..</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">==</span> <span class="s1">&#39;ENOENT&#39;</span><span class="p">)</span> <span class="nx">options</span><span class="p">.</span><span class="nx">abend</span><span class="p">(</span><span class="s1">&#39;file missing&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">file</span><span class="p">);</span>
-        <span class="k">else</span> <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
-      <span class="p">}</span>
-      <span class="c1">// Good to go.</span>
-      <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../lib/frobinator&#39;</span><span class="p">).</span><span class="nx">frobinate</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">processes</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-    <span class="p">}));</span>
-  <span class="p">});</span>
-<span class="p">});</span>
-</pre></div>
+    <span class="hljs-comment">// Read a file.</span>
+    fs.readFile(options.file, d.intercept(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">result</span>) </span>{
+      <span class="hljs-comment">// Here we either call abend or rethrow the error, either way we&apos;ll</span>
+      <span class="hljs-comment">// propagate to our `options.fatal` function..</span>
+      <span class="hljs-keyword">if</span> (error) {
+        <span class="hljs-keyword">if</span> (error.code == <span class="hljs-string">&apos;ENOENT&apos;</span>) options.abend(<span class="hljs-string">&apos;file missing&apos;</span>, options.file);
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">throw</span> error;
+      }
+      <span class="hljs-comment">// Good to go.</span>
+      <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../lib/frobinator&apos;</span>).frobinate(options.processes, options.argv);
+    }));
+  });
+});
 </code></pre>
 <p>You could use <code>process.on(&quot;uncaughtException&quot;)</code> for a quicker and dirtier
 implementation that would work just as well.</p>
-<h2>Contributors</h2>
+<h2 id="contributors">Contributors</h2>
 <ul>
-<li><a href="https://github.com/yawnt">Yawnt</a> — Italian translation.</li>
-<li><a href="https://github.com/tuhoojabotti">Ville Lahdenvuo</a> — Finnish
+<li><a href="https://github.com/yawnt">Yawnt</a> &#x2014; Italian translation.</li>
+<li><a href="https://github.com/tuhoojabotti">Ville Lahdenvuo</a> &#x2014; Finnish
 translation.</li>
-<li><a href="https://github.com/vielmetti">Ed Vielmetti</a> — German, Spanish,
+<li><a href="https://github.com/vielmetti">Ed Vielmetti</a> &#x2014; German, Spanish,
 Portuguese, Japanese, Chinese translations.</li>
 </ul>
-<h2>Change Log</h2>
+<h2 id="change-log">Change Log</h2>
 <p>todo: Move this into GitHub Releases?</p>
 <p>Changes for each release.</p>
 <ul>
 <li>Upgrade Proof to 0.0.32. #54.</li>
 </ul>
-<h3>Version 0.0.9</h3>
+<h3 id="version-0-0-9">Version 0.0.9</h3>
 <p>Sun Jun 30 14:57:25 UTC 2013</p>
 <ul>
 <li>Implement <code>options.fatal</code>. #52.</li>
@@ -392,7 +388,7 @@ Portuguese, Japanese, Chinese translations.</li>
 <li>Remove <code>bc</code> install from Travis CI build.</li>
 <li>Remove <code>.npmignore</code>. #47.</li>
 </ul>
-<h3>Version 0.0.8</h3>
+<h3 id="version-0-0-8">Version 0.0.8</h3>
 <p>Thu Mar 21 05:26:43 UTC 2013</p>
 <ul>
 <li>Use a usage message for parse errors. #44.</li>
@@ -409,13 +405,13 @@ Portuguese, Japanese, Chinese translations.</li>
 <li>Extract globs into an <a href="https://github.com/bigeasy/expandable">expandable</a>
 project. #37.</li>
 </ul>
-<h3>Version 0.0.7</h3>
+<h3 id="version-0-0-7">Version 0.0.7</h3>
 <p>Thu Feb 28 07:23:51 UTC 2013</p>
 <ul>
 <li>Remove <code>defaultLanguage</code> from <code>params</code>. #33.</li>
 <li>Error when usage message is missing. #28.</li>
 </ul>
-<h3>Version 0.0.6</h3>
+<h3 id="version-0-0-6">Version 0.0.6</h3>
 <p>Thu Feb 21 07:42:25 UTC 2013</p>
 <ul>
 <li>Fix formatting of change log in <code>README.md</code>. #31.</li>
@@ -425,7 +421,7 @@ project. #37.</li>
 <li>Use markup for usage messages instead of guessing locale based on language. #27.</li>
 <li>Wrap main body of program in a try/catch block. #25.</li>
 </ul>
-<h3>Version 0.0.5</h3>
+<h3 id="version-0-0-5">Version 0.0.5</h3>
 <p>Tue Jul 10 19:02:23 UTC 2012</p>
 <ul>
 <li>Update <code>README.md</code> help messages with short options first, proper terminator. #19.</li>
@@ -434,31 +430,31 @@ project. #37.</li>
 <li>Add <code>$given</code>, a list of given parameters. #16.</li>
 <li>Remove <code>sort</code> from flatten. #17.</li>
 </ul>
-<h3>Version 0.0.4</h3>
+<h3 id="version-0-0-4">Version 0.0.4</h3>
 <p>Tue Jul 10 05:32:25 UTC 2012</p>
 <ul>
 <li>Implement <code>flatten</code>. #15.</li>
 <li>Use <code>:usage</code> to end usage message. #13.</li>
 <li>Short opts before long opts in usage message list of options. #14.</li>
 </ul>
-<h3>Version 0.0.3</h3>
+<h3 id="version-0-0-3">Version 0.0.3</h3>
 <p>Mon Jul  9 18:24:28 UTC 2012</p>
 <ul>
 <li>Implement argument parsing. #4.</li>
 </ul>
-<h3>Version 0.0.2</h3>
+<h3 id="version-0-0-2">Version 0.0.2</h3>
 <p>Mon Jul  9 00:19:49 UTC 2012</p>
 <ul>
 <li>Give matched file relative to base. #11.</li>
 </ul>
-<h3>Version 0.0.1</h3>
+<h3 id="version-0-0-1">Version 0.0.1</h3>
 <p>Sun Jul  8 23:29:58 UTC 2012</p>
 <ul>
 <li>Created change log. #10.</li>
 <li>Build on Travis CI. #9.</li>
 <li>Bash wildcards on Windows. #7. #6. #5.</li>
 </ul>
-<h3>Version 0.0.0</h3>
+<h3 id="version-0-0-0">Version 0.0.0</h3>
 <p>Sun Jul  8 02:53:58 UTC 2012</p>
 <ul>
 <li>Create README.md. #3. #2.</li>
