@@ -54,27 +54,11 @@ function Program (usage, env, argv, io, module) {
 
     this.path = []
 
-    var state, root, parent = {}, path = [], command
-    root = parent
-        state = usage.getCommand(argv, state)
-        if (!state) {
-            throw new Error
-        }
-        argv = argv.slice(state.command.length)
-        while (state.command.length != 0) {
-            command = state.command.shift()
-            path.push(command)
-            parent.command = new Command(this, command, { given: [], params: {} })
-            parent = parent.command
-        }
-        var params = {}
-        var opt = getopt(usage.getPattern(path), argv)
-        if (opt.abend) {
-            this.abend(opt.abend, opt.context)
-        }
-        parent.command = new Command(this, command, opt)
-        parent = parent.command
-    this.command = root.command
+    var opt = getopt(usage.getPattern(), argv)
+    if (opt.abend) {
+        this.abend(opt.abend, opt.context)
+    }
+    this.command = new Command(this, null, opt)
     if (!this.command) {
         this.path = []
         this.abend('command required')
@@ -185,7 +169,7 @@ Program.prototype.help = function () {
         name: 'help',
         context: {
             method: 'help',
-            stdout: this._usage.chooseUsage(this.lang, this.path),
+            stdout: this._usage.chooseUsage(this.lang),
             code: this._code
         }
     })

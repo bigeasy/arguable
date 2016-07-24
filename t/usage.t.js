@@ -19,8 +19,8 @@ function prove (assert) {
                   ''
 
     var usage = extractUsage(__filename, 'en_US', [])
-    assert(usage.chooseUsage('en_US', []), message, 'usage')
-    assert(usage.getPattern([]), [
+    assert(usage.chooseUsage('en_US'), message, 'usage')
+    assert(usage.getPattern(), [
     {
         terse: 'c',
         verbose: 'config',
@@ -30,5 +30,5 @@ function prove (assert) {
         verbose: 'longonly',
         arguable: false
     }], 'patterns')
-    assert(usage.chooseUsage('en_GB', []), message, 'usage')
+    assert(usage.chooseUsage('en_GB'), message, 'usage')
 }

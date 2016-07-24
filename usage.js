@@ -1,5 +1,6 @@
 var Dictionary = require('synonymous')
 var fs = require('fs'), slice = [].slice
+var assert = require('assert')
 
 // The regular expression to match usage markdown.
 var numeric = /^(count|number|value|size)$/
@@ -12,11 +13,12 @@ function Usage (language, branch, dictionary, command) {
 }
 
 Usage.prototype.getPattern = function (command) {
+    assert(arguments.length == 0)
     var patterns = []
     // Extract a definition of the command line arguments from the usage message
     // while tiding the usage message; removing special characters that are flags
     // to Arguable that do not belong in the usage message printed to `stdout`.
-    this.chooseUsage(this.language, command).split(/\r?\n/).forEach(function (line) {
+    this.chooseUsage(this.language).split(/\r?\n/).forEach(function (line) {
         var $
         if ($ = /^(?:[\s*@]*(-[\w\d])[@\s]*,)?[@\s]*(--\w[-\w\d_]*)(?:[\s@]*[\[<]([^\]>]+)[\]>][\s@]*)?/.exec(line)) {
             var out = $[0]
@@ -34,8 +36,9 @@ Usage.prototype.getPattern = function (command) {
     return patterns
 }
 
-Usage.prototype.chooseUsage = function (language, command) {
-    var path = command.concat('usage')
+Usage.prototype.chooseUsage = function (language) {
+    assert(arguments.length == 1)
+    var path = [ 'usage' ]
     var found = this.dictionary.getText(language, path)
     if (!found) {
         found = this.dictionary.getText(this.language, path)
