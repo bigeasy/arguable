@@ -27,7 +27,15 @@ function prove (async, assert) {
                 '    -p, --processes <value>\n' +
                 '    -b, --bind <address>\n' +
                 ''
-    var createProgram = require('../program.js'), io
+    var Program = require('../program.js'), io
+
+    var createProgram = cadence(function (async, source, env, argv, options, main, module) {
+        options.env = env
+        options.module = module
+        var program = new Program(source, argv, options)
+        main(program, async())
+    })
+
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
     }), null, function (error) {
         assert(error.message, 'no usage found', 'no usage found')

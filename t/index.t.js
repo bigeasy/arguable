@@ -12,7 +12,7 @@ function prove (async, assert) {
         stdout = new stream.PassThrough
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })
-        echo1({}, [ 'a', 'b' ], { stdout: stdout }, async())
+        echo1([ 'a', 'b' ], { stdout: stdout }, async())
     }, function () {
         assert(true, 'echo 1 called back')
         assert(chunks.join(''), 'a b\n', 'echo 1 executed')
@@ -20,13 +20,13 @@ function prove (async, assert) {
         stdout = new stream.PassThrough
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })
-        echo2({}, [ 'a', 'b' ], { stdout: stdout }, async())
+        echo2([ 'a', 'b' ], { stdout: stdout }, async())
     }, function () {
         var ee = new events.EventEmitter
         ee.send = function (message) { assert(message, { key: 'value' }, 'send') }
         assert(true, 'echo 2 called back')
         assert(chunks.join(''), 'a b\n', 'echo 2 executed')
-        send({}, [], { events: ee }, async())
+        send([], { events: ee }, async())
     }, function () {
         assert(true, 'send called back')
     })

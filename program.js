@@ -59,8 +59,13 @@ function removeListener (eventName) {
 // ideology.
 
 //
-function Program (usage, env, argv, io, module) {
-    this._usage = usage
+function Program (source, argv, options) {
+    this._usage = createUsage(source)
+
+    if (this._usage == null) {
+// TODO Don't panic.
+        throw new Error('no usage found')
+    }
 
     // TODO Implement include in the language.
     // ___ include ___ required/path ___
@@ -68,12 +73,14 @@ function Program (usage, env, argv, io, module) {
 
     //
 
+    this.env = options.env
+
     // Use environment `LANG` or else language of first usage definition.
-    this.lang = env.LANG ? env.LANG.split('.')[0] : usage.language
+    this.lang = this.env.LANG ? this.env.LANG.split('.')[0] : this._usage.language
 
     this.path = []
 
-    var patterns = usage.getPattern()
+    var patterns = this._usage.getPattern()
     this.arguable = patterns.filter(function (pattern) {
         return pattern.arguable
     }).map(function (pattern) {
@@ -96,16 +103,15 @@ function Program (usage, env, argv, io, module) {
 
     this.argv = argv = argv.slice()
     this.params = {}
-    this.env = env
-    this.stdout = io.stdout
-    this.stderr = io.stderr
-    this.stdin = io.stdin
-    this.params = io.params
-    this.send = io.send
-    this._require = io.require
-    this._process = io.events
+    this.stdout = options.stdout
+    this.stderr = options.stderr
+    this.stdin = options.stdin
+    this.params = options.params
+    this.send = options.send
+    this._require = options.require
+    this._process = options.events
     this._hooked = {} // TODO outgoing.
-    this._module = module
+    this._module = options.module
 
     events.EventEmitter.call(this)
 
@@ -317,14 +323,4 @@ Program.prototype.exit = function (exitCode) {
     throw interrupt({ name: 'exit', context: { exitCode: exitCode } })
 }
 
-module.exports = cadence(function (async, source, env, argv, io, main, module) {
-    assert(arguments.length == 7)
-    // parse usage
-    var usage = createUsage(source)
-    if (!usage) {
-        throw new Error('no usage found')
-    }
-
-    // run program
-    main(new Program(createUsage(source), env, argv, io, module), async())
-})
+module.exports = Program
