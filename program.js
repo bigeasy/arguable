@@ -214,7 +214,7 @@ Program.prototype.delegate = cadence(function (async, format) {
     var pkg
     if (typeof format == 'function') {
         pkg = format(command, this)
-    } else if (typeof format == 'string') {
+    } else {
         pkg = util.format(format, command)
     }
     var arguable

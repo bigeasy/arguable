@@ -1,4 +1,4 @@
-require('proof')(42, require('cadence')(prove))
+require('proof')(43, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -140,6 +140,13 @@ function prove (async, assert) {
         assert(code, 0, 'sub command normal exit')
     })
     createProgram(path.join(__dirname, 'sub.js'), {}, [
+        'run'
+    ], {}, cadence(function (async, program) {
+        program.delegate('delegated.%s', async())
+    }), null, function (error, code) {
+        assert(error.stderr, 'sub command missing', 'sub command missing')
+    })
+    createProgram(path.join(__dirname, 'sub.js'), {}, [
         'run', 'found'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
@@ -150,7 +157,7 @@ function prove (async, assert) {
     createProgram(path.join(__dirname, 'sub.js'), {}, [
         'run', 'unfound'
     ], {}, cadence(function (async, program) {
-        program.delegate('delegated.%s', async())
+        program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
     }), module, function (error, code) {
         assert(error.stderr, 'sub command not found', 'delgated not found')
     })
