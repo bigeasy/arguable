@@ -1,4 +1,4 @@
-require('proof')(4, prove)
+require('proof')(3, prove)
 
 /*
   ___ usage ___ en_US ___
@@ -31,7 +31,4 @@ function prove (assert) {
         arguable: false
     }], 'patterns')
     assert(usage.chooseUsage('en_GB', []), message, 'usage')
-
-    var usage = extractUsage(path.join(__dirname, 'sub.js'), 'en_US', [])
-    assert(usage.getCommand([ 'foo', 'bar' ]).command, [ 'foo', 'bar' ], 'non executable path')
 }

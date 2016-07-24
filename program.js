@@ -56,10 +56,9 @@ function Program (usage, env, argv, io, module) {
 
     var state, root, parent = {}, path = [], command
     root = parent
-    for (;;) {
         state = usage.getCommand(argv, state)
         if (!state) {
-            break
+            throw new Error
         }
         argv = argv.slice(state.command.length)
         while (state.command.length != 0) {
@@ -75,7 +74,6 @@ function Program (usage, env, argv, io, module) {
         }
         parent.command = new Command(this, command, opt)
         parent = parent.command
-    }
     this.command = root.command
     if (!this.command) {
         this.path = []
