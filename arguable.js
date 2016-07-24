@@ -8,7 +8,7 @@ function createStream (s) {
     return s || new stream.PassThrough
 }
 
-module.exports = function (module, require, source, program, params) {
+module.exports = function (module, source, program, params) {
     var vargs = slice.call(arguments)
     module = vargs.shift()
     params = {}
@@ -18,16 +18,10 @@ module.exports = function (module, require, source, program, params) {
         program = vargs.pop()
     }
     source = module.filename
-    require = function (moduleName) {
-        return module.require(moduleName)
-    }
     while (vargs.length) {
         switch (typeof vargs[0]) {
         case 'string':
             source = vargs.shift()
-            break
-        case 'function':
-            require = vargs.shift()
             break
         default:
             throw new Error('unknown argument: ' + (typeof vargs[0]))
@@ -58,13 +52,6 @@ module.exports = function (module, require, source, program, params) {
             stderr: createStream(options.stderr),
             events: options.events || new events.EventEmitter,
             send: send || null,
-            require: options.require ? function (moduleName) {
-                if (options.require[moduleName]) {
-                    return options.require[moduleName]
-                } else {
-                    return require(moduleName)
-                }
-            } : require,
             params: params
         }
         createProgram(source, env, argv, io, program, module, callback)
