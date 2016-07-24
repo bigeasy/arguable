@@ -1,4 +1,4 @@
-require('proof')(37, require('cadence')(prove))
+require('proof')(39, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -158,21 +158,21 @@ function prove (async, assert) {
     })
     createProgram(__filename, {}, [ '-l', 3 ],  {
     }, cadence(function (async, program) {
-        program.command.required('level', 'processes')
+        program.required('level', 'processes')
     }), null, function (error) {
         assert(error.stderr, 'processes is required', 'required')
     })
     createProgram(__filename, {}, [ '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.command.validate('%s is not an integer', 'processes', /^\d+$/)
-        program.command.validate('%s is not copacetic', 'level', function () { return true })
-        program.command.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+        program.validate('%s is not an integer', 'processes', /^\d+$/)
+        program.validate('%s is not copacetic', 'level', function () { return true })
+        program.validate('%s is not an integer', 'other', 'level', /^\d+$/)
     }), null, function (error) {
         assert(error.stderr, 'level is not an integer', 'validate')
     })
     createProgram(__filename, {}, [ '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.command.numeric('processes', 'level')
+        program.numeric('processes', 'level')
     }), null, function (error) {
         assert(error.stderr, 'level is not numeric', 'numeric')
     })
@@ -198,36 +198,38 @@ function prove (async, assert) {
     io.events.emit('SIGINT')
     createProgram(__filename, {}, [ '-b', 'FRED' ],  {
     }, cadence(function (async, program) {
-        program.command.bind('bind')
+        program.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind port')
     })
     createProgram(__filename, {}, [ '-b', '0.0.1:8888' ],  {
     }, cadence(function (async, program) {
-        program.command.bind('bind')
+        program.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind address not enough parts')
     })
     createProgram(__filename, {}, [ '-b', 'x.0.0.1:8888' ],  {
     }, cadence(function (async, program) {
-        program.command.bind('bind')
+        program.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind address not numeric')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '8888' ],  {
+    createProgram(__filename, {}, [ '-b', '8888' ],  {
     }, cadence(function (async, program) {
 // TODO Throw an exception here and try to figure out how it becomes uncaught in
 // a fully assembled arguable.
-        var bind = program.command.command.bind('bind')
+        var bind = program.bind('bind')
         assert(bind, { address: '0.0.0.0', port: 8888 }, 'bind all interfaces')
-    }), null, function (e) {
+    }), null, function (error) {
+        if (error) throw error
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '127.0.0.1:8888' ],  {
+    createProgram(__filename, {}, [ '-b', '127.0.0.1:8888' ],  {
     }, cadence(function (async, program) {
 // TODO Throw an exception here and try to figure out how it becomes uncaught in
 // a fully assembled arguable.
-        var bind = program.command.command.bind('bind')
+        var bind = program.bind('bind')
         assert(bind, { address: '127.0.0.1', port: 8888 }, 'bind specific interface')
-    }), null, function (e) {
+    }), null, function (error) {
+        if (error) throw error
     })
 }

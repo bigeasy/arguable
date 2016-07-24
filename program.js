@@ -6,7 +6,6 @@ var util = require('util')
 var slice = [].slice
 var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var events = require('events')
-var Command = require('./command')
 
 // The program is an event emitter that proxies events from the Node.js
 // `Process` object with a single special event of its own.
@@ -68,20 +67,20 @@ function Program (usage, env, argv, io, module) {
 
     this.path = []
 
-    var opt = getopt(usage.getPattern(), argv)
-    if (opt.abend) {
-        this.abend(opt.abend, opt.context)
+    var gotopts = getopt(usage.getPattern(), argv)
+    if (gotopts.abend) {
+        this.abend(gotopts.abend, gotopts.context)
     }
-    this.command = new Command(this, null, opt)
-    if (!this.command) {
-        this.path = []
-        this.abend('command required')
-    }
-    var path = [], iterator = this.command
-    while (iterator.command) {
-        path.push(iterator.command.name)
-        iterator = iterator.command
-    }
+
+    this.given = gotopts.given
+    this.params = gotopts.params
+    this.ordered = gotopts.ordered
+    this.terminal = gotopts.terminal
+
+    this.param = {}
+    this.given.forEach(function (key) {
+        this.param[key] = this.params[key][this.params[key].length - 1]
+    }, this)
 
     this.argv = argv = argv.slice()
     this.params = {}
@@ -95,8 +94,6 @@ function Program (usage, env, argv, io, module) {
     this._process = io.events
     this._hooked = {} // TODO outgoing.
     this._module = module
-
-    this.path = path
 
     events.EventEmitter.call(this)
 
@@ -123,6 +120,61 @@ Program.prototype._getListenerProxy = function (eventName) {
     return proxy
 }
 
+function isNumeric (n) { return !isNaN(parseFloat(n)) && isFinite(n) }
+
+// TODO IPv6.
+function isListen (value) {
+    var bind = value.split(':')
+    if (bind.length == 1) {
+        bind.unshift('0.0.0.0')
+    }
+    if (isNumeric(bind[1])) {
+        var parts = bind[0].split('.')
+        if (parts.length == 4) {
+            return parts.filter(function (part) {
+                return isNumeric(part) && 0 <= +part && +part <= 255
+            }).length == 4
+        }
+    }
+    return false
+}
+
+Program.prototype.required = function () {
+    slice.call(arguments).forEach(function (param) {
+        if (!(param in this.param)) {
+            this.abend(param + ' is required')
+        }
+    }, this)
+}
+
+Program.prototype.numeric = function () {
+    this.validate.apply(this, [ '%s is not numeric' ].concat(slice.call(arguments))
+                                                     .concat(isNumeric))
+}
+
+Program.prototype.bind = function (name) {
+    this.validate('%s is not bindable', name, isListen)
+    var bind = this.param[name].split(':')
+    if (bind.length == 1) {
+        bind.unshift('0.0.0.0')
+    }
+    return { address: bind[0], port: +bind[1] }
+}
+
+Program.prototype.validate = function () {
+    var vargs = slice.call(arguments)
+    var format = vargs.shift()
+    var test = vargs.pop()
+    var f = test instanceof RegExp ? function (value) {
+        return test.test(value)
+    } : test
+    vargs.forEach(function (param) {
+        if ((param in this.param) && !f(this.param[param])) {
+            this.abend(util.format(format, param))
+        }
+    }, this)
+}
+
 Program.prototype.disconnect = function () {
     this._process.disconnect()
 }
@@ -147,7 +199,7 @@ Program.prototype.__defineGetter__('connected', function () {
 
 // format messages using strings.
 Program.prototype.format = function (key) {
-    return this._usage.format(this.lang, this.path, key, slice.call(arguments, 1))
+    return this._usage.format(this.lang, key, slice.call(arguments, 1))
 }
 
 // abend helper stops execution and prints a message
@@ -161,7 +213,7 @@ Program.prototype.abend = function () {
     }
     var message
     if (key) {
-        message = this._usage.format(this.lang, this.path, key, vargs)
+        message = this._usage.format(this.lang, key, vargs)
     }
     this._redirect = 'stderr'
     throw interrupt({
@@ -234,8 +286,8 @@ Program.prototype.delegate = cadence(function (async, format) {
     }, async())
 })
 
-// exit helper stops execution and exits with the given code, hmm...
-// TODO This ought to be testable, how do I test this?
+// Exit raises an exception to mimic `process.exit` behavior. Of course, this
+// can be defeated by an old catch block. Here's hoping the user rethrows.
 Program.prototype.exit = function (code) {
     throw interrupt({ name: 'exit', context: { code: code } })
 }
