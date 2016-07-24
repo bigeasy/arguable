@@ -1,10 +1,13 @@
-require('proof')(43, require('cadence')(prove))
+require('proof')(37, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
     usage: basic [options] [files]
         -c, --config <key=value>
             --longonly
+        -l, --level <value>
+        -p, --processes <value>
+        -b, --bind <address>
     ___ $ ___ en_US ___
     badness: A bad thing happened.
     ordered(2, 1): First %s then %s.
@@ -20,6 +23,9 @@ function prove (async, assert) {
     var usage = 'usage: basic [options] [files]\n' +
                 '    -c, --config <key=value>\n' +
                 '        --longonly\n' +
+                '    -l, --level <value>\n' +
+                '    -p, --processes <value>\n' +
+                '    -b, --bind <address>\n' +
                 ''
     var createProgram = require('../program.js'), io
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
@@ -123,68 +129,50 @@ function prove (async, assert) {
     }), null, function (error) {
         assert(!error, 'help if not')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [], io = {
-        stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        return 0
-    }), null, function (error, code) {
-        assert(error.stderr, 'command required', 'command missing')
-    })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, 'x' ],  {
-    }, cadence(function (async, program) {
-        assert(program.command.command.name, 'run', 'sub command name')
-        assert(program.command.command.param.processes, 3, 'sub command name')
-        return 0
-    }), null, function (error, code) {
-        if (error) throw error
-        assert(code, 0, 'sub command normal exit')
-    })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [
-        'run'
-    ], {}, cadence(function (async, program) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
     }), null, function (error, code) {
         assert(error.stderr, 'sub command missing', 'sub command missing')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [
-        'run', 'found'
+    createProgram(__filename, {}, [
+        'found'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
     }), module, function (error, code) {
         if (error) throw error
         assert(code, 0, 'delegated command normal exit')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [
-        'run', 'unfound'
+    createProgram(__filename, {}, [
+        'unfound'
     ], {}, cadence(function (async, program) {
         program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
     }), module, function (error, code) {
         assert(error.stderr, 'sub command not found', 'delgated not found')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [
-        'run', 'broken'
+    createProgram(__filename, {}, [
+        'broken'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
     }), module, function (error, code) {
         assert(error.message, 'x is not defined', 'delgated program broken')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-l', 3 ],  {
+    createProgram(__filename, {}, [ '-l', 3 ],  {
     }, cadence(function (async, program) {
-        program.command.command.required('level', 'processes')
+        program.command.required('level', 'processes')
     }), null, function (error) {
         assert(error.stderr, 'processes is required', 'required')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    createProgram(__filename, {}, [ '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.command.command.validate('%s is not an integer', 'processes', /^\d+$/)
-        program.command.command.validate('%s is not copacetic', 'level', function () { return true })
-        program.command.command.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+        program.command.validate('%s is not an integer', 'processes', /^\d+$/)
+        program.command.validate('%s is not copacetic', 'level', function () { return true })
+        program.command.validate('%s is not an integer', 'other', 'level', /^\d+$/)
     }), null, function (error) {
         assert(error.stderr, 'level is not an integer', 'validate')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-p', 3, '-l', 'x' ],  {
+    createProgram(__filename, {}, [ '-p', 3, '-l', 'x' ],  {
     }, cadence(function (async, program) {
-        program.command.command.numeric('processes', 'level')
+        program.command.numeric('processes', 'level')
     }), null, function (error) {
         assert(error.stderr, 'level is not numeric', 'numeric')
     })
@@ -208,21 +196,21 @@ function prove (async, assert) {
         assert(true, 'signal handler')
     })
     io.events.emit('SIGINT')
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', 'FRED' ],  {
+    createProgram(__filename, {}, [ '-b', 'FRED' ],  {
     }, cadence(function (async, program) {
-        program.command.command.bind('bind')
+        program.command.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind port')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', '0.0.1:8888' ],  {
+    createProgram(__filename, {}, [ '-b', '0.0.1:8888' ],  {
     }, cadence(function (async, program) {
-        program.command.command.bind('bind')
+        program.command.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind address not enough parts')
     })
-    createProgram(path.join(__dirname, 'sub.js'), {}, [ 'run', '-b', 'x.0.0.1:8888' ],  {
+    createProgram(__filename, {}, [ '-b', 'x.0.0.1:8888' ],  {
     }, cadence(function (async, program) {
-        program.command.command.bind('bind')
+        program.command.bind('bind')
     }), null, function (error) {
         assert(error.stderr, 'bind is not bindable', 'bind address not numeric')
     })
