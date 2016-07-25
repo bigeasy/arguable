@@ -70,6 +70,7 @@ css/%.css: css/%.less node_modules/.bin/lessc
 docco/%.html: arguable/%.js node_modules/.bin/docco
 	mkdir -p docco
 	node_modules/.bin/docco -o docco -c docco.css $<
+	sed -i '' -e 's/[ \t]*$$//' $@
 
 %.html: pages/%.html node_modules/.bin/edify
 	@echo generating $@

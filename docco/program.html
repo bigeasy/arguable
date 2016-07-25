@@ -10,26 +10,26 @@
 <body>
   <div id="container">
     <div id="background"></div>
-    
+
     <ul class="sections">
-        
+
           <li id="title">
               <div class="annotation">
                   <h1>program.js</h1>
               </div>
           </li>
-        
-        
-        
+
+
+
         <li id="section-1">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+
             </div>
-            
+
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
 <span class="hljs-keyword">var</span> createUsage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./usage'</span>)
 <span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
@@ -38,18 +38,91 @@
 <span class="hljs-keyword">var</span> slice = [].slice
 <span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'bigeasy.arguable'</span>)
 <span class="hljs-keyword">var</span> events = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>)
-<span class="hljs-keyword">var</span> Command = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./command'</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">newListener</span> (<span class="hljs-params">eventName</span>) </span>{
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The program is an event emitter that proxies events from the Node.js
+<code>Process</code> object with a single special event of its own.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>The <code>newListner</code> function is used to hook the <code>&quot;newListener&quot;</code> event of the
+<code>Program</code> object. It will set a proxy event on the parent Node.js <code>Process</code>
+or Arguable <code>Program</code>.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">newListener</span> (<span class="hljs-params">eventName</span>) </span>{
     <span class="hljs-keyword">switch</span> (eventName) {
-    <span class="hljs-keyword">case</span> <span class="hljs-string">'shutdown'</span>:
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The <code>&quot;shutdown&quot;</code> event is a convenience event that responds to both
+<code>SIGINT</code> and <code>SIGTERM</code>.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">case</span> <span class="hljs-string">'shutdown'</span>:
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._shutdown.count == <span class="hljs-number">0</span>) {
             <span class="hljs-keyword">this</span>._process.on(<span class="hljs-string">'SIGINT'</span>, <span class="hljs-keyword">this</span>._shutdown.listener)
             <span class="hljs-keyword">this</span>._process.on(<span class="hljs-string">'SIGTERM'</span>, <span class="hljs-keyword">this</span>._shutdown.listener)
         }
         <span class="hljs-keyword">this</span>._shutdown.count++
         <span class="hljs-keyword">break</span>
-    <span class="hljs-keyword">default</span>:
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Default is to proxy the event on the parent <code>Process</code> or <code>Program</code>.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">default</span>:
         <span class="hljs-keyword">this</span>._getListenerProxy(eventName).count++
         <span class="hljs-keyword">break</span>
     }
@@ -76,73 +149,139 @@
 }
 
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-2">
+
+
+        <li id="section-7">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>This will never be pretty. Let it be ugly. Let it swallow all the sins before
 they enter your program, so that your program can be a garden of pure
 ideology.</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Program</span> (<span class="hljs-params">usage, env, argv, io, module</span>) </span>{
-    <span class="hljs-keyword">this</span>._usage = usage
 
-</pre></div></div>
-            
         </li>
-        
-        
-        <li id="section-3">
+
+
+        <li id="section-8">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>use environment <code>LANG</code> or else language of first usage definition</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.lang = env.LANG ? env.LANG.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] : usage.language
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Program</span> (<span class="hljs-params">source, argv, options</span>) </span>{
+    <span class="hljs-keyword">this</span>._usage = createUsage(source)
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._usage == <span class="hljs-literal">null</span>) {
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>TODO Don’t panic.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'no usage found'</span>)
+    }
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>TODO Implement include in the language.
+<strong><em> include </em></strong> required/path ___
+TODO Implement adding to string tables, so you can add in include.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-11">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>
+    <span class="hljs-keyword">this</span>.env = options.env
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-12">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Use environment <code>LANG</code> or else language of first usage definition.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.lang = <span class="hljs-keyword">this</span>.env.LANG ? <span class="hljs-keyword">this</span>.env.LANG.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] : <span class="hljs-keyword">this</span>._usage.language
 
     <span class="hljs-keyword">this</span>.path = []
 
-    <span class="hljs-keyword">var</span> opt = getopt(usage.getPattern(), argv)
-    <span class="hljs-keyword">if</span> (opt.abend) {
-        <span class="hljs-keyword">this</span>.abend(opt.abend, opt.context)
+    <span class="hljs-keyword">var</span> patterns = <span class="hljs-keyword">this</span>._usage.getPattern()
+    <span class="hljs-keyword">this</span>.arguable = patterns.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pattern</span>) </span>{
+        <span class="hljs-keyword">return</span> pattern.arguable
+    }).map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pattern</span>) </span>{
+        <span class="hljs-keyword">return</span> pattern.name
+    })
+    <span class="hljs-keyword">var</span> gotopts = getopt(patterns, argv)
+    <span class="hljs-keyword">if</span> (gotopts.abend) {
+        <span class="hljs-keyword">this</span>.abend(gotopts.abend, gotopts.context)
     }
-    <span class="hljs-keyword">this</span>.command = <span class="hljs-keyword">new</span> Command(<span class="hljs-keyword">this</span>, <span class="hljs-literal">null</span>, opt)
-    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.command) {
-        <span class="hljs-keyword">this</span>.path = []
-        <span class="hljs-keyword">this</span>.abend(<span class="hljs-string">'command required'</span>)
-    }
-    <span class="hljs-keyword">var</span> path = [], iterator = <span class="hljs-keyword">this</span>.command
-    <span class="hljs-keyword">while</span> (iterator.command) {
-        path.push(iterator.command.name)
-        iterator = iterator.command
-    }
+
+    <span class="hljs-keyword">this</span>.given = gotopts.given
+    <span class="hljs-keyword">this</span>.params = gotopts.params
+    <span class="hljs-keyword">this</span>.ordered = gotopts.ordered
+    <span class="hljs-keyword">this</span>.terminal = gotopts.terminal
+
+    <span class="hljs-keyword">this</span>.param = {}
+    <span class="hljs-keyword">this</span>.given.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
+        <span class="hljs-keyword">this</span>.param[key] = <span class="hljs-keyword">this</span>.params[key][<span class="hljs-keyword">this</span>.params[key].length - <span class="hljs-number">1</span>]
+    }, <span class="hljs-keyword">this</span>)
 
     <span class="hljs-keyword">this</span>.argv = argv = argv.slice()
     <span class="hljs-keyword">this</span>.params = {}
-    <span class="hljs-keyword">this</span>.env = env
-    <span class="hljs-keyword">this</span>.stdout = io.stdout
-    <span class="hljs-keyword">this</span>.stderr = io.stderr
-    <span class="hljs-keyword">this</span>.stdin = io.stdin
-    <span class="hljs-keyword">this</span>.params = io.params
-    <span class="hljs-keyword">this</span>.send = io.send
-    <span class="hljs-keyword">this</span>._require = io.require
-    <span class="hljs-keyword">this</span>._process = io.events
+    <span class="hljs-keyword">this</span>.stdout = options.stdou
+    <span class="hljs-keyword">this</span>.stderr = options.stderr
+    <span class="hljs-keyword">this</span>.stdin = options.stdin
+    <span class="hljs-keyword">this</span>.params = options.params
+    <span class="hljs-keyword">this</span>.send = options.send
+    <span class="hljs-keyword">this</span>._require = options.require
+    <span class="hljs-keyword">this</span>._process = options.events
     <span class="hljs-keyword">this</span>._hooked = {} <span class="hljs-comment">// TODO outgoing.</span>
-    <span class="hljs-keyword">this</span>._module = <span class="hljs-built_in">module</span>
-
-    <span class="hljs-keyword">this</span>.path = path
+    <span class="hljs-keyword">this</span>._module = options.module
 
     events.EventEmitter.call(<span class="hljs-keyword">this</span>)
 
@@ -157,6 +296,29 @@ ideology.</p>
 }
 util.inherits(Program, events.EventEmitter)
 
+Program.prototype._setParameters = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ordered</span>) </span>{
+    <span class="hljs-keyword">this</span>.given = ordered.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+        <span class="hljs-keyword">return</span> parameter.name
+    }).filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, index, arrayj</span>) </span>{
+        <span class="hljs-keyword">return</span> arrayj.indexOf(value) == index
+    })
+    <span class="hljs-keyword">this</span>.params = {}
+    <span class="hljs-keyword">this</span>.arguable.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name</span>) </span>{
+        <span class="hljs-keyword">this</span>.params[name] = []
+    }, <span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.ordered.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+        <span class="hljs-keyword">var</span> array = <span class="hljs-keyword">this</span>.params[parameter.name]
+        <span class="hljs-keyword">if</span> (array == <span class="hljs-literal">null</span>) {
+            array = <span class="hljs-keyword">this</span>.params[parameter.name] = []
+        }
+        array.push(parameter.value)
+    }, <span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.param = {}
+    <span class="hljs-keyword">this</span>.given.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
+        <span class="hljs-keyword">this</span>.param[key] = <span class="hljs-keyword">this</span>.params[key][<span class="hljs-keyword">this</span>.params[key].length - <span class="hljs-number">1</span>]
+    }, <span class="hljs-keyword">this</span>)
+}
+
 Program.prototype._getListenerProxy = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">eventName</span>) </span>{
     <span class="hljs-keyword">var</span> proxy = <span class="hljs-keyword">this</span>._proxies[eventName]
     <span class="hljs-keyword">if</span> (proxy == <span class="hljs-literal">null</span>) {
@@ -167,6 +329,51 @@ Program.prototype._getListenerProxy = <span class="hljs-function"><span class="h
         proxy = <span class="hljs-keyword">this</span>._proxies[eventName] = { listener: listener, count: <span class="hljs-number">0</span> }
     }
     <span class="hljs-keyword">return</span> proxy
+}
+
+Program.prototype.required = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    slice.call(<span class="hljs-built_in">arguments</span>).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">param</span>) </span>{
+        <span class="hljs-keyword">if</span> (!(param <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.param)) {
+            <span class="hljs-keyword">this</span>.abend(param + <span class="hljs-string">' is required'</span>)
+        }
+    }, <span class="hljs-keyword">this</span>)
+}
+
+Program.prototype.validate = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>)
+    <span class="hljs-keyword">var</span> validator = <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">var</span> type = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>]
+    <span class="hljs-keyword">if</span> (type == <span class="hljs-string">'string'</span> &amp;&amp; ~vargs[<span class="hljs-number">0</span>].indexOf(<span class="hljs-string">'%s'</span>)) {
+        <span class="hljs-keyword">var</span> format = vargs.shift()
+        <span class="hljs-keyword">var</span> test = vargs.pop()
+        <span class="hljs-keyword">var</span> valid = test <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">RegExp</span> ? <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+            <span class="hljs-keyword">return</span> test.test(value)
+        } : tes
+        validator = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+            <span class="hljs-keyword">if</span> (!valid(value)) {
+                <span class="hljs-keyword">throw</span> forma
+            }
+        }
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type == <span class="hljs-string">'function'</span>) {
+        validator = vargs.shift()
+    } <span class="hljs-keyword">else</span> {
+        validator = vargs.pop()
+    }
+    <span class="hljs-keyword">var</span> ordered = <span class="hljs-keyword">this</span>.ordered.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+        <span class="hljs-keyword">try</span> {
+            <span class="hljs-keyword">var</span> value = validator(parameter.value, parameter.name, <span class="hljs-keyword">this</span>)
+            <span class="hljs-keyword">if</span> (value !== (<span class="hljs-keyword">void</span>(<span class="hljs-number">0</span>))) {
+                parameter.value = value
+            }
+            <span class="hljs-keyword">return</span> parameter
+        } <span class="hljs-keyword">catch</span> (error) {
+            <span class="hljs-keyword">if</span> (!(<span class="hljs-keyword">typeof</span> error == <span class="hljs-string">'string'</span> &amp;&amp; ~error.indexOf(<span class="hljs-string">'%s'</span>))) {
+                <span class="hljs-keyword">throw</span> error
+            }
+            <span class="hljs-keyword">this</span>.abend(util.format(error, parameter.name), parameter.value, parameter.name)
+        }
+    }.bind(<span class="hljs-keyword">this</span>))
+    <span class="hljs-keyword">this</span>._setParameters(ordered)
 }
 
 Program.prototype.disconnect = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
@@ -192,50 +399,50 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'connected'</span>,
 })
 
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-4">
+
+
+        <li id="section-13">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>format messages using strings.</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>Program.prototype.format = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, <span class="hljs-keyword">this</span>.path, key, slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>))
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, key, slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>))
 }
 
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-5">
+
+
+        <li id="section-14">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>abend helper stops execution and prints a message</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>Program.prototype.abend = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>), key = vargs.shift(), code
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> key == <span class="hljs-string">'number'</span>) {
-        <span class="hljs-keyword">this</span>._code = key
+        <span class="hljs-keyword">this</span>._exitCode = key
         key = vargs.shift()
     } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">this</span>._code = <span class="hljs-number">1</span>
+        <span class="hljs-keyword">this</span>._exitCode = <span class="hljs-number">1</span>
     }
     <span class="hljs-keyword">var</span> message
     <span class="hljs-keyword">if</span> (key) {
-        message = <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, <span class="hljs-keyword">this</span>.path, key, vargs)
+        message = <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, key, vargs)
     }
     <span class="hljs-keyword">this</span>._redirect = <span class="hljs-string">'stderr'</span>
     <span class="hljs-keyword">throw</span> interrupt({
@@ -245,34 +452,34 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'connected'</span>,
             key: key,
             vargs: vargs,
             stderr: message,
-            code: <span class="hljs-keyword">this</span>._code
+            exitCode: <span class="hljs-keyword">this</span>._exitCode
         }
     })
 }
 
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-6">
+
+
+        <li id="section-15">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>help helper prints stops execution and prints the help message</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>Program.prototype.help = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">this</span>._code = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">this</span>._exitCode = <span class="hljs-number">0</span>
     <span class="hljs-keyword">throw</span> interrupt({
         name: <span class="hljs-string">'help'</span>,
         context: {
             method: <span class="hljs-string">'help'</span>,
             stdout: <span class="hljs-keyword">this</span>._usage.chooseUsage(<span class="hljs-keyword">this</span>.lang),
-            code: <span class="hljs-keyword">this</span>._code
+            exitCode: <span class="hljs-keyword">this</span>._exitCode
         }
     })
 }
@@ -317,89 +524,51 @@ Program.prototype.delegate = cadence(<span class="hljs-function"><span class="hl
         stdin: <span class="hljs-keyword">this</span>.stdin,
         stderr: <span class="hljs-keyword">this</span>.stderr,
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-7">
+
+
+        <li id="section-16">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>TODO Should be this, not _process, maybe rename <code>_parent</code>.</p>
 
             </div>
-            
+
             <div class="content"><div class='highlight'><pre>        events: <span class="hljs-keyword">this</span>._process,
         send: <span class="hljs-keyword">this</span>.send
     }, <span class="hljs-keyword">async</span>())
 })
 
 </pre></div></div>
-            
+
         </li>
-        
-        
-        <li id="section-8">
+
+
+        <li id="section-17">
             <div class="annotation">
-              
+
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <p>exit helper stops execution and exits with the given code, hmm…
-TODO This ought to be testable, how do I test this?</p>
+              <p>Exit raises an exception to mimic <code>process.exit</code> behavior. Of course, this
+can be defeated by an old catch block. Here’s hoping the user rethrows.</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>Program.prototype.exit = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">code</span>) </span>{
-    <span class="hljs-keyword">throw</span> interrupt({ name: <span class="hljs-string">'exit'</span>, context: { code: code } })
+
+            <div class="content"><div class='highlight'><pre>Program.prototype.exit = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">exitCode</span>) </span>{
+    <span class="hljs-keyword">throw</span> interrupt({ name: <span class="hljs-string">'exit'</span>, context: { exitCode: exitCode } })
 }
 
-<span class="hljs-built_in">module</span>.exports = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, source, env, argv, io, main, module</span>) </span>{
-    assert(<span class="hljs-built_in">arguments</span>.length == <span class="hljs-number">7</span>)
-</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <p>parse usage</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> usage = createUsage(source)
-    <span class="hljs-keyword">if</span> (!usage) {
-        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'no usage found'</span>)
-    }
+<span class="hljs-built_in">module</span>.exports = Program
 
 </pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-10">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
-              </div>
-              <p>run program</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    main(<span class="hljs-keyword">new</span> Program(createUsage(source), env, argv, io, <span class="hljs-built_in">module</span>), <span class="hljs-keyword">async</span>())
-})
-
-</pre></div></div>
-            
         </li>
-        
+
     </ul>
   </div>
 </body>
