@@ -101,6 +101,8 @@ function Program (source, argv, options) {
         this.param[key] = this.params[key][this.params[key].length - 1]
     }, this)
 
+    this._setParameters(gotopts.ordered)
+
     this.argv = argv = argv.slice()
     this.params = {}
     this.stdout = options.stdout
