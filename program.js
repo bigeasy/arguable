@@ -125,10 +125,10 @@ util.inherits(Program, events.EventEmitter)
 // `arguments` is a JavaScript reserved word.
 
 //
-Program.prototype._setParameters = function (ordered) {
+Program.prototype._setParameters = function (parameters) {
     // **TODO** Oof. Do I want to rename this? `parameters`, `arrayed`, `indexed`.
-    this.ordered = ordered
-    this.given = ordered.map(function (parameter) {
+    this.parameters = parameters
+    this.given = parameters.map(function (parameter) {
         return parameter.name
     }).filter(function (value, index, arrayj) {
         return arrayj.indexOf(value) == index
@@ -137,7 +137,7 @@ Program.prototype._setParameters = function (ordered) {
     this.arguable.forEach(function (name) {
         this.params[name] = []
     }, this)
-    this.ordered.forEach(function (parameter) {
+    this.parameters.forEach(function (parameter) {
         this.params[parameter.name].push(parameter.value)
     }, this)
     this.param = {}
@@ -194,7 +194,7 @@ Program.prototype.validate = function () {
     } else {
         validator = vargs.pop()
     }
-    var ordered = this.ordered.map(function (parameter) {
+    var parameters = this.parameters.map(function (parameter) {
         try {
             var value = validator(parameter.value, parameter.name, this)
             if (value !== (void(0))) {
@@ -208,7 +208,7 @@ Program.prototype.validate = function () {
             this.abend(util.format(error, parameter.name), parameter.value, parameter.name)
         }
     }.bind(this))
-    this._setParameters(ordered)
+    this._setParameters(parameters)
 }
 
 // Proxy to parent's disconnect.
