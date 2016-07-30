@@ -140,9 +140,9 @@ Program.prototype._setParameters = function (parameters) {
     this.parameters.forEach(function (parameter) {
         this.params[parameter.name].push(parameter.value)
     }, this)
-    this.param = {}
+    this.ultimate = {}
     this.given.forEach(function (key) {
-        this.param[key] = this.params[key][this.params[key].length - 1]
+        this.ultimate[key] = this.params[key][this.params[key].length - 1]
     }, this)
 }
 
@@ -162,7 +162,7 @@ Program.prototype._getListenerProxy = function (eventName) {
 // Assert that there is a value present for a required argument.
 Program.prototype.required = function () {
     slice.call(arguments).forEach(function (param) {
-        if (!(param in this.param)) {
+        if (!(param in this.ultimate)) {
             this.abend(param + ' is required')
         }
     }, this)

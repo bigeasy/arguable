@@ -55,7 +55,7 @@ function prove (async, assert) {
             processes: [ ],
             bind: []
         }, 'param')
-        assert(program.param, { config: 'two=2' }, 'param')
+        assert(program.ultimate, { config: 'two=2' }, 'ultimate')
         assert(!program.terminal, 'not terminal')
     }), null, function (error) {
         if (error) throw error
@@ -193,7 +193,7 @@ function prove (async, assert) {
     createProgram(__filename, {}, [ '-p', '3' ],  {
     }, cadence(function (async, program) {
         program.validate('%s is not an integer', 'processes', /^\d+$/)
-        assert(program.param.processes, '3', 'successful function validation')
+        assert(program.ultimate.processes, '3', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
@@ -202,21 +202,21 @@ function prove (async, assert) {
         program.validate('%s is not copacetic', 'level', function (value) {
             return 'x' == value
         })
-        assert(program.param.level, 'x', 'successful function validation')
+        assert(program.ultimate.level, 'x', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate(function () { return 'y' }, 'level')
-        assert(program.param.level, 'y', 'validator as first argument')
+        assert(program.ultimate.level, 'y', 'validator as first argument')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate('level', function () { return 'y' })
-        assert(program.param.level, 'y', 'validator as last argument')
+        assert(program.ultimate.level, 'y', 'validator as last argument')
     }), null, function (error) {
         if (error) throw error
     })
