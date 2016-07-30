@@ -29,17 +29,24 @@ Usage.prototype.getPattern = function (command) {
     return patterns
 }
 
+Usage.prototype.getLanguageOptions = function (language) {
+    return ([ language, this.language ]).filter(function (language) { return language })
+}
+
 Usage.prototype.chooseUsage = function (language) {
-    var found = this.dictionary.getText(language, [ 'usage' ])
-    if (!found) {
-        found = this.dictionary.getText(this.language, [ 'usage' ])
+    var languages = this.getLanguageOptions(), found = null
+    while (languages.length) {
+        found = this.dictionary.getText(languages.shift(), [ 'usage' ])
+        if (found) {
+            return found
+        }
     }
-    return found
+    return ''
 }
 
 Usage.prototype.format = function (language, key, vargs) {
     var path = [], string
-    var languages = [ language, this.language ]
+    var languages = this.getLanguageOptions()
     while (languages.length) {
         var language = languages.shift()
         string = this.dictionary.format.apply(this.dictionary, [ language, path, key ].concat(vargs))
@@ -54,8 +61,5 @@ module.exports = function (source) {
     var dictionary = new Dictionary
     dictionary.load(fs.readFileSync(source, 'utf8'))
     var language = dictionary.getLanguages()[0]
-    if (!language) {
-        return null
-    }
-    return new Usage(language, dictionary)
+    return new Usage(language || '', dictionary)
 }

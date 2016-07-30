@@ -37,8 +37,9 @@ function prove (async, assert) {
     })
 
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
+        assert(program.arguable, [], 'missing')
     }), null, function (error) {
-        assert(error.message, 'no usage found', 'no usage found')
+        if (error) throw error
     })
     createProgram(__filename, {}, [ '--' ], {}, cadence(function (async, program) {
         assert(program.terminal, 'terminal')

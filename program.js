@@ -62,10 +62,6 @@ function removeListener (eventName) {
 function Program (source, argv, options) {
     this._usage = createUsage(source)
 
-    if (this._usage == null) {
-        throw new Error('no usage found')
-    }
-
     //
     this.env = options.env
 
@@ -189,6 +185,7 @@ Program.prototype.validate = function () {
         } : test
         validator = function (value) {
             if (!valid(value)) {
+// TODO What? Why am I throwing this?
                 throw format
             }
         }
