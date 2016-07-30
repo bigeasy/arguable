@@ -84,31 +84,26 @@ function Program (source, argv, options) {
     this.arguable = patterns.filter(function (pattern) {
         return pattern.arguable
     }).map(function (pattern) {
-        return pattern.name
+        return pattern.verbose
     })
-    var gotopts = getopt(patterns, argv)
-    if (gotopts.abend) {
-        this.abend(gotopts.abend, gotopts.context)
+
+    var gotopts
+    try {
+        gotopts = getopt(patterns, argv)
+    } catch (error) {
+        this.abend(error.abend, error.context)
     }
 
-    this.given = gotopts.given
-    this.params = gotopts.params
-    this.ordered = gotopts.ordered
-    this.terminal = gotopts.terminal
+    if (this.terminal = argv[0] == '--')  {
+        argv.shift()
+    }
 
-    this.param = {}
-    this.given.forEach(function (key) {
-        this.param[key] = this.params[key][this.params[key].length - 1]
-    }, this)
-
-    this._setParameters(gotopts.ordered)
+    this._setParameters(gotopts)
 
     this.argv = argv = argv.slice()
-    this.params = {}
     this.stdout = options.stdout
     this.stderr = options.stderr
     this.stdin = options.stdin
-    this.params = options.params
     this.send = options.send
     this._require = options.require
     this._process = options.events
@@ -129,6 +124,7 @@ function Program (source, argv, options) {
 util.inherits(Program, events.EventEmitter)
 
 Program.prototype._setParameters = function (ordered) {
+    this.ordered = ordered
     this.given = ordered.map(function (parameter) {
         return parameter.name
     }).filter(function (value, index, arrayj) {
@@ -139,11 +135,7 @@ Program.prototype._setParameters = function (ordered) {
         this.params[name] = []
     }, this)
     this.ordered.forEach(function (parameter) {
-        var array = this.params[parameter.name]
-        if (array == null) {
-            array = this.params[parameter.name] = []
-        }
-        array.push(parameter.value)
+        this.params[parameter.name].push(parameter.value)
     }, this)
     this.param = {}
     this.given.forEach(function (key) {

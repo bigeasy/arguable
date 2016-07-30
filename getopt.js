@@ -8,19 +8,11 @@ function getopt (patterns, argv) {
         }
     })
 
-    var params = {}, ordered = []
-
-    patterns.filter(function (pattern) {
-        return pattern.arguable
-    }).map(function (pattern) {
-        params[pattern.key] = []
-    })
+    var ordered = []
 
     var i = 0, terminal = false
     for (;;) {
         if (argv[0] == '--') {
-            terminal = true
-            argv.shift()
             break
         }
         if (argv.length == 0 || !/^--?[^-]/.test(argv[0])) {
@@ -37,7 +29,7 @@ function getopt (patterns, argv) {
                 || pattern.terse.lastIndexOf(parameter, 0) == 0
         })
         if (alternates.length != 1) {
-            return {
+            throw {
                 abend: alternates.length ? 'ambiguous argument' : 'unknown argument',
                 context: parameter
             }
@@ -47,7 +39,7 @@ function getopt (patterns, argv) {
         if (pattern.arguable) {
             if (!catenated) {
                 if (argv.length == 0) {
-                    return {
+                    throw {
                         abend: 'missing argument',
                         context: isLong ? pattern.verbose : pattern.terse
                     }
@@ -56,22 +48,17 @@ function getopt (patterns, argv) {
             }
         } else if (catenated) {
             if (isLong) {
-                return {
+                throw {
                     abend: 'unexpected argument value',
                     context: pattern.verbose
                 }
             } else {
                 argv.unshift('-' + value)
+                value = true
             }
         }
 
         ordered.push({ name: pattern.key, value: value })
-
-        if (!params[pattern.key]) {
-            params[pattern.key] = [ value ]
-        } else {
-            params[pattern.key].push(value)
-        }
 
         i++
     }
@@ -80,16 +67,7 @@ function getopt (patterns, argv) {
 // https://github.com/trentm/node-dashdash/pull/13
 // http://stackoverflow.com/questions/9234258/in-python-argparse-is-it-possible-to-have-paired-no-something-something-arg/9236426#9236426
 // http://stackoverflow.com/questions/9234258/in-python-argparse-is-it-possible-to-have-paired-no-something-something-arg
-    return {
-        params: params,
-        given: patterns.filter(function (pattern) {
-            return params[pattern.key] && params[pattern.key].length != 0
-        }).map(function (pattern) {
-            return pattern.key
-        }),
-        ordered: ordered,
-        terminal: terminal
-    }
+    return ordered
 }
 
 module.exports = getopt

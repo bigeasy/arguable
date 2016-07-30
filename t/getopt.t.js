@@ -1,4 +1,4 @@
-require('proof')(19, prove)
+require('proof')(17, prove)
 
 function prove (assert) {
     var pattern = [
@@ -10,50 +10,61 @@ function prove (assert) {
         { verbose: 'help', arguable: false }
     ]
     var getopt = require('../getopt'), params
-    var given = getopt(pattern, [ '-N', 'steve']).given
-    assert(given, [ 'name' ], 'string given')
-    var params = getopt(pattern, [ '-N', 'steve']).params
-    assert(params, { processes: [], config: [], name: [ 'steve' ] }, 'terse string')
-    params = getopt(pattern, [ '-Nsteve']).params
-    assert(params.name, [ 'steve' ], 'terse mushed string')
-    params = getopt(pattern, [ '--name', 'steve']).params
-    assert(params.name, [ 'steve' ], 'verbose string')
-    params = getopt(pattern, [ '--n', 'steve']).params
-    assert(params.name, [ 'steve' ], 'verbose abbrevated string')
-    params = getopt(pattern, [ '--name=steve']).params
-    assert(params.name, [ 'steve' ], 'verbose assigned string')
+    params = getopt(pattern, [ '-N', 'steve'])
+    assert(params, [{ name: 'name', value: 'steve' }], 'terse string')
+    params = getopt(pattern, [ '-Nsteve'])
+    assert(params, [{ name: 'name', value: 'steve' }], 'terse mushed string')
+    params = getopt(pattern, [ '--name', 'steve'])
+    assert(params, [{ name: 'name', value: 'steve' }], 'verbose string')
+    params = getopt(pattern, [ '--n', 'steve'])
+    assert(params, [{ name: 'name', value: 'steve' }], 'verbose abbrevated string')
+    params = getopt(pattern, [ '--name=steve'])
+    assert(params, [{ name: 'name', value: 'steve' }], 'verbose assigned string')
 
-    params = getopt(pattern, [ '-a', 3 ]).params
-    assert(params.ambiguous, [ true ], 'short opt makes it unambigouus')
-    params = getopt(pattern, [ '-A', 3 ]).params
-    assert(params.arbitrary, [ true ], 'short opt match')
-    assert(!('ambiguous' in params), 'boolean not added')
+    params = getopt(pattern, [ '-a', 3 ])
+    assert(params, [{ name: 'ambiguous', value: true }], 'short opt makes it unambigouus')
+    params = getopt(pattern, [ '-A', 3 ])
+    assert(params, [{ name: 'arbitrary', value: true }], 'short opt match')
 
-    getopt(pattern, [ '-aA' ])
+    params = getopt(pattern, [ '-aA' ])
+    assert(params, [{
+        name: 'ambiguous', value: true
+    }, {
+        name: 'arbitrary', value: true
+    }], 'catenated short opt without argument')
 
-    params = getopt(pattern, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ]).params
-    assert(params.config, [ 'one=1', 'two=2', 'three=3' ], 'array')
+    params = getopt(pattern, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ])
+    assert(params, [{
+        name: 'config', value: 'one=1'
+    }, {
+        name: 'config', value: 'two=2'
+    }, {
+        name: 'config', value: 'three=3'
+    }], 'array')
 
     var argv = [ '-p', 3, '--', '-A' ]
-    var outcome = getopt(pattern, argv)
-    assert(argv, [ '-A' ], 'stop on double hyphens')
-    assert(outcome.terminal, 'detect terminal')
-    assert(outcome.params.processes, [ '3' ], 'stop on double hyphens params')
+    params = getopt(pattern, argv)
+    assert(argv, [ '--', '-A' ], 'stop on double hyphens')
+    assert(params, [{ name: 'processes', value: '3' }], 'stop on double hyphens params')
 
     var argv = [ '-a', '-p', 3 ]
-    assert(getopt(pattern, argv).ordered, [
+    assert(getopt(pattern, argv), [
         { name: 'ambiguous', value: true },
         { name: 'processes', value: '3' }
     ], 'ordered')
 
     function failed (args, expected, message) {
-        var outcome = getopt(pattern, args)
-        assert(outcome.abend, expected, message)
+        try {
+            getopt(pattern, args)
+        } catch (error) {
+            assert(error.abend, expected, message)
+            return
+        }
+        throw new Error
     }
 
     failed([ '-ax' ], 'unknown argument', 'unknown')
     failed([ '-c' ], 'missing argument', 'terse missing')
-//    failed([ '--p', 2, '--p', 3 ], 'scalar argument', 'duplicate argument')
     failed([ '--c' ], 'missing argument', 'verbose inferred missing')
     failed([ '--a' ], 'ambiguous argument', 'ambiguous')
     failed([ '--ambiguous=1' ], 'unexpected argument value', 'value to long toggle')

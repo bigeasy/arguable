@@ -1,4 +1,4 @@
-require('proof')(38, require('cadence')(prove))
+require('proof')(43, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -39,6 +39,25 @@ function prove (async, assert) {
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
     }), null, function (error) {
         assert(error.message, 'no usage found', 'no usage found')
+    })
+    createProgram(__filename, {}, [ '--' ], {}, cadence(function (async, program) {
+        assert(program.terminal, 'terminal')
+    }), null, function (error) {
+        if (error) throw error
+    })
+    createProgram(__filename, {}, [ '-cone=1', '-c', 'two=2' ], {
+    }, cadence(function (async, program) {
+        assert(program.given, [ 'config' ], 'given')
+        assert(program.params, {
+            config: [ 'one=1', 'two=2' ],
+            level: [],
+            processes: [ ],
+            bind: []
+        }, 'param')
+        assert(program.param, { config: 'two=2' }, 'param')
+        assert(!program.terminal, 'not terminal')
+    }), null, function (error) {
+        if (error) throw error
     })
     createProgram(__filename, {}, [], io = {
         events: { exitCode: 0 }
