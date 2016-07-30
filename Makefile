@@ -40,7 +40,7 @@ endef
 export SAFARI_REFRESH
 export CHROME_REFRESH
 
-sources = docco/program.html css/arguable.css index.html
+sources = docco/arguable.html docco/program.html docco/exit.html css/arguable.css index.html
 
 all: $(sources)
 
@@ -58,7 +58,7 @@ node_modules/.bin/edify:
 	npm install less edify edify.markdown edify.highlight
 
 watch: all
-	fswatch fswatch --exclude '.' --include '\.html$$' --include '\.less$$' pages css | while read line; \
+	fswatch --exclude '.' --include '\.html$$' --include '\.less$$' --include '\.js$$' pages css arguable | while read line; \
 	do \
 		make --no-print-directory all; \
 		osascript -e "$$CHROME_REFRESH"; \
@@ -69,8 +69,8 @@ css/%.css: css/%.less node_modules/.bin/lessc
 
 docco/%.html: arguable/%.js node_modules/.bin/docco
 	mkdir -p docco
-	node_modules/.bin/docco -o docco -c docco.css $<
-	sed -i '' -e 's/[ \t]*$$//' $@
+	node_modules/.bin/docco -o docco -c docco.css arguable/*.js
+	sed -i '' -e 's/[ \t]*$$//' docco/*.html
 
 %.html: pages/%.html node_modules/.bin/edify
 	@echo generating $@

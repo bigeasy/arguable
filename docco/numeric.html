@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>numeric.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="arguable.html">
+                  arguable.js
+                </a>
+
+
+                <a class="source" href="bindable.html">
+                  bindable.js
+                </a>
+
+
+                <a class="source" href="exit.html">
+                  exit.js
+                </a>
+
+
+                <a class="source" href="getopt.html">
+                  getopt.js
+                </a>
+
+
+                <a class="source" href="numeric.html">
+                  numeric.js
+                </a>
+
+
+                <a class="source" href="program.html">
+                  program.js
+                </a>
+
+
+                <a class="source" href="usage.html">
+                  usage.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>numeric.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(<span class="hljs-built_in">parseFloat</span>(value)) || !<span class="hljs-built_in">isFinite</span>(value)) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-string">'%s is not numeric'</span>
+    }
+    <span class="hljs-keyword">return</span> +value
+}
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
