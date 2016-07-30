@@ -1,25 +1,30 @@
-var stream = require('stream'),
-    events = require('events'),
-    Program = require('./program'),
-    exit = require('./exit'),
-    slice = [].slice
+var stream = require('stream')
+var events = require('events')
+var exit = require('./exit')
 
-function createStream (s) {
-    return s || new stream.PassThrough
-}
+var Program = require('./program')
+
+var slice = [].slice
+
+// Use given stream or create pseudo-stream.
+function createStream (s) { return s || new stream.PassThrough }
 
 module.exports = function () {
     var vargs = slice.call(arguments)
     var module = vargs.shift()
     var params = {}
     var main = vargs.pop()
+    // Check for default values for named parameters when argument parser is
+    // invoked as a main module.
     if (typeof main == 'object') {
         params = main
         main = vargs.pop()
     }
-    var source = module.filename
+    // Usage source can be specified explicitly, or else it is sought in the
+    // comments of the main module.
+    var usage = module.filename
     if (typeof vargs[0] == 'string') {
-        source = vargs.shift()
+        usage = vargs.shift()
     }
     var invoke = module.exports = function (argv, options, callback) {
         var expanded = []
@@ -51,19 +56,22 @@ module.exports = function () {
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
-        for (var param in options.params) {
-            params[param] = options.params[param]
+        var mergedParameters = {}
+        for (var param in params) {
+            mergedParameters[param] = params[param]
         }
-        var io = {
+        for (var param in options.params) {
+            mergedParameters[param] = options.params[param]
+        }
+        var program = new Program(usage, argv, {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
             events: options.events || new events.EventEmitter,
             send: send || null,
             env: options.env || {},
-            params: params
-        }
-        var program = new Program(source, argv, io)
+            params: mergedParameters
+        })
         main(program, callback)
         return program
     }

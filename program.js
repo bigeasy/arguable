@@ -63,16 +63,10 @@ function Program (source, argv, options) {
     this._usage = createUsage(source)
 
     if (this._usage == null) {
-// TODO Don't panic.
         throw new Error('no usage found')
     }
 
-    // TODO Implement include in the language.
-    // ___ include ___ required/path ___
-    // TODO Implement adding to string tables, so you can add in include.
-
     //
-
     this.env = options.env
 
     // Use environment `LANG` or else language of first usage definition.
@@ -80,6 +74,7 @@ function Program (source, argv, options) {
 
     this.path = []
 
+    // Extract argument patterns from usage.
     var patterns = this._usage.getPattern()
     this.arguable = patterns.filter(function (pattern) {
         return pattern.arguable
@@ -87,9 +82,9 @@ function Program (source, argv, options) {
         return pattern.verbose
     })
 
-    var gotopts
+    // Parse arguments and save the remaining arguments.
     try {
-        gotopts = getopt(patterns, argv)
+        var gotopts = getopt(patterns, argv)
     } catch (error) {
         this.abend(error.abend, error.context)
     }
@@ -100,16 +95,20 @@ function Program (source, argv, options) {
 
     this._setParameters(gotopts)
 
-    this.argv = argv = argv.slice()
+    this.argv = argv
+
+    // Assign I/O provide in `options`.
     this.stdout = options.stdout
     this.stderr = options.stderr
     this.stdin = options.stdin
     this.send = options.send
-    this._require = options.require
+
+    // Capture environment.
+    this.env = options.env
     this._process = options.events
-    this._hooked = {} // TODO outgoing.
     this._module = options.module
 
+    // Become an `EventEmitter` and proxy parent events.
     events.EventEmitter.call(this)
 
     this._proxies = {}
@@ -123,7 +122,15 @@ function Program (source, argv, options) {
 }
 util.inherits(Program, events.EventEmitter)
 
+// Use an array of key/value pairs to populate some useful shortcut properties
+// for working with parameters.
+//
+// Note to self; we use `parameters` here and in documentation because
+// `arguments` is a JavaScript reserved word.
+
+//
 Program.prototype._setParameters = function (ordered) {
+    // **TODO** Oof. Do I want to rename this? `parameters`, `arrayed`, `indexed`.
     this.ordered = ordered
     this.given = ordered.map(function (parameter) {
         return parameter.name
@@ -143,6 +150,7 @@ Program.prototype._setParameters = function (ordered) {
     }, this)
 }
 
+// Register a listener proxy with the parent process or Arguable program.
 Program.prototype._getListenerProxy = function (eventName) {
     var proxy = this._proxies[eventName]
     if (proxy == null) {
@@ -155,6 +163,7 @@ Program.prototype._getListenerProxy = function (eventName) {
     return proxy
 }
 
+// Assert that there is a value present for a required argument.
 Program.prototype.required = function () {
     slice.call(arguments).forEach(function (param) {
         if (!(param in this.param)) {
@@ -163,6 +172,11 @@ Program.prototype.required = function () {
     }, this)
 }
 
+// Variadic nonsense to support handful of different ways to invoke this
+// validation function. The validation can change the type and value of the
+// parameters in the in the parameters array, so valiation is also
+// transmogrifcation of strings into appropriately typed and structured
+// parameters for your program.
 Program.prototype.validate = function () {
     var vargs = slice.call(arguments)
     var validator = null
@@ -200,16 +214,23 @@ Program.prototype.validate = function () {
     this._setParameters(ordered)
 }
 
+// Proxy to parent's disconnect.
 Program.prototype.disconnect = function () {
     this._process.disconnect()
 }
 
+// Disconnect if not already disconnected. Disconnecting is the only way to
+// terminate an additional parent/child socket, so I'll write this up to a
+// shutdown handler that might be called twice.
 Program.prototype.disconnectIf = function () {
     if (this.connected) {
         this.disconnect()
     }
 }
 
+// Process properties that are proxied to the parent.
+
+//
 Program.prototype.__defineSetter__('exitCode', function (exitCode) {
     this._process.exitCode = exitCode
 })
@@ -222,7 +243,7 @@ Program.prototype.__defineGetter__('connected', function () {
     return this._process.connected
 })
 
-// format messages using strings.
+// Format a message using the string tables provided in the usage message.
 Program.prototype.format = function (key) {
     return this._usage.format(this.lang, key, slice.call(arguments, 1))
 }
@@ -231,6 +252,7 @@ Program.prototype.format = function (key) {
 Program.prototype.abend = function () {
     var vargs = slice.call(arguments), key = vargs.shift(), code
     if (typeof key == 'number') {
+    // **TODO** `_exitCode` looks unused.
         this._exitCode = key
         key = vargs.shift()
     } else {
@@ -253,7 +275,7 @@ Program.prototype.abend = function () {
     })
 }
 
-// help helper prints stops execution and prints the help message
+// Stop execution and print help message.
 Program.prototype.help = function () {
     this._exitCode = 0
     throw interrupt({
@@ -270,14 +292,18 @@ Program.prototype.assert = function (condition, message) {
     if (!condition) this.abend(message)
 }
 
-Program.prototype.require = function (moduleName) {
-    return this._require(moduleName)
-}
-
+// Saves having to write a unit test for every application that checks a branch
+// that does exactly this.
 Program.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
+// Load an arguable module and invoke it using this `Program` as the parent. Not
+// at all certain that I want to have all this formatting nonsense. Can't the
+// parent simply invoke it with a string?
+//
+// **TODO** Let's hedge and accept a package name. If that is easy enough to use
+// in the programs that currently use Aguable, we can come back and remove this.
 Program.prototype.delegate = cadence(function (async, format) {
     if (this.argv.length == 0) {
         this.abend('sub command missing')
