@@ -161,9 +161,9 @@ Program.prototype._getListenerProxy = function (eventName) {
 
 // Assert that there is a value present for a required argument.
 Program.prototype.required = function () {
-    slice.call(arguments).forEach(function (param) {
-        if (!(param in this.ultimate)) {
-            this.abend(param + ' is required')
+    slice.call(arguments).forEach(function (name) {
+        if (!(name in this.ultimate)) {
+            this.abend(name + ' is required')
         }
     }, this)
 }
