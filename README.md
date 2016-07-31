@@ -2,24 +2,8 @@
 
 Usage first argument parser for Node.js.
 
-```
-Isochronous
-
-Convert Node.js Paxos messages to binary to share with alternate implementations.
-
-    Discussion:     https://github.com/bigeasy/isochronous/issues/1
-
-    Documentation:  https://bigeasy.github.io/isochronous
-    Source:         https://github.com/bigeasy/isochronous
-    Issues:         https://github.com/bigeasy/isochronous/issues
-    CI:             https://travis-ci.org/bigeasy/isochronous
-    Coverage:       https://coveralls.io/github/bigeasy/isochronous
-
-    Install:        `npm install isochronous`
-
-    License:        MIT
-
-To learn everything you want to know about Isochronous start here:
-
-    http://bigeasy.github.io/isochronous
-```
+ * [Documentation](https://bigeasy.github.io/arguable).
+ * [Discussion and Questions](https://github.com/bigeasy/isochronous/issues/1).
+ * [Issues](https://github.com/bigeasy/isochronous/issues).
+ * Installation: `npm install arguable`.
+ * License: MIT.
