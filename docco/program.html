@@ -228,10 +228,6 @@ ideology.</p>
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Program</span> (<span class="hljs-params">source, argv, options</span>) </span>{
     <span class="hljs-keyword">this</span>._usage = createUsage(source)
 
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._usage == <span class="hljs-literal">null</span>) {
-        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'no usage found'</span>)
-    }
-
 </pre></div></div>
 
         </li>
@@ -415,7 +411,30 @@ for working with parameters.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>Program.prototype._setParameters = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ordered</span>) </span>{
+            <div class="content"><div class='highlight'><pre>Program.prototype._setParameters = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameters</span>) </span>{
+    <span class="hljs-keyword">this</span>.parameters = parameters
+    <span class="hljs-keyword">this</span>.given = parameters.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+        <span class="hljs-keyword">return</span> parameter.name
+    }).filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, index, arrayj</span>) </span>{
+        <span class="hljs-keyword">return</span> arrayj.indexOf(value) == index
+    })
+    <span class="hljs-keyword">this</span>.grouped = {}
+    <span class="hljs-keyword">this</span>.arguable.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name</span>) </span>{
+        <span class="hljs-keyword">this</span>.grouped[name] = []
+    }, <span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.parameters.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+        <span class="hljs-keyword">var</span> group = <span class="hljs-keyword">this</span>.grouped[parameter.name]
+        <span class="hljs-keyword">if</span> (group == <span class="hljs-literal">null</span>) {
+            group = <span class="hljs-keyword">this</span>.grouped[parameter.name] = []
+        }
+        group.push(parameter.value)
+    }, <span class="hljs-keyword">this</span>)
+    <span class="hljs-keyword">this</span>.ultimate = {}
+    <span class="hljs-keyword">this</span>.given.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
+        <span class="hljs-keyword">this</span>.ultimate[key] = <span class="hljs-keyword">this</span>.grouped[key][<span class="hljs-keyword">this</span>.grouped[key].length - <span class="hljs-number">1</span>]
+    }, <span class="hljs-keyword">this</span>)
+}
+
 </pre></div></div>
 
         </li>
@@ -426,40 +445,6 @@ for working with parameters.</p>
 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
-              </div>
-              <p><strong>TODO</strong> Oof. Do I want to rename this? <code>parameters</code>, <code>arrayed</code>, <code>indexed</code>.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.ordered = ordered
-    <span class="hljs-keyword">this</span>.given = ordered.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
-        <span class="hljs-keyword">return</span> parameter.name
-    }).filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, index, arrayj</span>) </span>{
-        <span class="hljs-keyword">return</span> arrayj.indexOf(value) == index
-    })
-    <span class="hljs-keyword">this</span>.params = {}
-    <span class="hljs-keyword">this</span>.arguable.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name</span>) </span>{
-        <span class="hljs-keyword">this</span>.params[name] = []
-    }, <span class="hljs-keyword">this</span>)
-    <span class="hljs-keyword">this</span>.ordered.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
-        <span class="hljs-keyword">this</span>.params[parameter.name].push(parameter.value)
-    }, <span class="hljs-keyword">this</span>)
-    <span class="hljs-keyword">this</span>.param = {}
-    <span class="hljs-keyword">this</span>.given.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
-        <span class="hljs-keyword">this</span>.param[key] = <span class="hljs-keyword">this</span>.params[key][<span class="hljs-keyword">this</span>.params[key].length - <span class="hljs-number">1</span>]
-    }, <span class="hljs-keyword">this</span>)
-}
-
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-19">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Register a listener proxy with the parent process or Arguable program.</p>
 
@@ -482,20 +467,20 @@ for working with parameters.</p>
         </li>
 
 
-        <li id="section-20">
+        <li id="section-19">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Assert that there is a value present for a required argument.</p>
 
             </div>
 
             <div class="content"><div class='highlight'><pre>Program.prototype.required = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    slice.call(<span class="hljs-built_in">arguments</span>).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">param</span>) </span>{
-        <span class="hljs-keyword">if</span> (!(param <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.param)) {
-            <span class="hljs-keyword">this</span>.abend(param + <span class="hljs-string">' is required'</span>)
+    slice.call(<span class="hljs-built_in">arguments</span>).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name</span>) </span>{
+        <span class="hljs-keyword">if</span> (!(name <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.ultimate)) {
+            <span class="hljs-keyword">this</span>.abend(name + <span class="hljs-string">' is required'</span>)
         }
     }, <span class="hljs-keyword">this</span>)
 }
@@ -505,11 +490,11 @@ for working with parameters.</p>
         </li>
 
 
-        <li id="section-21">
+        <li id="section-20">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>Variadic nonsense to support handful of different ways to invoke this
 validation function. The validation can change the type and value of the
@@ -529,7 +514,23 @@ parameters for your program.</p>
         <span class="hljs-keyword">var</span> valid = test <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">RegExp</span> ? <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
             <span class="hljs-keyword">return</span> test.test(value)
         } : tes
-        validator = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-21">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>The validator will throw a format to use to format the error message.
+Not sure why I’ve decied to get so wicked with the throws.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        validator = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
             <span class="hljs-keyword">if</span> (!valid(value)) {
                 <span class="hljs-keyword">throw</span> forma
             }
@@ -539,7 +540,7 @@ parameters for your program.</p>
     } <span class="hljs-keyword">else</span> {
         validator = vargs.pop()
     }
-    <span class="hljs-keyword">var</span> ordered = <span class="hljs-keyword">this</span>.ordered.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
+    <span class="hljs-keyword">var</span> parameters = <span class="hljs-keyword">this</span>.parameters.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parameter</span>) </span>{
         <span class="hljs-keyword">try</span> {
             <span class="hljs-keyword">var</span> value = validator(parameter.value, parameter.name, <span class="hljs-keyword">this</span>)
             <span class="hljs-keyword">if</span> (value !== (<span class="hljs-keyword">void</span>(<span class="hljs-number">0</span>))) {
@@ -553,7 +554,7 @@ parameters for your program.</p>
             <span class="hljs-keyword">this</span>.abend(util.format(error, parameter.name), parameter.value, parameter.name)
         }
     }.bind(<span class="hljs-keyword">this</span>))
-    <span class="hljs-keyword">this</span>._setParameters(ordered)
+    <span class="hljs-keyword">this</span>._setParameters(parameters)
 }
 
 </pre></div></div>
@@ -776,22 +777,26 @@ that does exactly this.</p>
               <p>Load an arguable module and invoke it using this <code>Program</code> as the parent. No
 at all certain that I want to have all this formatting nonsense. Can’t the
 parent simply invoke it with a string?</p>
-<p><strong>TODO</strong> Let’s hedge and accept a package name. If that is easy enough to use
-in the programs that currently use Aguable, we can come back and remove this.</p>
+<p>We’re only going to support accepting a package name, but leave the
+formatting logic in for now to see where it’s being used.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>Program.prototype.delegate = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, format</span>) </span>{
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.argv.length == <span class="hljs-number">0</span>) {
-        <span class="hljs-keyword">this</span>.abend(<span class="hljs-string">'sub command missing'</span>)
-    }
-    <span class="hljs-keyword">var</span> argv = <span class="hljs-keyword">this</span>.argv.slice()
-    <span class="hljs-keyword">var</span> command = argv.shift()
-    <span class="hljs-keyword">var</span> pkg
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> format == <span class="hljs-string">'function'</span>) {
-        pkg = format(command, <span class="hljs-keyword">this</span>)
+            <div class="content"><div class='highlight'><pre>Program.prototype.delegate = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, format, argv</span>) </span>{
+    <span class="hljs-keyword">if</span> (argv == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.argv.length == <span class="hljs-number">0</span>) {
+            <span class="hljs-keyword">this</span>.abend(<span class="hljs-string">'sub command missing'</span>)
+        }
+        <span class="hljs-keyword">var</span> argv = <span class="hljs-keyword">this</span>.argv.slice()
+        <span class="hljs-keyword">var</span> command = argv.shift()
+        <span class="hljs-keyword">var</span> pkg
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> format == <span class="hljs-string">'function'</span>) {
+            pkg = format(command, <span class="hljs-keyword">this</span>)
+        } <span class="hljs-keyword">else</span> {
+            pkg = util.format(format, command)
+        }
     } <span class="hljs-keyword">else</span> {
-        pkg = util.format(format, command)
+        pkg = forma
     }
     <span class="hljs-keyword">var</span> arguable
     <span class="hljs-keyword">try</span> {
@@ -839,8 +844,7 @@ in the programs that currently use Aguable, we can come back and remove this.</p
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
-              <p>Exit raises an exception to mimic <code>process.exit</code> behavior. Of course, this
-can be defeated by an old catch block. Here’s hoping the user rethrows.</p>
+              <p>TODO Outgoingish.</p>
 
             </div>
 

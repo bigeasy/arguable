@@ -123,17 +123,24 @@ to Arguable that do not belong in the usage message printed to <code>stdout</cod
     <span class="hljs-keyword">return</span> patterns
 }
 
+Usage.prototype.getLanguageOptions = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">language</span>) </span>{
+    <span class="hljs-keyword">return</span> ([ language, <span class="hljs-keyword">this</span>.language ]).filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">language</span>) </span>{ <span class="hljs-keyword">return</span> language })
+}
+
 Usage.prototype.chooseUsage = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">language</span>) </span>{
-    <span class="hljs-keyword">var</span> found = <span class="hljs-keyword">this</span>.dictionary.getText(language, [ <span class="hljs-string">'usage'</span> ])
-    <span class="hljs-keyword">if</span> (!found) {
-        found = <span class="hljs-keyword">this</span>.dictionary.getText(<span class="hljs-keyword">this</span>.language, [ <span class="hljs-string">'usage'</span> ])
+    <span class="hljs-keyword">var</span> languages = <span class="hljs-keyword">this</span>.getLanguageOptions(), found = <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">while</span> (languages.length) {
+        found = <span class="hljs-keyword">this</span>.dictionary.getText(languages.shift(), [ <span class="hljs-string">'usage'</span> ])
+        <span class="hljs-keyword">if</span> (found) {
+            <span class="hljs-keyword">return</span> found
+        }
     }
-    <span class="hljs-keyword">return</span> found
+    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>
 }
 
 Usage.prototype.format = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">language, key, vargs</span>) </span>{
     <span class="hljs-keyword">var</span> path = [], string
-    <span class="hljs-keyword">var</span> languages = [ language, <span class="hljs-keyword">this</span>.language ]
+    <span class="hljs-keyword">var</span> languages = <span class="hljs-keyword">this</span>.getLanguageOptions()
     <span class="hljs-keyword">while</span> (languages.length) {
         <span class="hljs-keyword">var</span> language = languages.shift()
         string = <span class="hljs-keyword">this</span>.dictionary.format.apply(<span class="hljs-keyword">this</span>.dictionary, [ language, path, key ].concat(vargs))
@@ -148,10 +155,7 @@ Usage.prototype.format = <span class="hljs-function"><span class="hljs-keyword">
     <span class="hljs-keyword">var</span> dictionary = <span class="hljs-keyword">new</span> Dictionary
     dictionary.load(fs.readFileSync(source, <span class="hljs-string">'utf8'</span>))
     <span class="hljs-keyword">var</span> language = dictionary.getLanguages()[<span class="hljs-number">0</span>]
-    <span class="hljs-keyword">if</span> (!language) {
-        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
-    }
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Usage(language, dictionary)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Usage(language || <span class="hljs-string">''</span>, dictionary)
 }
 
 </pre></div></div>
