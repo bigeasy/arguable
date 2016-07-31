@@ -138,7 +138,11 @@ Program.prototype._setParameters = function (parameters) {
         this.grouped[name] = []
     }, this)
     this.parameters.forEach(function (parameter) {
-        this.grouped[parameter.name].push(parameter.value)
+        var group = this.grouped[parameter.name]
+        if (group == null) {
+            group = this.grouped[parameter.name] = []
+        }
+        group.push(parameter.value)
     }, this)
     this.ultimate = {}
     this.given.forEach(function (key) {

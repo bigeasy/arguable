@@ -6,15 +6,16 @@
   ___ . ___
 */
 
-require('../..')(module, function (options, callback) {
-    if (options.argv.length) {
+require('../..')(module, function (program, callback) {
+    console.log(program.argv)
+    if (program.argv.length) {
         var separator = ''
-        options.argv.forEach(function (arg) {
-            options.stdout.write(separator)
-            options.stdout.write(arg)
+        program.argv.forEach(function (arg) {
+            program.stdout.write(separator)
+            program.stdout.write(arg)
             separator = ' '
         })
-        options.stdout.write('\n')
+        program.stdout.write('\n')
     }
     callback()
 })

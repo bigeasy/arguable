@@ -12,65 +12,60 @@ function createStream (s) { return s || new stream.PassThrough }
 module.exports = function () {
     var vargs = slice.call(arguments)
     var module = vargs.shift()
-    var params = {}
-    var main = vargs.pop()
-    // Check for default values for named parameters when argument parser is
-    // invoked as a main module.
-    if (typeof main == 'object') {
-        params = main
-        main = vargs.pop()
-    }
     // Usage source can be specified explicitly, or else it is sought in the
     // comments of the main module.
     var usage = module.filename
     if (typeof vargs[0] == 'string') {
         usage = vargs.shift()
     }
+    // Check for default values for named parameters when argument parser is
+    // invoked as a main module.
+    var defaultParameters = {}
+    if (typeof vargs[0] == 'object') {
+        defaultParameters = vargs.shift()
+    }
+    var main = vargs.shift()
     var invoke = module.exports = function (argv, options, callback) {
-        var expanded = []
-        if (typeof argv == 'object') {
-            for (var name in argv) {
-                expanded.push('--name', String(argv[name]))
-            }
-        } else {
-            argv.forEach(function (argument) {
-                switch (typeof argument) {
-                case 'object':
+        var parameters = []
+        if (!Array.isArray(argv)) {
+            argv = [ argv ]
+        }
+        argv.unshift(defaultParameters)
+        argv = argv.slice()
+        while (argv.length != 0) {
+            var argument = argv.shift()
+            switch (typeof argument) {
+            case 'object':
+                if (Array.isArray(argument)) {
+                    argv.unshift.apply(argv, argument)
+                } else {
                     if (('name' in argument) &&
                         ('value' in argument) &&
                         Object.keys(argument).length == 2
                     ) {
-                        extended.push('--' + argument.name, String(argument.value))
+                        parameters.push(argument)
                     } else {
                         for (var name in argument) {
-                            extended.push('--' + name, String(argument[name]))
+                            parameters.push({ name: name, value: argument[name] })
                         }
                     }
-                    break
-                default:
-                    expanded.push(String(argument))
-                    break
                 }
-            })
+                break
+            default:
+                parameters.push(argument)
+                break
+            }
         }
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
-        var mergedParameters = {}
-        for (var param in params) {
-            mergedParameters[param] = params[param]
-        }
-        for (var param in options.params) {
-            mergedParameters[param] = options.params[param]
-        }
-        var program = new Program(usage, argv, {
+        var program = new Program(usage, parameters, {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
             events: options.events || new events.EventEmitter,
             send: send || null,
-            env: options.env || {},
-            params: mergedParameters
+            env: options.env || {}
         })
         main(program, callback)
         return program

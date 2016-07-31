@@ -1,11 +1,13 @@
-require('proof')(7, prove)
+require('proof')(8, prove)
 
 function prove (assert) {
     var bindable = require('../bindable')
 
     assert(bindable('8080'), { address: '0.0.0.0', port: 8080 }, 'port')
     assert(String(bindable('8080')), '0.0.0.0:8080', 'to string')
-    assert(bindable('127.0.0.1:8080'), { address: '127.0.0.1', port: 8080 }, 'interface and port')
+    var converted = bindable('127.0.0.1:8080')
+    assert(converted, { address: '127.0.0.1', port: 8080 }, 'interface and port')
+    assert(bindable(converted), { address: '127.0.0.1', port: 8080 }, 'run over already converted bindable')
     try {
        bindable('X.0.0.1:8080')
     } catch (error) {

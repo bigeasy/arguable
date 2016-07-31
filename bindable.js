@@ -30,6 +30,7 @@ function isListen (value) {
 }
 
 module.exports = function (value, name) {
+    value = String(value)
     if (!isListen(value)) {
         throw '%s is not bindable'
     }

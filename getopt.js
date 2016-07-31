@@ -12,6 +12,10 @@ function getopt (patterns, argv) {
 
     var i = 0, terminal = false
     for (;;) {
+        if (typeof argv[0] == 'object') {
+            ordered.push(argv.shift())
+            continue
+        }
         if (argv[0] == '--') {
             break
         }

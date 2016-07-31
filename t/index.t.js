@@ -1,9 +1,10 @@
-require('proof')(6, require('cadence')(prove))
+require('proof')(9, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
     var echo2 = require('./fixtures/echo-2')
     var send = require('./fixtures/send')
+    var parameters = require('./fixtures/parameters')
     var stream = require('stream')
     var events = require('events')
     var stdout
@@ -29,5 +30,14 @@ function prove (async, assert) {
         send([], { events: ee }, async())
     }, function () {
         assert(true, 'send called back')
+        parameters({ two: 3 }, {}, async())
+    }, function (result) {
+        assert(result, { one: 1, two: 3 }, 'parameter overwrite, single object argv')
+        parameters([{ name: 'name', value: 'value' }], {}, async())
+    }, function (result) {
+        assert(result, { one: 1, two: 2, name: 'value' }, 'name value argument')
+        parameters([[{ three: 3 }]], {}, async())
+    }, function (result) {
+        assert(result, { one: 1, two: 2, three: 3 }, 'nested array argument')
     })
 }
