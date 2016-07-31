@@ -1,3 +1,3 @@
 require('../..')(module, function (program, callback) {
-    callback(null, program.mainModule)
+    callback(null, program.isMainModule)
 })

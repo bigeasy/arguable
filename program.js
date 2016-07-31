@@ -67,6 +67,7 @@ function Program (source, argv, options) {
 
     // Capture environment.
     this.env = options.env
+    this.isMainModule = options.isMainModule
     this._process = options.events
     this._module = options.module
 

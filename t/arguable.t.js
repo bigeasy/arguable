@@ -1,4 +1,4 @@
-require('proof')(12, require('cadence')(prove))
+require('proof')(13, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -41,12 +41,13 @@ function prove (async, assert) {
         parameters([[{ three: 3 }]], {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 2, three: 3 }, 'nested array argument')
-        main([], {}, async())
-    }, function (result) {
-        assert(result === process.mainModule, 'main module')
-        main([], { mainModule: main }, async())
-    }, function (result) {
-        assert(result === main, 'main module mocked')
+        var program = main([], {}, async())
+        assert(program.mainModule === process.mainModule, 'default main module')
+    }, function (isMainModule) {
+        assert(isMainModule, false, 'main module')
+        main([], { isMainModule: true }, async())
+    }, function (isMainModule) {
+        assert(isMainModule, true, 'is main module')
         disconnect([], { connected: true }, async())
     }, function (connected) {
         assert(connected, false, 'disconected')
