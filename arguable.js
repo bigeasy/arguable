@@ -59,12 +59,19 @@ module.exports = function () {
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
+        var ee = options.events
+        if (ee == null) {
+            ee = new events.EventEmitter
+            ee.mainModule == options.mainModule || process.mainModule
+            ee.connected == ('connected' in options) ? options.connected : true
+            ee.disconnect = function () { this.connected = false }
+        }
         var program = new Program(usage, parameters, {
             module: module,
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
-            events: options.events || new events.EventEmitter,
+            process: ee,
             send: send || null,
             env: options.env || {}
         })

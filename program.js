@@ -62,8 +62,13 @@ function removeListener (eventName) {
 function Program (source, argv, options) {
     this._usage = createUsage(source)
 
-    //
+    // As opposed to being the actual `Process` object it mocks.
+    this.isProgram = true
+
+    // Capture environment.
     this.env = options.env
+    this._process = options.events
+    this._module = options.module
 
     // Use environment `LANG` or else language of first usage definition.
     this.lang = this.env.LANG ? this.env.LANG.split('.')[0] : this._usage.language
@@ -98,11 +103,6 @@ function Program (source, argv, options) {
     this.stderr = options.stderr
     this.stdin = options.stdin
     this.send = options.send
-
-    // Capture environment.
-    this.env = options.env
-    this._process = options.events
-    this._module = options.module
 
     // Become an `EventEmitter` and proxy parent events.
     events.EventEmitter.call(this)
@@ -336,8 +336,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
         env: this.env,
         stdin: this.stdin,
         stderr: this.stderr,
-// TODO Should be this, not _process, maybe rename `_parent`.
-        events: this._process,
+        events: this,
         send: this.send
     }, async())
 })
