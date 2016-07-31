@@ -342,8 +342,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
     }, async())
 })
 
-// Exit raises an exception to mimic `process.exit` behavior. Of course, this
-// can be defeated by an old catch block. Here's hoping the user rethrows.
+// TODO Outgoingish.
 Program.prototype.exit = function (exitCode) {
     throw interrupt({ name: 'exit', context: { exitCode: exitCode } })
 }
