@@ -60,6 +60,7 @@ module.exports = function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
         var program = new Program(usage, parameters, {
+            module: module,
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
