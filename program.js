@@ -255,13 +255,10 @@ Program.prototype.format = function (key) {
 
 // abend helper stops execution and prints a message
 Program.prototype.abend = function () {
-    var vargs = slice.call(arguments), key = vargs.shift(), code
+    var vargs = slice.call(arguments), key = vargs.shift(), exitCode = 1
     if (typeof key == 'number') {
-    // **TODO** `_exitCode` looks unused.
-        this._exitCode = key
+        exitCode = key
         key = vargs.shift()
-    } else {
-        this._exitCode = 1
     }
     var message
     if (key) {
@@ -275,20 +272,19 @@ Program.prototype.abend = function () {
             key: key,
             vargs: vargs,
             stderr: message,
-            exitCode: this._exitCode
+            exitCode: exitCode
         }
     })
 }
 
 // Stop execution and print help message.
 Program.prototype.help = function () {
-    this._exitCode = 0
     throw interrupt({
         name: 'help',
         context: {
             method: 'help',
             stdout: this._usage.chooseUsage(this.lang),
-            exitCode: this._exitCode
+            exitCode: 0
         }
     })
 }

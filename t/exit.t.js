@@ -29,7 +29,8 @@ function prove (assert) {
     exit(process)(interrupt({
         name: 'help',
         context: {
-            stdout: 'usage'
+            stdout: 'usage',
+            exitCode: 0
         }
     }))
     assert(process.stdout.read().toString(), 'usage\n', 'help message')
