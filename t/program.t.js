@@ -49,12 +49,12 @@ function prove (async, assert) {
     createProgram(__filename, {}, [ '-cone=1', '-c', 'two=2' ], {
     }, cadence(function (async, program) {
         assert(program.given, [ 'config' ], 'given')
-        assert(program.params, {
+        assert(program.grouped, {
             config: [ 'one=1', 'two=2' ],
             level: [],
             processes: [ ],
             bind: []
-        }, 'param')
+        }, 'grouped')
         assert(program.ultimate, { config: 'two=2' }, 'ultimate')
         assert(!program.terminal, 'not terminal')
     }), null, function (error) {

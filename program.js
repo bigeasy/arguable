@@ -133,16 +133,16 @@ Program.prototype._setParameters = function (parameters) {
     }).filter(function (value, index, arrayj) {
         return arrayj.indexOf(value) == index
     })
-    this.params = {}
+    this.grouped = {}
     this.arguable.forEach(function (name) {
-        this.params[name] = []
+        this.grouped[name] = []
     }, this)
     this.parameters.forEach(function (parameter) {
-        this.params[parameter.name].push(parameter.value)
+        this.grouped[parameter.name].push(parameter.value)
     }, this)
     this.ultimate = {}
     this.given.forEach(function (key) {
-        this.ultimate[key] = this.params[key][this.params[key].length - 1]
+        this.ultimate[key] = this.grouped[key][this.grouped[key].length - 1]
     }, this)
 }
 
