@@ -1,4 +1,4 @@
-require('proof')(43, require('cadence')(prove))
+require('proof')(44, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -169,6 +169,12 @@ function prove (async, assert) {
     }), module, function (error, exitCode) {
         if (error) throw error
         assert(exitCode, 0, 'delegated command normal exit')
+    })
+    createProgram(__filename, {}, [ 'found' ], {}, cadence(function (async, program) {
+        program.delegate('delegated.found', [], async())
+    }), module, function (error, exitCode) {
+        if (error) throw error
+        assert(exitCode, 0, 'delegated by package name normal exit')
     })
     createProgram(__filename, {}, [
         'unfound'

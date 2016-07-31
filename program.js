@@ -305,17 +305,21 @@ Program.prototype.helpIf = function (help) {
 //
 // **TODO** Let's hedge and accept a package name. If that is easy enough to use
 // in the programs that currently use Aguable, we can come back and remove this.
-Program.prototype.delegate = cadence(function (async, format) {
-    if (this.argv.length == 0) {
-        this.abend('sub command missing')
-    }
-    var argv = this.argv.slice()
-    var command = argv.shift()
-    var pkg
-    if (typeof format == 'function') {
-        pkg = format(command, this)
+Program.prototype.delegate = cadence(function (async, format, argv) {
+    if (argv == null) {
+        if (this.argv.length == 0) {
+            this.abend('sub command missing')
+        }
+        var argv = this.argv.slice()
+        var command = argv.shift()
+        var pkg
+        if (typeof format == 'function') {
+            pkg = format(command, this)
+        } else {
+            pkg = util.format(format, command)
+        }
     } else {
-        pkg = util.format(format, command)
+        pkg = format
     }
     var arguable
     try {
