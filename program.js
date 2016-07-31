@@ -126,7 +126,6 @@ util.inherits(Program, events.EventEmitter)
 
 //
 Program.prototype._setParameters = function (parameters) {
-    // **TODO** Oof. Do I want to rename this? `parameters`, `arrayed`, `indexed`.
     this.parameters = parameters
     this.given = parameters.map(function (parameter) {
         return parameter.name
@@ -187,9 +186,10 @@ Program.prototype.validate = function () {
         var valid = test instanceof RegExp ? function (value) {
             return test.test(value)
         } : test
+        // The validator will throw a format to use to format the error message.
+        // Not sure why I've decied to get so wicked with the throws.
         validator = function (value) {
             if (!valid(value)) {
-// TODO What? Why am I throwing this?
                 throw format
             }
         }
@@ -303,8 +303,8 @@ Program.prototype.helpIf = function (help) {
 // at all certain that I want to have all this formatting nonsense. Can't the
 // parent simply invoke it with a string?
 //
-// **TODO** Let's hedge and accept a package name. If that is easy enough to use
-// in the programs that currently use Aguable, we can come back and remove this.
+// We're only going to support accepting a package name, but leave the
+// formatting logic in for now to see where it's being used.
 Program.prototype.delegate = cadence(function (async, format, argv) {
     if (argv == null) {
         if (this.argv.length == 0) {
