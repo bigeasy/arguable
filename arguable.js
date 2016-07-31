@@ -62,8 +62,8 @@ module.exports = function () {
         var ee = options.events
         if (ee == null) {
             ee = new events.EventEmitter
-            ee.mainModule == options.mainModule || process.mainModule
-            ee.connected == ('connected' in options) ? options.connected : true
+            ee.mainModule = options.mainModule || process.mainModule
+            ee.connected = ('connected' in options) ? options.connected : true
             ee.disconnect = function () { this.connected = false }
         }
         var program = new Program(usage, parameters, {
@@ -71,7 +71,7 @@ module.exports = function () {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
-            process: ee,
+            events: ee,
             send: send || null,
             env: options.env || {}
         })
