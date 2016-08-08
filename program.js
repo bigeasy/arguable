@@ -22,8 +22,8 @@ function newListener (eventName) {
     // `SIGINT` and `SIGTERM`.
     case 'shutdown':
         if (this._shutdown.count == 0) {
-            this._process.on('SIGINT', this._shutdown.listener)
-            this._process.on('SIGTERM', this._shutdown.listener)
+            this.on('SIGINT', this._shutdown.listener)
+            this.on('SIGTERM', this._shutdown.listener)
         }
         this._shutdown.count++
         break
@@ -39,8 +39,8 @@ function removeListener (eventName) {
     case 'shutdown':
         this._shutdown.count--
         if (this._shutdown.count == 0) {
-            this._process.removeListener('SIGINT', this._shutdown.listener)
-            this._process.removeListener('SIGTERM', this._shutdown.listener)
+            this.removeListener('SIGINT', this._shutdown.listener)
+            this.removeListener('SIGTERM', this._shutdown.listener)
         }
         break
     default:
