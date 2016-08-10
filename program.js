@@ -201,6 +201,9 @@ Program.prototype.validate = function () {
     }
     var parameters = this.parameters.map(function (parameter) {
         try {
+            if (!~vargs.indexOf(parameter.name)) {
+                return parameter
+            }
             var value = validator(parameter.value, parameter.name, this)
             if (value !== (void(0))) {
                 parameter.value = value

@@ -196,7 +196,7 @@ function prove (async, assert) {
     }), null, function (error) {
         assert(error.stderr, 'processes is required', 'required')
     })
-    createProgram(__filename, {}, [ '-p', '3' ],  {
+    createProgram(__filename, {}, [ '-l', 'x', '-p', '3' ],  {
     }, cadence(function (async, program) {
         program.validate('%s is not an integer', 'processes', /^\d+$/)
         assert(program.ultimate.processes, '3', 'successful function validation')
