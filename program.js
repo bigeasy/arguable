@@ -5,6 +5,7 @@ var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
 var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
+var rescue = require('rescue')
 var events = require('events')
 
 // The program is an event emitter that proxies events from the Node.js
@@ -295,6 +296,22 @@ Program.prototype.help = function () {
 
 Program.prototype.assert = function (condition, message) {
     if (!condition) this.abend(message)
+}
+
+Program.prototype.attempt = function (f) {
+    try {
+        return f()
+    } catch (error) {
+        var vargs = slice.call(arguments, 1)
+        var abend = function () {
+            this.abend.apply(this, vargs)
+        }.bind(this)
+        if (vargs[0] instanceof RegExp) {
+            rescue(vargs.shift(), abend)(error)
+        } else {
+            abend()
+        }
+    }
 }
 
 // Saves having to write a unit test for every application that checks a branch

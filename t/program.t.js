@@ -1,4 +1,4 @@
-require('proof')(44, require('cadence')(prove))
+require('proof')(47, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -202,6 +202,21 @@ function prove (async, assert) {
         assert(program.ultimate.processes, '3', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
+    })
+    createProgram(__filename, {}, [],  {
+    }, cadence(function (async, program) {
+        assert(program.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
+        assert(program.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
+    }), null, function (error) {
+        assert(error.stderr, 'failed attempt', 'failed attempt')
+    })
+    createProgram(__filename, {}, [],  {
+    }, cadence(function (async, program) {
+        assert(program.attempt(function () {
+            throw new Error('failed attempt')
+        }, /^failed attempt$/, 'failed attempt'), 1, 'attempted')
+    }), null, function (error) {
+        assert(error.stderr, 'failed attempt', 'failed attempt matched')
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
