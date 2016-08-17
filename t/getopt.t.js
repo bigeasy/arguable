@@ -1,4 +1,4 @@
-require('proof')(17, prove)
+require('proof/redux')(17, prove)
 
 function prove (assert) {
     var pattern = [
@@ -42,12 +42,12 @@ function prove (assert) {
         name: 'config', value: 'three=3'
     }], 'array')
 
-    var argv = [ '-p', 3, '--', '-A' ]
+    var argv = [ '-p', '3', '--', '-A' ]
     params = getopt(pattern, argv)
     assert(argv, [ '--', '-A' ], 'stop on double hyphens')
     assert(params, [{ name: 'processes', value: '3' }], 'stop on double hyphens params')
 
-    var argv = [ '-a', '-p', 3 ]
+    var argv = [ '-a', '-p', '3' ]
     assert(getopt(pattern, argv), [
         { name: 'ambiguous', value: true },
         { name: 'processes', value: '3' }

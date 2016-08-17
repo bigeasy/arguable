@@ -1,4 +1,4 @@
-require('proof')(47, require('cadence')(prove))
+require('proof/redux')(47, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___

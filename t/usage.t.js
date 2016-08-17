@@ -1,4 +1,4 @@
-require('proof')(4, prove)
+require('proof/redux')(4, prove)
 
 /*
   ___ usage ___ en_US ___

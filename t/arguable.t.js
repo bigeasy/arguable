@@ -1,4 +1,4 @@
-require('proof')(13, require('cadence')(prove))
+require('proof/redux')(13, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
