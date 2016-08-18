@@ -1,4 +1,4 @@
-require('proof/redux')(14, require('cadence')(prove))
+require('proof/redux')(15, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -41,6 +41,9 @@ function prove (async, assert) {
         parameters([{ name: 'name', value: 'value' }], {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 2, name: 'value' }, 'name value argument')
+        parameters([], async())
+    }, function (result) {
+        assert(result, { one: 1, two: 2 }, 'invoke without options')
         parameters([[{ three: 3 }]], {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 2, three: 3 }, 'nested array argument')

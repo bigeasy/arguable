@@ -40,6 +40,10 @@ module.exports = function () {
                 delete object.argv
             }
         }
+        if (typeof options == 'function') {
+            callback = options
+            options = {}
+        }
         argv.unshift(defaultParameters)
         argv = argv.slice()
         while (argv.length != 0) {
