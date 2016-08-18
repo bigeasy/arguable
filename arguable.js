@@ -27,8 +27,18 @@ module.exports = function () {
     var main = vargs.shift()
     var invoke = module.exports = function (argv, options, callback) {
         var parameters = []
-        if (!Array.isArray(argv)) {
+        if (Array.isArray(argv)) {
             argv = [ argv ]
+        } else {
+            var object = {}
+            for (var key in argv) {
+                object[key] = argv[key]
+            }
+            argv = [ object ]
+            if (Array.isArray(object.argv)) {
+                argv.push(object.argv)
+                delete object.argv
+            }
         }
         argv.unshift(defaultParameters)
         argv = argv.slice()

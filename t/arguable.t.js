@@ -1,4 +1,4 @@
-require('proof/redux')(13, require('cadence')(prove))
+require('proof/redux')(14, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -35,6 +35,9 @@ function prove (async, assert) {
         parameters({ two: 3 }, {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 3 }, 'parameter overwrite, single object argv')
+        parameters({ two: 3, argv: [{ name: 'four', value: 4 }] }, {}, async())
+    }, function (result) {
+        assert(result, { one: 1, two: 3, four: 4 }, 'parameter overwrite, argv in object')
         parameters([{ name: 'name', value: 'value' }], {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 2, name: 'value' }, 'name value argument')
