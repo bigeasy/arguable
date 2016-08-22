@@ -362,7 +362,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
         env: this.env,
         stdin: this.stdin,
         stderr: this.stderr,
-        process: this,
+        events: this,
         send: this.send
     }, async())
 })
