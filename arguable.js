@@ -90,6 +90,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             isMainModule: isMainModule,
             events: ee,
+            properties: options.properties,
             send: send || null,
             env: options.env || {}
         })

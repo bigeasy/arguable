@@ -1,4 +1,4 @@
-require('proof/redux')(47, require('cadence')(prove))
+require('proof/redux')(48, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -257,6 +257,14 @@ function prove (async, assert) {
     }, cadence(function (async, program) {
         assert(program.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
         assert(program.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
+    }), null, function (error) {
+        if (error) throw error
+    })
+    createProgram(__filename, {
+    }, [],  {
+        properties: { extension: 1 }
+    }, cadence(function (async, program) {
+        assert(program.extension, 1, 'additional properties')
     }), null, function (error) {
         if (error) throw error
     })

@@ -72,6 +72,11 @@ function Program (source, argv, options) {
     this._process = options.events
     this._module = options.module
 
+    var properties = options.properties || {}
+    for (var key in properties) {
+        this[key] = properties[key]
+    }
+
     // Use environment `LANG` or else language of first usage definition.
     this.lang = this.env.LANG ? this.env.LANG.split('.')[0] : this._usage.language
 
