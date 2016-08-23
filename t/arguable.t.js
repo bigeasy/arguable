@@ -1,4 +1,4 @@
-require('proof/redux')(15, require('cadence')(prove))
+require('proof/redux')(17, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -32,6 +32,12 @@ function prove (async, assert) {
         send([], { events: ee }, async())
     }, function () {
         assert(true, 'send called back')
+        parameters({}, async())
+    }, function (result, argv, property) {
+        assert(property, 1, 'default property')
+        parameters({}, { properties: { property: 2 } },  async())
+    }, function (result, argv, property) {
+        assert(property, 2, 'override default property')
         parameters({ two: 3 }, {}, async())
     }, function (result) {
         assert(result, { one: 1, two: 3 }, 'parameter overwrite, single object argv')

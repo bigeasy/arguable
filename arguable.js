@@ -10,21 +10,29 @@ var slice = [].slice
 function createStream (s) { return s || new stream.PassThrough }
 
 module.exports = function () {
+    // Varadic arguments.
     var vargs = slice.call(arguments)
+
+    // First argument is always the module.
     var module = vargs.shift()
+
     // Usage source can be specified explicitly, or else it is sought in the
     // comments of the main module.
-    var usage = module.filename
-    if (typeof vargs[0] == 'string') {
-        usage = vargs.shift()
-    }
+    var usage = typeof vargs[0] == 'string'
+              ? vargs.shift()
+              : module.filename
+
     // Check for default values for named parameters when argument parser is
     // invoked as a main module.
-    var defaultParameters = {}
-    if (typeof vargs[0] == 'object') {
-        defaultParameters = vargs.shift()
-    }
+    var defaults = typeof vargs[0] == 'object' ? vargs.shift() : {}
+
+    // Ensure we have defaults.
+    defaults.argv || (defaults.argv = [])
+    defaults.properties || (defaults.properties = [])
+
+    // Main body of argument parser or program is final argument.
     var main = vargs.shift()
+
     var invoke = module.exports = function (argv, options, callback) {
         var parameters = []
         if (Array.isArray(argv)) {
@@ -44,7 +52,7 @@ module.exports = function () {
             callback = options
             options = {}
         }
-        argv.unshift(defaultParameters)
+        argv.unshift(defaults.argv)
         argv = argv.slice()
         while (argv.length != 0) {
             var argument = argv.shift()
@@ -90,7 +98,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             isMainModule: isMainModule,
             events: ee,
-            properties: options.properties,
+            properties: [ defaults.properties, options.properties || {} ],
             send: send || null,
             env: options.env || {}
         })
