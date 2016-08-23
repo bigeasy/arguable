@@ -1,18 +1,18 @@
 {
     "name":                 "arguable",
+    "version":              "3.2.1",
     "description":
 
       "Usage-first argument parser.",
 
-    "version":              "3.2.1",
     "keywords":
     [
                             "command", "option", "parser", "prompt", "cli",
                             "stdin", "args", "arguments", "console", "glob"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "license":              "MIT",
     "homepage":             "http://bigeasy.github.io/arguable",
+    "license":              "MIT",
     "repository":
     {
                             "type": "git",
