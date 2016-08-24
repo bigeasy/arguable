@@ -109,12 +109,12 @@ to able to stop it’s own event loops.</p>
                         process.stderr.write(error.stderr)
                         process.stderr.write(<span class="hljs-string">'\n'</span>)
                     }
-                    <span class="hljs-keyword">return</span> error.exitCode || <span class="hljs-number">1</span>
+                    <span class="hljs-keyword">return</span> error.exitCode
                 },
                 <span class="hljs-regexp">/^bigeasy.arguable#help$/m</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
                     process.stdout.write(error.stdout)
                     process.stdout.write(<span class="hljs-string">'\n'</span>)
-                    <span class="hljs-keyword">return</span> error.exitCode || <span class="hljs-number">0</span>
+                    <span class="hljs-keyword">return</span> error.exitCode
                 }
 </pre></div></div>
 
@@ -132,6 +132,9 @@ to able to stop it’s own event loops.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>            ])(error)
+            <span class="hljs-keyword">if</span> (exitCode == <span class="hljs-literal">null</span>) {
+                exitCode = <span class="hljs-number">1</span>
+            }
         }
 </pre></div></div>
 
