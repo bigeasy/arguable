@@ -353,7 +353,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
         arguable = this._module.require(pkg)
     } catch (error) {
         if (error.code == 'MODULE_NOT_FOUND') {
-            this.abend('sub command not found', command, pkg)
+            this.abend('sub command module not found', command, pkg)
         } else {
             throw error
         }

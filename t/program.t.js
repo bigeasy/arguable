@@ -182,7 +182,7 @@ function prove (async, assert) {
     ], {}, cadence(function (async, program) {
         program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
     }), module, function (error) {
-        assert(error.stderr, 'sub command not found', 'delgated not found')
+        assert(error.stderr, 'sub command module not found', 'delegated not found')
     })
     createProgram(__filename, {}, [
         'broken'
