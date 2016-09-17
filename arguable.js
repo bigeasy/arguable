@@ -1,7 +1,6 @@
 var stream = require('stream')
 var events = require('events')
 var exit = require('./exit')
-var rescue = require('rescue')
 
 var Program = require('./program')
 
@@ -103,17 +102,7 @@ module.exports = function () {
             send: send || null,
             env: options.env || {}
         })
-        main(program, function (error) {
-            try {
-                if (error) rescue(/^bigeasy.arguable#raise$/m, function (error) {
-                    program.abend.apply(program, error.vargs)
-                })(error)
-            } catch (error) {
-                callback(error)
-                return
-            }
-            callback.apply(null, slice.call(arguments))
-        })
+        main(program, callback)
         return program
     }
     if (module === process.mainModule) {
@@ -126,9 +115,4 @@ module.exports = function () {
             events: process
         }, exit(process))
     }
-}
-
-var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
-module.exports.raise = function () {
-    throw new interrupt({ name: 'raise', context: { vargs: slice.call(arguments) } })
 }

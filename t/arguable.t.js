@@ -1,9 +1,8 @@
-require('proof/redux')(18, require('cadence')(prove))
+require('proof/redux')(17, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
     var echo2 = require('./fixtures/echo-2')
-    var raise = require('./fixtures/raise')
     var send = require('./fixtures/send')
     var parameters = require('./fixtures/parameters')
     var disconnect = require('./fixtures/disconnect')
@@ -25,11 +24,7 @@ function prove (async, assert) {
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })
         echo2([ 'a', 'b' ], { stdout: stdout }, async())
-    }, [function () {
-        raise([], async())
-    }, function (error) {
-        assert(/^bigeasy.arguable#abend$/m, 'raised')
-    }], function () {
+    }, function () {
         var ee = new events.EventEmitter
         ee.send = function (message) { assert(message, { key: 'value' }, 'send') }
         assert(true, 'echo 2 called back')
