@@ -78,6 +78,9 @@ module.exports = function () {
                 break
             }
         }
+        if (options instanceof events.EventEmitter) {
+            options = { events: options }
+        }
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
