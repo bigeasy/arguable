@@ -78,9 +78,22 @@ module.exports = function () {
                 break
             }
         }
+        // If options is really an `EventEmitter`, then our argument parser is
+        // being called as a universal submodule. This is an interface that
+        // allwos a library module author to document that a submodule accepts
+        // an arguments array and a signal handler. The library module author
+        // can document as many `Program` features as they would like, or they
+        // could simply say that it is only for events, or they can say that it
+        // is mean to be ignored by the submodule author.
+        //
+        // Now the submoudle author can use Arguable for their argument parser
+        // and program will be correctly configured, or they can create a
+        // function that takes teh argument array and use the argument parser
+        // module of their choice.
         if (options instanceof events.EventEmitter) {
             options = { events: options }
         }
+        //
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
         }
