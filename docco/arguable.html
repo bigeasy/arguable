@@ -30,6 +30,11 @@
                 </a>
 
 
+                <a class="source" href="code.html">
+                  code.js
+                </a>
+
+
                 <a class="source" href="exit.html">
                   exit.js
                 </a>
@@ -255,6 +260,9 @@ invoked as a main module.</p>
                 parameters.push(argument)
                 <span class="hljs-keyword">break</span>
             }
+        }
+        <span class="hljs-keyword">if</span> (options <span class="hljs-keyword">instanceof</span> events.EventEmitter) {
+            options = { events: options }
         }
         <span class="hljs-keyword">var</span> send = options.send || options.events &amp;&amp; options.events.send &amp;&amp; <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
             options.events.send.apply(options.events, slice.call(<span class="hljs-built_in">arguments</span>))

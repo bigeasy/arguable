@@ -30,6 +30,11 @@
                 </a>
 
 
+                <a class="source" href="code.html">
+                  code.js
+                </a>
+
+
                 <a class="source" href="exit.html">
                   exit.js
                 </a>
@@ -817,7 +822,7 @@ formatting logic in for now to see where it’s being used.</p>
         arguable = <span class="hljs-keyword">this</span>._module.require(pkg)
     } <span class="hljs-keyword">catch</span> (error) {
         <span class="hljs-keyword">if</span> (error.code == <span class="hljs-string">'MODULE_NOT_FOUND'</span>) {
-            <span class="hljs-keyword">this</span>.abend(<span class="hljs-string">'sub command not found'</span>, command, pkg)
+            <span class="hljs-keyword">this</span>.abend(<span class="hljs-string">'sub command module not found'</span>, command, pkg)
         } <span class="hljs-keyword">else</span> {
             <span class="hljs-keyword">throw</span> error
         }
