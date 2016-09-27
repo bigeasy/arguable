@@ -261,10 +261,49 @@ invoked as a main module.</p>
                 <span class="hljs-keyword">break</span>
             }
         }
-        <span class="hljs-keyword">if</span> (options <span class="hljs-keyword">instanceof</span> events.EventEmitter) {
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>If options is really an <code>EventEmitter</code>, then our argument parser is
+being called as a universal submodule. This is an interface tha
+allwos a library module author to document that a submodule accepts
+an arguments array and a signal handler. The library module author
+can document as many <code>Program</code> features as they would like, or they
+could simply say that it is only for events, or they can say that i
+is mean to be ignored by the submodule author.</p>
+<p>Now the submoudle author can use Arguable for their argument parser
+and program will be correctly configured, or they can create a
+function that takes teh argument array and use the argument parser
+module of their choice.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (options <span class="hljs-keyword">instanceof</span> events.EventEmitter) {
             options = { events: options }
         }
-        <span class="hljs-keyword">var</span> send = options.send || options.events &amp;&amp; options.events.send &amp;&amp; <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> send = options.send || options.events &amp;&amp; options.events.send &amp;&amp; <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
             options.events.send.apply(options.events, slice.call(<span class="hljs-built_in">arguments</span>))
         }
         <span class="hljs-keyword">var</span> ee = options.events
@@ -298,11 +337,11 @@ invoked as a main module.</p>
         </li>
 
 
-        <li id="section-9">
+        <li id="section-11">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>No. Stop! There is no <code>process.stdio</code>. Do not addd one. (Again.)</p>
 
