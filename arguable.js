@@ -10,7 +10,7 @@ var slice = [].slice
 function createStream (s) { return s || new stream.PassThrough }
 
 module.exports = function () {
-    // Varadic arguments.
+    // Variadic arguments.
     var vargs = slice.call(arguments)
 
     // First argument is always the module.
@@ -34,6 +34,7 @@ module.exports = function () {
     var main = vargs.shift()
 
     var invoke = module.exports = function (argv, options, callback) {
+        var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
         var parameters = []
         if (Array.isArray(argv)) {
             argv = [ argv ]
@@ -78,21 +79,41 @@ module.exports = function () {
                 break
             }
         }
+        // What we're shooting for here is this:
+        //
+        //   Create a signature that would be a reasonable signature for a
+        //   generic function that is not an Arguable argument parser.
+        //
+        //   Or put another way, tell the user to create an argument parser that
+        //   accepts an arguments array and a pseudo-process, the program, and a
+        //   callback, so that you can tell them to either use Arguable, or else
+        //   implement an argument parser that accepts reasonable arguments as
+        //   opposed to accepting convoluted named parameters.
+        //
         // If options is really an `EventEmitter`, then our argument parser is
         // being called as a universal submodule. This is an interface that
-        // allwos a library module author to document that a submodule accepts
+        // allows a library module author to document that a submodule accepts
         // an arguments array and a signal handler. The library module author
         // can document as many `Program` features as they would like, or they
         // could simply say that it is only for events, or they can say that it
         // is mean to be ignored by the submodule author.
         //
-        // Now the submoudle author can use Arguable for their argument parser
+        // Now the submodule author can use Arguable for their argument parser
         // and program will be correctly configured, or they can create a
-        // function that takes teh argument array and use the argument parser
-        // module of their choice.
+        // function that takes the argument array and use the argument parser
+        // module of their choice. Additional properties are arguments to the
+        // argument parser, not properties on this mystery event emitter.
+
+        // Note that all the other options are debugging options.
         if (options instanceof events.EventEmitter) {
             options = { events: options }
+            options.stdin = options.events.stdin
+            options.stdout = options.events.stdout
+            options.stderr = options.events.stderr
         }
+        // TODO Okay, now we have space for additional arguments that follow the
+        // event emitter or the options. These can be passed in as variadic
+        // arguments to be interpreted by the caller. This can be experimental.
         //
         var send = options.send || options.events && options.events.send && function () {
             options.events.send.apply(options.events, slice.call(arguments))
@@ -118,12 +139,12 @@ module.exports = function () {
             send: send || null,
             env: options.env || {}
         })
-        main(program, callback)
+        main.apply(null, [ program ].concat(vargs))
         return program
     }
     if (module === process.mainModule) {
         invoke(process.argv.slice(2), {
-// No. Stop! There is no `process.stdio`. Do not addd one. (Again.)
+// No. Stop! There is no `process.stdio`. Do not add one! (Again.)
             env: process.env,
             stdout: process.stdout,
             stdin: process.stdin,
