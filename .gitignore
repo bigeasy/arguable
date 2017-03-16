@@ -1,4 +1,5 @@
-/.imdone
+/.wiseguy
+/docs
 /node_modules/*
 !/node_modules/delegated.found.js
 !/node_modules/delegated.broken.js
