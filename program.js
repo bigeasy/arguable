@@ -276,27 +276,21 @@ Program.prototype.abend = function () {
         message = this._usage.format(this.lang, key, vargs)
     }
     this._redirect = 'stderr'
-    throw interrupt({
-        name: 'abend',
-        context: {
-            method: 'abend',
-            key: key,
-            vargs: vargs,
-            stderr: message,
-            exitCode: exitCode
-        }
+    throw interrupt('abend', {
+        method: 'abend',
+        key: key,
+        vargs: vargs,
+        stderr: message,
+        exitCode: exitCode
     })
 }
 
 // Stop execution and print help message.
 Program.prototype.help = function () {
-    throw interrupt({
-        name: 'help',
-        context: {
-            method: 'help',
-            stdout: this._usage.chooseUsage(this.lang),
-            exitCode: 0
-        }
+    throw interrupt('help', {
+        method: 'help',
+        stdout: this._usage.chooseUsage(this.lang),
+        exitCode: 0
     })
 }
 
@@ -370,7 +364,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
 
 // TODO Outgoingish.
 Program.prototype.exit = function (exitCode) {
-    throw interrupt({ name: 'exit', context: { exitCode: exitCode } })
+    throw interrupt('exit', { exitCode: exitCode })
 }
 
 module.exports = Program
