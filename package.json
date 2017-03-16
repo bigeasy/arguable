@@ -27,7 +27,7 @@
     },
     "devDependencies":
     {
-                            "proof":                        "1.1.x"
+                            "proof":                        "1.2.4"
     },
     "main":                 "arguable",
     "scripts":
