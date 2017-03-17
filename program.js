@@ -362,9 +362,4 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
     }, async())
 })
 
-// TODO Outgoingish.
-Program.prototype.exit = function (exitCode) {
-    throw interrupt('exit', { exitCode: exitCode })
-}
-
 module.exports = Program

@@ -1,4 +1,4 @@
-require('proof/redux')(48, require('cadence')(prove))
+require('proof/redux')(47, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -135,13 +135,6 @@ function prove (async, assert) {
     }), null, function (error) {
         assert(error.stderr, 'unknown argument', 'unknown argument')
         assert(error.exitCode, 1, 'unknown argument code')
-    })
-    createProgram(__filename, {}, [], io = {
-    }, cadence(function (async, program) {
-        program.exit(0)
-        return 0
-    }), null, function (error) {
-        assert(error.exitCode, 0, 'normal exit')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.help()
