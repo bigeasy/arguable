@@ -1,4 +1,4 @@
-# Arguable Design
+## Wed Mar 20 18:47:33 UTC 2013
 
 Currently wondering what to do about missing commands. If the programmer
 does not specify a default, what is the correct action to take? Nothing matches.
@@ -14,7 +14,9 @@ at all able to detect it.
 
 `svn` behaves the same way.
 
-## The `abended` function.
+## Wed Mar 20 21:32:21 UTC 2013
+
+### The `abended` function.
 
 Currently, the user `abend` function handles the case of a programmer invoking
 help by calling the `help` function of options. We use an exception to stop the
@@ -26,13 +28,15 @@ a framework for it.
 
 This needs to be added to GitHub Issues.
 
-## String Resources
+## Fri Apr 19 17:16:08 UTC 2013
+
+### String Resources
 
 The string resources in the main module part are generally available to all
 commands, so that subcommands can pull from a common pool of error messages and
 resource strings.
 
-## Internationalization
+### Internationalization
 
 Make a note, somewhere in the documentation, that you're not supposed to change
 the way the software works in a different language, but maybe you're allowed to,
@@ -41,12 +45,9 @@ to always be pulled from the default language.
 
 Are there translations; can read from a directory, instead of from a file?
 
-## Markup Language
+## Fri Apr 19 18:10:37 UTC 2013
 
-I'd like to make the input to arguable be more of a markup language, easier to
-write, and it can create the nice columnar displays as optional outputs.
-
-## Inbox
+### Inbox
 
 This library migrated from generated code from a language that compiles into
 JavaScript, so it is in rough shape, having been built from generated output.
@@ -55,10 +56,21 @@ As I document, and use the library, I'm going to probably find uses for this
 current code base that are hidden by my distaste for the code, uses exposed by
 the interface, which pleases me.
 
+## Fri Aug  9 03:40:00 UTC 2013
+
+### Markup Language
+
+I'd like to make the input to arguable be more of a markup language, easier to
+write, and it can create the nice columnar displays as optional outputs.
+
+## Wed Aug 20 15:05:20 UTC 2014
+
 You should use an error-first callback, providing a callback that will abend if
 there is an error, but that does not need to be called to end the program.
 
-## Expanding Variables<a id="expand"></a>
+## Sun Jan 17 17:51:25 UTC 2016
+
+### Expanding Variables<a id="expand"></a>
 
 Thoughts on less than simple implementation.
 
