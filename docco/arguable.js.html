@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -89,9 +89,7 @@
 
 <span class="hljs-keyword">var</span> Program = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./program'</span>)
 
-<span class="hljs-keyword">var</span> slice = [].slice
-
-</pre></div></div>
+<span class="hljs-keyword">var</span> slice = [].slice</pre></div></div>
 
         </li>
 
@@ -108,8 +106,7 @@
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createStream</span> (<span class="hljs-params">s</span>) </span>{ <span class="hljs-keyword">return</span> s || <span class="hljs-keyword">new</span> stream.PassThrough }
 
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{</pre></div></div>
 
         </li>
 
@@ -120,13 +117,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Varadic arguments.</p>
+              <p>Variadic arguments.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>)
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>)</pre></div></div>
 
         </li>
 
@@ -141,9 +136,7 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span> = vargs.shift()
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span> = vargs.shift()</pre></div></div>
 
         </li>
 
@@ -161,9 +154,7 @@ comments of the main module.</p>
 
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> usage = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'string'</span>
               ? vargs.shift()
-              : <span class="hljs-built_in">module</span>.filename
-
-</pre></div></div>
+              : <span class="hljs-built_in">module</span>.filename</pre></div></div>
 
         </li>
 
@@ -179,9 +170,7 @@ invoked as a main module.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> defaults = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'object'</span> ? vargs.shift() : {}
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> defaults = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'object'</span> ? vargs.shift() : {}</pre></div></div>
 
         </li>
 
@@ -197,9 +186,7 @@ invoked as a main module.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>    defaults.argv || (defaults.argv = [])
-    defaults.properties || (defaults.properties = [])
-
-</pre></div></div>
+    defaults.properties || (defaults.properties = [])</pre></div></div>
 
         </li>
 
@@ -217,6 +204,7 @@ invoked as a main module.</p>
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> main = vargs.shift()
 
     <span class="hljs-keyword">var</span> invoke = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">argv, options, callback</span>) </span>{
+        <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-built_in">arguments</span>.length &gt;= <span class="hljs-number">3</span> ? <span class="hljs-number">2</span> : <span class="hljs-number">1</span>)
         <span class="hljs-keyword">var</span> parameters = []
         <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Array</span>.isArray(argv)) {
             argv = [ argv ]
@@ -251,7 +239,7 @@ invoked as a main module.</p>
                         parameters.push(argument)
                     } <span class="hljs-keyword">else</span> {
                         <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> name <span class="hljs-keyword">in</span> argument) {
-                            parameters.push({ name: name, value: argument[name] })
+                            parameters.push({ <span class="hljs-attr">name</span>: name, <span class="hljs-attr">value</span>: argument[name] })
                         }
                     }
                 }
@@ -260,8 +248,7 @@ invoked as a main module.</p>
                 parameters.push(argument)
                 <span class="hljs-keyword">break</span>
             }
-        }
-</pre></div></div>
+        }</pre></div></div>
 
         </li>
 
@@ -272,24 +259,28 @@ invoked as a main module.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>If options is really an <code>EventEmitter</code>, then our argument parser is
-being called as a universal submodule. This is an interface tha
-allwos a library module author to document that a submodule accepts
+              <p>What we’re shooting for here is this:</p>
+<p>  Create a signature that would be a reasonable signature for a
+  generic function that is not an Arguable argument parser.</p>
+<p>  Or put another way, tell the user to create an argument parser that
+  accepts an arguments array and a pseudo-process, the program, and a
+  callback, so that you can tell them to either use Arguable, or else
+  implement an argument parser that accepts reasonable arguments as
+  opposed to accepting convoluted named parameters.</p>
+<p>If options is really an <code>EventEmitter</code>, then our argument parser is
+being called as a universal submodule. This is an interface that
+allows a library module author to document that a submodule accepts
 an arguments array and a signal handler. The library module author
 can document as many <code>Program</code> features as they would like, or they
-could simply say that it is only for events, or they can say that i
+could simply say that it is only for events, or they can say that it
 is mean to be ignored by the submodule author.</p>
-<p>Now the submoudle author can use Arguable for their argument parser
+<p>Now the submodule author can use Arguable for their argument parser
 and program will be correctly configured, or they can create a
-function that takes teh argument array and use the argument parser
-module of their choice.</p>
+function that takes the argument array and use the argument parser
+module of their choice. Additional properties are arguments to the
+argument parser, not properties on this mystery event emitter.</p>
 
             </div>
-
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (options <span class="hljs-keyword">instanceof</span> events.EventEmitter) {
-            options = { events: options }
-        }
-</pre></div></div>
 
         </li>
 
@@ -300,6 +291,29 @@ module of their choice.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
+              <p>Note that all the other options are debugging options.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (options <span class="hljs-keyword">instanceof</span> events.EventEmitter) {
+            options = { <span class="hljs-attr">events</span>: options }
+            options.stdin = options.events.stdin
+            options.stdout = options.events.stdout
+            options.stderr = options.events.stderr
+        }</pre></div></div>
+
+        </li>
+
+
+        <li id="section-11">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>TODO Okay, now we have space for additional arguments that follow the
+event emitter or the options. These can be passed in as variadic
+arguments to be interpreted by the caller. This can be experimental.</p>
 
             </div>
 
@@ -317,46 +331,43 @@ module of their choice.</p>
                          ? options.isMainModule
                          : process.mainModule === <span class="hljs-built_in">module</span>
         <span class="hljs-keyword">var</span> program = <span class="hljs-keyword">new</span> Program(usage, parameters, {
-            <span class="hljs-built_in">module</span>: <span class="hljs-built_in">module</span>,
-            stdout: createStream(options.stdout),
-            stdin: createStream(options.stdin),
-            stderr: createStream(options.stderr),
-            isMainModule: isMainModule,
-            events: ee,
-            properties: [ defaults.properties, options.properties || {} ],
-            send: send || <span class="hljs-literal">null</span>,
-            env: options.env || {}
+            <span class="hljs-attr">module</span>: <span class="hljs-built_in">module</span>,
+            <span class="hljs-attr">stdout</span>: createStream(options.stdout),
+            <span class="hljs-attr">stdin</span>: createStream(options.stdin),
+            <span class="hljs-attr">stderr</span>: createStream(options.stderr),
+            <span class="hljs-attr">isMainModule</span>: isMainModule,
+            <span class="hljs-attr">events</span>: ee,
+            <span class="hljs-attr">properties</span>: [ defaults.properties, options.properties || {} ],
+            <span class="hljs-attr">send</span>: send || <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">env</span>: options.env || {}
         })
-        main(program, callback)
+        main.apply(<span class="hljs-literal">null</span>, [ program ].concat(vargs))
         <span class="hljs-keyword">return</span> program
     }
     <span class="hljs-keyword">if</span> (<span class="hljs-built_in">module</span> === process.mainModule) {
-        invoke(process.argv.slice(<span class="hljs-number">2</span>), {
-</pre></div></div>
+        invoke(process.argv.slice(<span class="hljs-number">2</span>), {</pre></div></div>
 
         </li>
 
 
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
 
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>No. Stop! There is no <code>process.stdio</code>. Do not addd one. (Again.)</p>
+              <p>No. Stop! There is no <code>process.stdio</code>. Do not add one! (Again.)</p>
 
             </div>
 
             <div class="content"><div class='highlight'><pre>            env: process.env,
-            stdout: process.stdout,
-            stdin: process.stdin,
-            stderr: process.stderr,
-            events: process
+            <span class="hljs-attr">stdout</span>: process.stdout,
+            <span class="hljs-attr">stdin</span>: process.stdin,
+            <span class="hljs-attr">stderr</span>: process.stderr,
+            <span class="hljs-attr">events</span>: process
         }, exit(process))
     }
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 

@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -85,18 +85,16 @@
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bindable</span> (<span class="hljs-params">address, port</span>) </span>{
     <span class="hljs-keyword">this</span>.address = address
-    <span class="hljs-keyword">this</span>.port = por
+    <span class="hljs-keyword">this</span>.port = port
 }
 
 Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.address + <span class="hljs-string">':'</span> + <span class="hljs-keyword">this</span>.por
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.address + <span class="hljs-string">':'</span> + <span class="hljs-keyword">this</span>.port
 }
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isNumeric</span> (<span class="hljs-params">value</span>) </span>{
     <span class="hljs-keyword">return</span> !<span class="hljs-built_in">isNaN</span>(<span class="hljs-built_in">parseFloat</span>(value)) &amp;&amp; <span class="hljs-built_in">isFinite</span>(value)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -115,8 +113,7 @@ Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyw
     <span class="hljs-keyword">var</span> bind = value.split(<span class="hljs-string">':'</span>)
     <span class="hljs-keyword">if</span> (bind.length == <span class="hljs-number">1</span>) {
         bind.unshift(<span class="hljs-string">'0.0.0.0'</span>)
-    }
-</pre></div></div>
+    }</pre></div></div>
 
         </li>
 
@@ -152,9 +149,7 @@ Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyw
         bind.unshift(<span class="hljs-string">'0.0.0.0'</span>)
     }
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Bindable(bind[<span class="hljs-number">0</span>], +bind[<span class="hljs-number">1</span>])
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 

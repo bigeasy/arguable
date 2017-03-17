@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -83,9 +83,7 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> rescue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'rescue'</span>)
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> rescue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'rescue'</span>)</pre></div></div>
 
         </li>
 
@@ -96,7 +94,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>We do not set the code by calling <code>process.exit</code> immediately. We instead se
+              <p>We do not set the code by calling <code>process.exit</code> immediately. We instead set
 set the exit code by hooking the exit event. This means that we’re not going
 to shutdown hard, so if our dear user fails to cancel timers and close
 streams, shutdown is going to hang. That is what we want. A program know how
@@ -105,23 +103,22 @@ to able to stop it’s own event loops.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">process</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">error, exitCode</span>) </span>{
-        <span class="hljs-keyword">if</span> (error) {
+module.exports = function (process) {
+    return function (error, exitCode) {
+        if (error) {
             exitCode = rescue([
-                <span class="hljs-regexp">/^bigeasy.arguable#abend$/m</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-                    <span class="hljs-keyword">if</span> (error.stderr) {
+                /^bigeasy.arguable#abend$/m, function () {
+                    if (error.stderr) {
                         process.stderr.write(error.stderr)
-                        process.stderr.write(<span class="hljs-string">'\n'</span>)
+                        process.stderr.write('\n')
                     }
-                    <span class="hljs-keyword">return</span> error.exitCode
+                    return error.exitCode
                 },
-                <span class="hljs-regexp">/^bigeasy.arguable#help$/m</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                /^bigeasy.arguable#help$/m, function () {
                     process.stdout.write(error.stdout)
-                    process.stdout.write(<span class="hljs-string">'\n'</span>)
-                    <span class="hljs-keyword">return</span> error.exitCode
-                }
-</pre></div></div>
+                    process.stdout.write('\n')
+                    return error.exitCode
+                }</pre></div></div>
 
         </li>
 
@@ -140,8 +137,7 @@ to able to stop it’s own event loops.</p>
             <span class="hljs-keyword">if</span> (exitCode == <span class="hljs-literal">null</span>) {
                 exitCode = <span class="hljs-number">1</span>
             }
-        }
-</pre></div></div>
+        }</pre></div></div>
 
         </li>
 
@@ -160,9 +156,7 @@ to able to stop it’s own event loops.</p>
             process.exitCode = exitCode
         }
     }
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 

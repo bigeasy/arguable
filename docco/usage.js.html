@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -92,8 +92,7 @@
 }
 
 Usage.prototype.getPattern = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">command</span>) </span>{
-    <span class="hljs-keyword">var</span> patterns = []
-</pre></div></div>
+    <span class="hljs-keyword">var</span> patterns = []</pre></div></div>
 
         </li>
 
@@ -119,9 +118,9 @@ to Arguable that do not belong in the usage message printed to <code>stdout</cod
             <span class="hljs-keyword">var</span> arguable = !! $[<span class="hljs-number">3</span>]
             line = line.substring(out.length)
             patterns.push({
-                terse: terse,
-                verbose: verbose,
-                arguable: arguable
+                <span class="hljs-attr">terse</span>: terse,
+                <span class="hljs-attr">verbose</span>: verbose,
+                <span class="hljs-attr">arguable</span>: arguable
             })
         }
     }, <span class="hljs-keyword">this</span>)
@@ -161,9 +160,7 @@ Usage.prototype.format = <span class="hljs-function"><span class="hljs-keyword">
     dictionary.load(fs.readFileSync(source, <span class="hljs-string">'utf8'</span>))
     <span class="hljs-keyword">var</span> language = dictionary.getLanguages()[<span class="hljs-number">0</span>]
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Usage(language || <span class="hljs-string">''</span>, dictionary)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 

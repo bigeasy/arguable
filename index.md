@@ -1,22 +1,5 @@
-<!DOCTYPE html>
-<html>
-<meta charset="utf-8">
-<title>Arguable</title>
-<!--
-<link href='http://fonts.googleapis.com/css?family=Parisienne|Oxygen+Mono|PT+Mono|Offside|Nova+Mono|Averia+Serif+Libre|Alex+Brush|Autour+One|Share+Tech+Mono|Merriweather|Maven+Pro|Raleway' rel='stylesheet' type='text/css'>
--->
-<!-- todo: why doesn't fork me float? -->
-<link href="http://fonts.googleapis.com/css?family=Alex+Brush|Oxygen+Mono|Offside|Raleway:400,700" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="css/syntax.css">
-<link rel="stylesheet" type="text/css" href="css/less.css">
-<body><a href="https://github.com/bigeasy/arguable/"><img style="position:
-absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a><div class="container">
+Look at the [Docco](./docco/) for now.
 
-<div class="unit welcome">
-<h1>--arguable</h1>
-</div>
-<!-- todo: code font is too small for body text font -->
-<div class="unit description markdown">
 **Arguable** is a command line parser that lends structure to your command line
 programs. You can use Arguable as a simple command line parser, or you can use
 it to organize your program in a master program with any number of sub-commands
@@ -82,7 +65,7 @@ are optional.
 If you have a synonym for one of your commands, simply declare it separately and
 document it separately.
 
-The only argument validation that *Arguable** performs is to check that
+The only argument validation that **Arguable** performs is to check that
 arguments that accept a parameter have a parameter; that arguments that don't
 accept a parameter don't have a parameter. Type checking is meant to be
 performed by the program itself.
@@ -519,17 +502,3 @@ Sun Jul  8 23:29:58 UTC 2012
 Sun Jul  8 02:53:58 UTC 2012
 
  * Create README.md. #3. #2.
-</div>
-
-</div></body>
-<!-- todo: move into an edify plugin -->
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-20388260-3', 'bigeasy.github.io');
-ga('send', 'pageview');
-</script>
-</html>

@@ -1,0 +1,116 @@
+
+<html>
+  <meta charset="utf-8">
+  <title>Cadence</title>
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono|Sorts+Mill+Goudy|Mate|Oxygen+Mono|Offside|Raleway:400,700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy">
+  <link rel="stylesheet" type="text/css" href="css/ascetic.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</html>
+<body>
+  <div class="container">
+    <div class="unit description">
+      <div class="entry">
+        <h2><a name="1363805253000">Wed Mar 20 2013 13:47:33 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><p>Currently wondering what to do about missing commands. If the programmer
+does not specify a default, what is the correct action to take? Nothing matches.
+But it means that if the user specifies <code>frobinate foo</code> and there is no <code>foo</code>
+command that the default is invoked.</p>
+<p>I&apos;m looking at <code>git</code> and seeing that there is no default command. If you invoke
+the default command, you get a message saying that there is no such command.</p>
+<p>Therefore, I believe there should always be a default command, and that the
+validation for that command should attempt to report a missing command, if it is
+at all able to detect it.</p>
+<p><code>svn</code> behaves the same way.</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1363815141000">Wed Mar 20 2013 16:32:21 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><h3 id="the-abended-function-">The <code>abended</code> function.</h3>
+<p>Currently, the user <code>abend</code> function handles the case of a programmer invoking
+help by calling the <code>help</code> function of options. We use an exception to stop the
+program, but that is an implementation detail. We then invoke the <code>abend</code>
+function, which may be user supplied, and require that the user handle our help
+message exception. This is confusing and needs to be removed. If the user wants
+special help message handling, they can implement it themselves. They don&apos;t need
+a framework for it.</p>
+<p>This needs to be added to GitHub Issues.</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1366391768000">Fri Apr 19 2013 12:16:08 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><h3 id="string-resources">String Resources</h3>
+<p>The string resources in the main module part are generally available to all
+commands, so that subcommands can pull from a common pool of error messages and
+resource strings.</p>
+<h3 id="internationalization">Internationalization</h3>
+<p>Make a note, somewhere in the documentation, that you&apos;re not supposed to change
+the way the software works in a different language, but maybe you&apos;re allowed to,
+but you really ought not to be allowed to. This means that the definition ought
+to always be pulled from the default language.</p>
+<p>Are there translations; can read from a directory, instead of from a file?</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1366395037000">Fri Apr 19 2013 13:10:37 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><h3 id="inbox">Inbox</h3>
+<p>This library migrated from generated code from a language that compiles into
+JavaScript, so it is in rough shape, having been built from generated output.</p>
+<p>As I document, and use the library, I&apos;m going to probably find uses for this
+current code base that are hidden by my distaste for the code, uses exposed by
+the interface, which pleases me.</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1376019600000">Thu Aug 08 2013 22:40:00 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><h3 id="markup-language">Markup Language</h3>
+<p>I&apos;d like to make the input to arguable be more of a markup language, easier to
+write, and it can create the nice columnar displays as optional outputs.</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1408547120000">Wed Aug 20 2014 10:05:20 GMT-0500 (CDT)</a></h2>
+        <div class="markdown"><p>You should use an error-first callback, providing a callback that will abend if
+there is an error, but that does not need to be called to end the program.</p>
+</div>
+      </div>
+      <div class="entry">
+        <h2><a name="1453053085000">Sun Jan 17 2016 11:51:25 GMT-0600 (CST)</a></h2>
+        <div class="markdown"><h3 id="expanding-variables-a-id-expand-a-">Expanding Variables<a id="expand"></a></h3>
+<p>Thoughts on less than simple implementation.</p>
+<pre><code>program.expand(&apos;bind&apos;, function (name, value, defaultAddress, defaultPort) {
+    program.validate(/^(?:d+(?:.d+){3}:(d+)|(d+))$/.test(value), name + &apos; invalid bind&apos;)
+    var split = value.split(&apos;:&apos;), binding
+    if (/^d+$/.test(split[0])) {
+        binding = {
+            address: defaultAddress,
+            port: +split[0]
+        }
+    } else if (split.length == 2) {
+        binding =  {
+            address: split[0],
+            port: +split[1]
+        }
+    } else {
+        binding = {
+            address: split[0],
+            port: defaultPort
+        }
+    }
+    assert(validAddress(binding.address), name + &apos; invalid address&apos;)
+    assert(validPort(binding.port), name + &apos; invalid port&apos;)
+    return binding
+}, &apos;0.0.0.0&apos;, 8080)
+</code></pre><p>This turns <code>program.param.bind</code> into a bidning object. It is a function you
+provide to program, it is not built into program. Thus, in Node.js fashion you
+can bundle up validations into modules, include them as needed.</p>
+<p>Noticing that string matching for errors is getting a bit convoluted. Typing
+&quot;<code>--foo</code> is a required argument&quot;, &quot;<code>--bar</code> is a required argument&quot; is tedious to
+read and maintain. Need some way to parameterize common arguments and either
+match specifically or match generally.</p>
+</div>
+      </div>
+    </div>
+  </div>
+</body>
+<!-- vim: set ts=2 sw=2 nowrap:-->

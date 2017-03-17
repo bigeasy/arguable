@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -91,9 +91,7 @@
 <span class="hljs-keyword">var</span> slice = [].slice
 <span class="hljs-keyword">var</span> interrupt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'interrupt'</span>).createInterrupter(<span class="hljs-string">'bigeasy.arguable'</span>)
 <span class="hljs-keyword">var</span> rescue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'rescue'</span>)
-<span class="hljs-keyword">var</span> events = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>)
-
-</pre></div></div>
+<span class="hljs-keyword">var</span> events = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>)</pre></div></div>
 
         </li>
 
@@ -137,8 +135,7 @@ or Arguable <code>Program</code>.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">newListener</span> (<span class="hljs-params">eventName</span>) </span>{
-    <span class="hljs-keyword">switch</span> (eventName) {
-</pre></div></div>
+    <span class="hljs-keyword">switch</span> (eventName) {</pre></div></div>
 
         </li>
 
@@ -160,8 +157,7 @@ or Arguable <code>Program</code>.</p>
             <span class="hljs-keyword">this</span>.on(<span class="hljs-string">'SIGTERM'</span>, <span class="hljs-keyword">this</span>._shutdown.listener)
         }
         <span class="hljs-keyword">this</span>._shutdown.count++
-        <span class="hljs-keyword">break</span>
-</pre></div></div>
+        <span class="hljs-keyword">break</span></pre></div></div>
 
         </li>
 
@@ -200,9 +196,7 @@ or Arguable <code>Program</code>.</p>
         }
         <span class="hljs-keyword">break</span>
     }
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -232,9 +226,7 @@ ideology.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Program</span> (<span class="hljs-params">source, argv, options</span>) </span>{
-    <span class="hljs-keyword">this</span>._usage = createUsage(source)
-
-</pre></div></div>
+    <span class="hljs-keyword">this</span>._usage = createUsage(source)</pre></div></div>
 
         </li>
 
@@ -249,9 +241,7 @@ ideology.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.isProgram = <span class="hljs-literal">true</span>
-
-</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.isProgram = <span class="hljs-literal">true</span></pre></div></div>
 
         </li>
 
@@ -275,9 +265,7 @@ ideology.</p>
         <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> properties) {
             <span class="hljs-keyword">this</span>[key] = properties[key]
         }
-    }, <span class="hljs-keyword">this</span>)
-
-</pre></div></div>
+    }, <span class="hljs-keyword">this</span>)</pre></div></div>
 
         </li>
 
@@ -294,9 +282,7 @@ ideology.</p>
 
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.lang = <span class="hljs-keyword">this</span>.env.LANG ? <span class="hljs-keyword">this</span>.env.LANG.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] : <span class="hljs-keyword">this</span>._usage.language
 
-    <span class="hljs-keyword">this</span>.path = []
-
-</pre></div></div>
+    <span class="hljs-keyword">this</span>.path = []</pre></div></div>
 
         </li>
 
@@ -316,9 +302,7 @@ ideology.</p>
         <span class="hljs-keyword">return</span> pattern.arguable
     }).map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pattern</span>) </span>{
         <span class="hljs-keyword">return</span> pattern.verbose
-    })
-
-</pre></div></div>
+    })</pre></div></div>
 
         </li>
 
@@ -345,9 +329,7 @@ ideology.</p>
 
     <span class="hljs-keyword">this</span>._setParameters(gotopts)
 
-    <span class="hljs-keyword">this</span>.argv = argv
-
-</pre></div></div>
+    <span class="hljs-keyword">this</span>.argv = argv</pre></div></div>
 
         </li>
 
@@ -362,12 +344,10 @@ ideology.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.stdout = options.stdou
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.stdout = options.stdout
     <span class="hljs-keyword">this</span>.stderr = options.stderr
     <span class="hljs-keyword">this</span>.stdin = options.stdin
-    <span class="hljs-keyword">this</span>.send = options.send
-
-</pre></div></div>
+    <span class="hljs-keyword">this</span>.send = options.send</pre></div></div>
 
         </li>
 
@@ -386,16 +366,14 @@ ideology.</p>
 
     <span class="hljs-keyword">this</span>._proxies = {}
     <span class="hljs-keyword">this</span>._shutdown = {
-        count: <span class="hljs-number">0</span>,
-        listener: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{ <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'shutdown'</span>) }.bind(<span class="hljs-keyword">this</span>)
+        <span class="hljs-attr">count</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">listener</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{ <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'shutdown'</span>) }.bind(<span class="hljs-keyword">this</span>)
     }
 
     <span class="hljs-keyword">this</span>.on(<span class="hljs-string">'removeListener'</span>, removeListener.bind(<span class="hljs-keyword">this</span>))
     <span class="hljs-keyword">this</span>.on(<span class="hljs-string">'newListener'</span>, newListener.bind(<span class="hljs-keyword">this</span>))
 }
-util.inherits(Program, events.EventEmitter)
-
-</pre></div></div>
+util.inherits(Program, events.EventEmitter)</pre></div></div>
 
         </li>
 
@@ -447,9 +425,7 @@ for working with parameters.</p>
     <span class="hljs-keyword">this</span>.given.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
         <span class="hljs-keyword">this</span>.ultimate[key] = <span class="hljs-keyword">this</span>.grouped[key][<span class="hljs-keyword">this</span>.grouped[key].length - <span class="hljs-number">1</span>]
     }, <span class="hljs-keyword">this</span>)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -471,12 +447,10 @@ for working with parameters.</p>
             <span class="hljs-keyword">this</span>.emit.apply(<span class="hljs-keyword">this</span>, [ eventName ].concat(slice.call(<span class="hljs-built_in">arguments</span>)))
         }.bind(<span class="hljs-keyword">this</span>)
         <span class="hljs-keyword">this</span>._process.addListener(eventName, listener)
-        proxy = <span class="hljs-keyword">this</span>._proxies[eventName] = { listener: listener, count: <span class="hljs-number">0</span> }
+        proxy = <span class="hljs-keyword">this</span>._proxies[eventName] = { <span class="hljs-attr">listener</span>: listener, <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> }
     }
     <span class="hljs-keyword">return</span> proxy
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -497,9 +471,7 @@ for working with parameters.</p>
             <span class="hljs-keyword">this</span>.abend(name + <span class="hljs-string">' is required'</span>)
         }
     }, <span class="hljs-keyword">this</span>)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -527,8 +499,7 @@ parameters for your program.</p>
         <span class="hljs-keyword">var</span> test = vargs.pop()
         <span class="hljs-keyword">var</span> valid = test <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">RegExp</span> ? <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
             <span class="hljs-keyword">return</span> test.test(value)
-        } : tes
-</pre></div></div>
+        } : test</pre></div></div>
 
         </li>
 
@@ -546,7 +517,7 @@ Not sure why I’ve decied to get so wicked with the throws.</p>
 
             <div class="content"><div class='highlight'><pre>        validator = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
             <span class="hljs-keyword">if</span> (!valid(value)) {
-                <span class="hljs-keyword">throw</span> forma
+                <span class="hljs-keyword">throw</span> format
             }
         }
     } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type == <span class="hljs-string">'function'</span>) {
@@ -572,9 +543,7 @@ Not sure why I’ve decied to get so wicked with the throws.</p>
         }
     }.bind(<span class="hljs-keyword">this</span>))
     <span class="hljs-keyword">this</span>._setParameters(parameters)
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -591,9 +560,7 @@ Not sure why I’ve decied to get so wicked with the throws.</p>
 
             <div class="content"><div class='highlight'><pre>Program.prototype.disconnect = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">this</span>._process.disconnect()
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -614,9 +581,7 @@ shutdown handler that might be called twice.</p>
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.connected) {
         <span class="hljs-keyword">this</span>.disconnect()
     }
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -657,9 +622,7 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'connected'</span>,
 
 Program.prototype.__defineGetter__(<span class="hljs-string">'mainModule'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._process.mainModule
-})
-
-</pre></div></div>
+})</pre></div></div>
 
         </li>
 
@@ -676,9 +639,7 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'mainModule'</span>
 
             <div class="content"><div class='highlight'><pre>Program.prototype.format = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, key, slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>))
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -704,19 +665,14 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'mainModule'</span>
         message = <span class="hljs-keyword">this</span>._usage.format(<span class="hljs-keyword">this</span>.lang, key, vargs)
     }
     <span class="hljs-keyword">this</span>._redirect = <span class="hljs-string">'stderr'</span>
-    <span class="hljs-keyword">throw</span> interrupt({
-        name: <span class="hljs-string">'abend'</span>,
-        context: {
-            method: <span class="hljs-string">'abend'</span>,
-            key: key,
-            vargs: vargs,
-            stderr: message,
-            exitCode: exitCode
-        }
+    <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'abend'</span>, {
+        <span class="hljs-attr">method</span>: <span class="hljs-string">'abend'</span>,
+        <span class="hljs-attr">key</span>: key,
+        <span class="hljs-attr">vargs</span>: vargs,
+        <span class="hljs-attr">stderr</span>: message,
+        <span class="hljs-attr">exitCode</span>: exitCode
     })
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -732,13 +688,10 @@ Program.prototype.__defineGetter__(<span class="hljs-string">'mainModule'</span>
             </div>
 
             <div class="content"><div class='highlight'><pre>Program.prototype.help = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">throw</span> interrupt({
-        name: <span class="hljs-string">'help'</span>,
-        context: {
-            method: <span class="hljs-string">'help'</span>,
-            stdout: <span class="hljs-keyword">this</span>._usage.chooseUsage(<span class="hljs-keyword">this</span>.lang),
-            exitCode: <span class="hljs-number">0</span>
-        }
+    <span class="hljs-keyword">throw</span> interrupt(<span class="hljs-string">'help'</span>, {
+        <span class="hljs-attr">method</span>: <span class="hljs-string">'help'</span>,
+        <span class="hljs-attr">stdout</span>: <span class="hljs-keyword">this</span>._usage.chooseUsage(<span class="hljs-keyword">this</span>.lang),
+        <span class="hljs-attr">exitCode</span>: <span class="hljs-number">0</span>
     })
 }
 
@@ -760,9 +713,7 @@ Program.prototype.attempt = <span class="hljs-function"><span class="hljs-keywor
             abend()
         }
     }
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -780,9 +731,7 @@ that does exactly this.</p>
 
             <div class="content"><div class='highlight'><pre>Program.prototype.helpIf = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">help</span>) </span>{
     <span class="hljs-keyword">if</span> (help) <span class="hljs-keyword">this</span>.help()
-}
-
-</pre></div></div>
+}</pre></div></div>
 
         </li>
 
@@ -793,7 +742,7 @@ that does exactly this.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
-              <p>Load an arguable module and invoke it using this <code>Program</code> as the parent. No
+              <p>Load an arguable module and invoke it using this <code>Program</code> as the parent. Not
 at all certain that I want to have all this formatting nonsense. Can’t the
 parent simply invoke it with a string?</p>
 <p>We’re only going to support accepting a package name, but leave the
@@ -815,7 +764,7 @@ formatting logic in for now to see where it’s being used.</p>
             pkg = util.format(format, command)
         }
     } <span class="hljs-keyword">else</span> {
-        pkg = forma
+        pkg = format
     }
     <span class="hljs-keyword">var</span> arguable
     <span class="hljs-keyword">try</span> {
@@ -828,37 +777,16 @@ formatting logic in for now to see where it’s being used.</p>
         }
     }
     arguable(argv, {
-        stdout: <span class="hljs-keyword">this</span>.stdout,
-        env: <span class="hljs-keyword">this</span>.env,
-        stdin: <span class="hljs-keyword">this</span>.stdin,
-        stderr: <span class="hljs-keyword">this</span>.stderr,
-        events: <span class="hljs-keyword">this</span>,
-        send: <span class="hljs-keyword">this</span>.send
+        <span class="hljs-attr">stdout</span>: <span class="hljs-keyword">this</span>.stdout,
+        <span class="hljs-attr">env</span>: <span class="hljs-keyword">this</span>.env,
+        <span class="hljs-attr">stdin</span>: <span class="hljs-keyword">this</span>.stdin,
+        <span class="hljs-attr">stderr</span>: <span class="hljs-keyword">this</span>.stderr,
+        <span class="hljs-attr">events</span>: <span class="hljs-keyword">this</span>,
+        <span class="hljs-attr">send</span>: <span class="hljs-keyword">this</span>.send
     }, <span class="hljs-keyword">async</span>())
 })
 
-</pre></div></div>
-
-        </li>
-
-
-        <li id="section-31">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
-              </div>
-              <p>TODO Outgoingish.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>Program.prototype.exit = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">exitCode</span>) </span>{
-    <span class="hljs-keyword">throw</span> interrupt({ name: <span class="hljs-string">'exit'</span>, context: { exitCode: exitCode } })
-}
-
-<span class="hljs-built_in">module</span>.exports = Program
-
-</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = Program</pre></div></div>
 
         </li>
 

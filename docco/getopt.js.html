@@ -20,42 +20,42 @@
             <div id="jump_page">
 
 
-                <a class="source" href="arguable.html">
+                <a class="source" href="arguable.js.html">
                   arguable.js
                 </a>
 
 
-                <a class="source" href="bindable.html">
+                <a class="source" href="bindable.js.html">
                   bindable.js
                 </a>
 
 
-                <a class="source" href="code.html">
+                <a class="source" href="code.js.html">
                   code.js
                 </a>
 
 
-                <a class="source" href="exit.html">
+                <a class="source" href="exit.js.html">
                   exit.js
                 </a>
 
 
-                <a class="source" href="getopt.html">
+                <a class="source" href="getopt.js.html">
                   getopt.js
                 </a>
 
 
-                <a class="source" href="numeric.html">
+                <a class="source" href="numeric.js.html">
                   numeric.js
                 </a>
 
 
-                <a class="source" href="program.html">
+                <a class="source" href="program.js.html">
                   program.js
                 </a>
 
 
-                <a class="source" href="usage.html">
+                <a class="source" href="usage.js.html">
                   usage.js
                 </a>
 
@@ -86,10 +86,10 @@
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getopt</span> (<span class="hljs-params">patterns, argv</span>) </span>{
     patterns = patterns.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pattern</span>) </span>{
         <span class="hljs-keyword">return</span> {
-            arguable: pattern.arguable,
-            verbose: <span class="hljs-string">'--'</span> + pattern.verbose,
-            terse: pattern.terse ? <span class="hljs-string">'-'</span> + pattern.terse : <span class="hljs-string">''</span>,
-            key: pattern.verbose
+            <span class="hljs-attr">arguable</span>: pattern.arguable,
+            <span class="hljs-attr">verbose</span>: <span class="hljs-string">'--'</span> + pattern.verbose,
+            <span class="hljs-attr">terse</span>: pattern.terse ? <span class="hljs-string">'-'</span> + pattern.terse : <span class="hljs-string">''</span>,
+            <span class="hljs-attr">key</span>: pattern.verbose
         }
     })
 
@@ -119,8 +119,8 @@
         })
         <span class="hljs-keyword">if</span> (alternates.length != <span class="hljs-number">1</span>) {
             <span class="hljs-keyword">throw</span> {
-                abend: alternates.length ? <span class="hljs-string">'ambiguous argument'</span> : <span class="hljs-string">'unknown argument'</span>,
-                context: parameter
+                <span class="hljs-attr">abend</span>: alternates.length ? <span class="hljs-string">'ambiguous argument'</span> : <span class="hljs-string">'unknown argument'</span>,
+                <span class="hljs-attr">context</span>: parameter
             }
         }
 
@@ -129,8 +129,8 @@
             <span class="hljs-keyword">if</span> (!catenated) {
                 <span class="hljs-keyword">if</span> (argv.length == <span class="hljs-number">0</span>) {
                     <span class="hljs-keyword">throw</span> {
-                        abend: <span class="hljs-string">'missing argument'</span>,
-                        context: isLong ? pattern.verbose : pattern.terse
+                        <span class="hljs-attr">abend</span>: <span class="hljs-string">'missing argument'</span>,
+                        <span class="hljs-attr">context</span>: isLong ? pattern.verbose : pattern.terse
                     }
                 }
                 value = argv.shift()
@@ -138,8 +138,8 @@
         } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (catenated) {
             <span class="hljs-keyword">if</span> (isLong) {
                 <span class="hljs-keyword">throw</span> {
-                    abend: <span class="hljs-string">'unexpected argument value'</span>,
-                    context: pattern.verbose
+                    <span class="hljs-attr">abend</span>: <span class="hljs-string">'unexpected argument value'</span>,
+                    <span class="hljs-attr">context</span>: pattern.verbose
                 }
             } <span class="hljs-keyword">else</span> {
                 argv.unshift(<span class="hljs-string">'-'</span> + value)
@@ -147,12 +147,10 @@
             }
         }
 
-        ordered.push({ name: pattern.key, value: value })
+        ordered.push({ <span class="hljs-attr">name</span>: pattern.key, <span class="hljs-attr">value</span>: value })
 
         i++
-    }
-
-</pre></div></div>
+    }</pre></div></div>
 
         </li>
 
@@ -173,9 +171,7 @@
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> ordered
 }
 
-<span class="hljs-built_in">module</span>.exports = getop
-
-</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = getopt</pre></div></div>
 
         </li>
 
