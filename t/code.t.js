@@ -1,4 +1,4 @@
-require('proof')(5, prove)
+require('proof')(6, prove)
 
 function prove (assert) {
     var code = require('../code')
@@ -44,7 +44,10 @@ function prove (assert) {
     ee.emit('exit', 0)
 
     ee = new events.EventEmitter
-    ee.on('exit', function (exitCode) { assert(exitCode, 1, 'other exit handler called') })
+    ee.on('exit', function (exitCode) {
+        assert(this === ee, 'this set correctly')
+        assert(exitCode, 1, 'other exit handler called')
+    })
 
     try {
         code(extend(ee, {

@@ -19,7 +19,7 @@ module.exports = function (process) {
             assert(listener != null, 'cannot find exit patch listener')
         } while (listener !== exit)
         while (listeners.length) {
-            listeners.shift().call(null, process.exitCode)
+            listeners.shift().call(process, process.exitCode)
         }
         process.exit(process.exitCode)
     }
