@@ -152,7 +152,7 @@ module.exports = function (process) {
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (exitCode != <span class="hljs-literal">null</span>) {
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (exitCode != <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-keyword">typeof</span> exitCode == <span class="hljs-string">'number'</span>) {
             process.exitCode = exitCode
         }
     }

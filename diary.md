@@ -1,3 +1,10 @@
+## Thu Apr  6 02:15:08 CDT 2017
+
+The started signal seems like a bad idea and a difficult way to trigger an exit
+code. Really ought to have the return indicate that any sort of a server is
+ready which can then be used to signal it to shut down in the unit tests I
+create for all these programs.
+
 ## Wed Mar 20 18:47:33 GMT 2013
 
 Currently wondering what to do about missing commands. If the programmer

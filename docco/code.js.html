@@ -104,7 +104,7 @@
             assert(listener != <span class="hljs-literal">null</span>, <span class="hljs-string">'cannot find exit patch listener'</span>)
         } <span class="hljs-keyword">while</span> (listener !== exit)
         <span class="hljs-keyword">while</span> (listeners.length) {
-            listeners.shift().call(<span class="hljs-literal">null</span>, process.exitCode)
+            listeners.shift().call(process, process.exitCode)
         }
         process.exit(process.exitCode)
     }
