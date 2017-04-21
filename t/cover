@@ -2,6 +2,17 @@
 
 set -e
 
+if [ ! -e node_modules/.bin/istanbul ]; then
+    cat << EOF 1>&2
+
+Istanbul is required to run coverage. Install Istanbul:
+
+    npm install istanbul
+
+EOF
+    exit 1
+fi
+
 rm -rf coverage
 
 count=1;
@@ -10,8 +21,6 @@ for file in $(find . ! -path '*/node_modules/*' -name \*.t.js); do
   mv coverage/coverage.json coverage/coverage$count.json
   count=$(expr $count + 1)
 done
-
-node_modules/.bin/istanbul cover -x 't/**' t/fixtures/echo-1.js > /dev/null 2>&1
 
 node_modules/.bin/istanbul report --root coverage --dir coverage > /dev/null
 
