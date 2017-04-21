@@ -24,6 +24,8 @@ done
 
 node_modules/.bin/istanbul report --root coverage --dir coverage > /dev/null
 
+node_modules/.bin/istanbul cover -x 't/**' t/fixtures/echo-1.js > /dev/null 2>&1
+
 sed -i -e s,'^SF:'`pwd`/,SF:, coverage/lcov.info
 
 exit 0
