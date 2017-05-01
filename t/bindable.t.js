@@ -1,13 +1,15 @@
-require('proof')(8, prove)
+require('proof')(10, prove)
 
 function prove (assert) {
     var bindable = require('../bindable')
 
-    assert(bindable('8080'), { address: '0.0.0.0', port: 8080 }, 'port')
+    assert(bindable('/var/app/service.sock'), { family: 'unix', path: '/var/app/service.sock' }, 'path')
+    assert(String(bindable('/var/app/service.sock')), '/var/app/service.sock', 'path to string')
+    assert(bindable('8080'), { family: 'IPv4', address: '0.0.0.0', port: 8080 }, 'port')
     assert(String(bindable('8080')), '0.0.0.0:8080', 'to string')
     var converted = bindable('127.0.0.1:8080')
-    assert(converted, { address: '127.0.0.1', port: 8080 }, 'interface and port')
-    assert(bindable(converted), { address: '127.0.0.1', port: 8080 }, 'run over already converted bindable')
+    assert(converted, { family: 'IPv4', address: '127.0.0.1', port: 8080 }, 'interface and port')
+    assert(bindable(converted), { family: 'IPv4', address: '127.0.0.1', port: 8080 }, 'run over already converted bindable')
     try {
        bindable('X.0.0.1:8080')
     } catch (error) {
@@ -24,7 +26,7 @@ function prove (assert) {
         assert(error, '%s is not bindable', 'wrong number of parts')
     }
     try {
-       bindable('X')
+       console.log(bindable('X'))
     } catch (error) {
         assert(error, '%s is not bindable', 'port not numeric')
     }

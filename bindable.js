@@ -1,4 +1,14 @@
+function Path (path) {
+    this.family = 'unix'
+    this.path = path
+}
+
+Path.prototype.toString = function () {
+    return this.path
+}
+
 function Bindable (address, port) {
+    this.family = 'IPv4'
     this.address = address
     this.port = port
 }
@@ -12,31 +22,41 @@ function isNumeric (value) {
 }
 
 // TODO IPv6.
-function isListen (value) {
-    var bind = value.split(':')
-    if (bind.length == 1) {
-        bind.unshift('0.0.0.0')
-    }
-// TODO You'll want string aliases so that `"foo is required" -> "generic required"
-    if (isNumeric(bind[1])) {
-        var parts = bind[0].split('.')
-        if (parts.length == 4) {
-            return parts.filter(function (part) {
-                return isNumeric(part) && 0 <= +part && +part <= 255
-            }).length == 4
+function parse (value) {
+    if (/^[.\/]/.test(value)) {
+        return new Path(value)
+    } else {
+        var bind = value.split(':')
+        if (bind.length == 1) {
+            bind.unshift('0.0.0.0')
         }
+    // TODO You'll want string aliases so that `"foo is required" -> "generic required"
+        if (!isNumeric(bind[1])) {
+            return null
+        }
+        var parts = bind[0].split('.')
+        if (parts.length != 4) {
+            return null
+        }
+        if (parts.filter(function (part) {
+            return isNumeric(part) && 0 <= +part && +part <= 255
+        }).length != 4) {
+            return null
+        }
+        var bind = value.split(':')
+        if (bind.length == 1) {
+            bind.unshift('0.0.0.0')
+        }
+        return new Bindable(bind[0], +bind[1])
     }
-    return false
+    return null
 }
 
 module.exports = function (value, name) {
     value = String(value)
-    if (!isListen(value)) {
+    value = parse(value)
+    if (value == null) {
         throw '%s is not bindable'
     }
-    var bind = value.split(':')
-    if (bind.length == 1) {
-        bind.unshift('0.0.0.0')
-    }
-    return new Bindable(bind[0], +bind[1])
+    return value
 }
