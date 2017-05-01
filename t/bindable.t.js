@@ -1,4 +1,4 @@
-require('proof')(10, prove)
+require('proof')(12, prove)
 
 function prove (assert) {
     var bindable = require('../bindable')
@@ -30,4 +30,38 @@ function prove (assert) {
     } catch (error) {
         assert(error, '%s is not bindable', 'port not numeric')
     }
+
+    var binder
+
+    binder = bindable('/var/app/service.sock')
+    binder.listen({
+        listen: function (path, backlog, callback) {
+            assert({
+                path: path,
+                backlog: backlog,
+                callback: typeof callback
+            }, {
+                path: '/var/app/service.sock',
+                backlog: backlog,
+                callback: 'function'
+            }, 'path listen')
+        }
+    }, 255, function () {})
+
+    binder = bindable('127.0.0.1:8080')
+    binder.listen({
+        listen: function (port, iface, backlog, callback) {
+            assert({
+                port: port,
+                iface: iface,
+                backlog: backlog,
+                callback: typeof callback
+            }, {
+                port: 8080,
+                iface: '127.0.0.1',
+                backlog: backlog,
+                callback: 'function'
+            }, 'network listen')
+        }
+    }, 255, function () {})
 }

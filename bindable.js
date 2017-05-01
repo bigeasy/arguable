@@ -7,6 +7,13 @@ Path.prototype.toString = function () {
     return this.path
 }
 
+Path.prototype.listen = function () {
+    var vargs = Array.prototype.slice.call(arguments)
+    var server = vargs.shift()
+    vargs.unshift(this.path)
+    server.listen.apply(server, vargs)
+}
+
 function Bindable (address, port) {
     this.family = 'IPv4'
     this.address = address
@@ -15,6 +22,13 @@ function Bindable (address, port) {
 
 Bindable.prototype.toString = function () {
     return this.address + ':' + this.port
+}
+
+Bindable.prototype.listen = function () {
+    var vargs = Array.prototype.slice.call(arguments)
+    var server = vargs.shift()
+    vargs.unshift(this.port, this.address)
+    server.listen.apply(server, vargs)
 }
 
 function isNumeric (value) {
