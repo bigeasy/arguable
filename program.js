@@ -115,6 +115,10 @@ function Program (source, argv, options) {
     // Become an `EventEmitter` and proxy parent events.
     events.EventEmitter.call(this)
 
+    this.pid = process.pid
+    this.platform = process.platform
+    this.release = process.release
+
     this._proxies = {}
     this._shutdown = {
         count: 0,
