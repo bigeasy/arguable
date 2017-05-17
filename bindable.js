@@ -14,6 +14,11 @@ Path.prototype.listen = function () {
     server.listen.apply(server, vargs)
 }
 
+Path.prototype.connect = function (connect) {
+    connect.path = this.path
+    return connect
+}
+
 function Bindable (address, port) {
     this.family = 'IPv4'
     this.address = address
@@ -31,6 +36,12 @@ Bindable.prototype.listen = function () {
     server.listen.apply(server, vargs)
 }
 
+Bindable.prototype.connect = function (connect) {
+    connect.port = this.port
+    connect.hostname = this.address == '0.0.0.0' ? '127.0.0.1' : this.address
+    return connect
+}
+
 function isNumeric (value) {
     return !isNaN(parseFloat(value)) && isFinite(value)
 }
@@ -39,31 +50,29 @@ function isNumeric (value) {
 function parse (value) {
     if (/^[.\/]/.test(value)) {
         return new Path(value)
-    } else {
-        var bind = value.split(':')
-        if (bind.length == 1) {
-            bind.unshift('0.0.0.0')
-        }
-    // TODO You'll want string aliases so that `"foo is required" -> "generic required"
-        if (!isNumeric(bind[1])) {
-            return null
-        }
-        var parts = bind[0].split('.')
-        if (parts.length != 4) {
-            return null
-        }
-        if (parts.filter(function (part) {
-            return isNumeric(part) && 0 <= +part && +part <= 255
-        }).length != 4) {
-            return null
-        }
-        var bind = value.split(':')
-        if (bind.length == 1) {
-            bind.unshift('0.0.0.0')
-        }
-        return new Bindable(bind[0], +bind[1])
     }
-    return null
+    var bind = value.split(':')
+    if (bind.length == 1) {
+        bind.unshift('0.0.0.0')
+    }
+// TODO You'll want string aliases so that `"foo is required" -> "generic required"
+    if (!isNumeric(bind[1])) {
+        return null
+    }
+    var parts = bind[0].split('.')
+    if (parts.length != 4) {
+        return null
+    }
+    if (parts.filter(function (part) {
+        return isNumeric(part) && 0 <= +part && +part <= 255
+    }).length != 4) {
+        return null
+    }
+    var bind = value.split(':')
+    if (bind.length == 1) {
+        bind.unshift('0.0.0.0')
+    }
+    return new Bindable(bind[0], +bind[1])
 }
 
 module.exports = function (value, name) {

@@ -1,4 +1,4 @@
-require('proof')(12, prove)
+require('proof')(15, prove)
 
 function prove (assert) {
     var bindable = require('../bindable')
@@ -11,22 +11,22 @@ function prove (assert) {
     assert(converted, { family: 'IPv4', address: '127.0.0.1', port: 8080 }, 'interface and port')
     assert(bindable(converted), { family: 'IPv4', address: '127.0.0.1', port: 8080 }, 'run over already converted bindable')
     try {
-       bindable('X.0.0.1:8080')
+        bindable('X.0.0.1:8080')
     } catch (error) {
         assert(error, '%s is not bindable', 'part not numeric')
     }
     try {
-       bindable('400.0.0.1:8080')
+        bindable('400.0.0.1:8080')
     } catch (error) {
         assert(error, '%s is not bindable', 'part out of range')
     }
     try {
-       bindable('0.127.0.0.1:8080')
+        bindable('0.127.0.0.1:8080')
     } catch (error) {
         assert(error, '%s is not bindable', 'wrong number of parts')
     }
     try {
-       console.log(bindable('X'))
+        console.log(bindable('X'))
     } catch (error) {
         assert(error, '%s is not bindable', 'port not numeric')
     }
@@ -47,8 +47,11 @@ function prove (assert) {
             }, 'path listen')
         }
     }, 255, function () {})
+    assert(binder.connect({}), {
+        path: '/var/app/service.sock'
+    }, 'path connect')
 
-    binder = bindable('127.0.0.1:8080')
+    binder = bindable('10.0.0.1:8080')
     binder.listen({
         listen: function (port, iface, backlog, callback) {
             assert({
@@ -58,10 +61,19 @@ function prove (assert) {
                 callback: typeof callback
             }, {
                 port: 8080,
-                iface: '127.0.0.1',
+                iface: '10.0.0.1',
                 backlog: backlog,
                 callback: 'function'
             }, 'network listen')
         }
     }, 255, function () {})
+    assert(binder.connect({}), {
+        hostname: '10.0.0.1',
+        port: 8080
+    }, 'network connect')
+    binder = bindable('8080')
+    assert(binder.connect({}), {
+        hostname: '127.0.0.1',
+        port: 8080
+    }, 'network connect')
 }
