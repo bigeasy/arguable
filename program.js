@@ -7,6 +7,7 @@ var slice = [].slice
 var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var rescue = require('rescue')
 var events = require('events')
+var Signal = require('signal')
 
 // The program is an event emitter that proxies events from the Node.js
 // `Process` object with a single special event of its own.
@@ -127,6 +128,8 @@ function Program (source, argv, options) {
 
     this.on('removeListener', removeListener.bind(this))
     this.on('newListener', newListener.bind(this))
+
+    this.ready = new Signal
 }
 util.inherits(Program, events.EventEmitter)
 

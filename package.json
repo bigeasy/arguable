@@ -23,6 +23,7 @@
                             "cadence":                      "1.0.x",
                             "interrupt":                    "5.0.x",
                             "rescue":                       "3.0.x",
+                            "signal":                       "1.10.x",
                             "synonymous":                   "1.0.x"
     },
     "devDependencies":
