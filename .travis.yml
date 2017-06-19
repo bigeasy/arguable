@@ -16,5 +16,5 @@ branches:
 
 before_install:
   - npm install
-  - git checkout .
   - npm install istanbul coveralls
+  - git checkout .
