@@ -28,7 +28,6 @@ module.exports = function (process) {
                 exitCode = 1
             }
         }
-// TODO We ignore this now. It is always set thorugh `program`.
         if (exitCode != null && typeof exitCode == 'number') {
             process.exitCode = exitCode
         }
