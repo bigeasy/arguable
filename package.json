@@ -1,6 +1,6 @@
 {
     "name":                 "arguable",
-    "version":              "5.2.1",
+    "version":              "6.0.0",
     "description":
 
       "Usage-first argument parser.",
