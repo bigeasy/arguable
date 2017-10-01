@@ -33,6 +33,8 @@ module.exports = function () {
     // Main body of argument parser or program is final argument.
     var main = vargs.shift()
 
+    var properties = vargs.shift() || {}
+
     var invoke = module.exports = function (argv, options, callback) {
         var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
         var parameters = []
@@ -135,7 +137,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             isMainModule: isMainModule,
             events: ee,
-            properties: [ defaults.properties, options.properties || {} ],
+            properties: [ defaults.properties, properties, options.properties || {} ],
             send: send || null,
             env: options.env || {}
         })
