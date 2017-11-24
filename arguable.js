@@ -141,7 +141,9 @@ module.exports = function () {
             send: send || null,
             env: options.env || {}
         })
-        main.apply(null, [ program ].concat(vargs))
+        // TODO This delay is to allow users to do something with the pass
+        // through streams and event emitter.
+        process.nextTick(main.bind.apply(main, [ null, program ].concat(vargs)))
         return program
     }
     if (module === process.mainModule) {

@@ -151,11 +151,13 @@ function prove (async, assert) {
     }), null, function (error) {
         assert(!error, 'help if not')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-        program.delegate('delegated.%s', async())
-    }), null, function (error) {
+    async([function () {
+        createProgram(__filename, {}, [], {}, cadence(function (async, program) {
+            program.delegate('delegated.%s', async())
+        }), null, async())
+    }, function (error) {
         assert(error.stderr, 'sub command missing', 'sub command missing')
-    })
+    }])
     createProgram(__filename, {}, [
         'found'
     ], {}, cadence(function (async, program) {
@@ -164,10 +166,11 @@ function prove (async, assert) {
         if (error) throw error
         assert(exitCode, 0, 'delegated command normal exit')
     })
-    createProgram(__filename, {}, [ 'found' ], {}, cadence(function (async, program) {
-        program.delegate('delegated.found', [], async())
-    }), module, function (error, exitCode) {
-        if (error) throw error
+    async(function () {
+        createProgram(__filename, {}, [ 'found' ], {}, cadence(function (async, program) {
+            program.delegate('delegated.found', [], async())
+        }), module, async())
+    }, function (exitCode) {
         assert(exitCode, 0, 'delegated by package name normal exit')
     })
     createProgram(__filename, {}, [
