@@ -14,5 +14,5 @@ branches:
 
 install:
   - npm install
-  - npm install istanbul coveralls@2
+  - npm install istanbul coveralls
   - git checkout .
