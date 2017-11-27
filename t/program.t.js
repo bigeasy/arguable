@@ -261,7 +261,7 @@ function prove (async, assert) {
     }, [],  {
         properties: [{ extension: 1 }]
     }, cadence(function (async, program) {
-        assert(program.extension, 1, 'additional properties')
+        assert(program.properties.extension, 1, 'additional properties')
     }), null, function (error) {
         if (error) throw error
     })

@@ -72,10 +72,11 @@ function Program (source, argv, options) {
     this.isMainModule = options.isMainModule
     this._process = options.events
     this._module = options.module
+    this.properties = {}
 
     options.properties.forEach(function (properties) {
         for (var key in properties) {
-            this[key] = properties[key]
+            this.properties[key] = properties[key]
         }
     }, this)
 
