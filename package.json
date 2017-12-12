@@ -7,8 +7,9 @@
 
     "keywords":
     [
-                            "command", "option", "parser", "prompt", "cli",
-                            "stdin", "args", "arguments", "console", "glob"
+                            "cadence", "command", "option", "parser", "prompt",
+                            "cli", "stdin", "args", "arguments", "console",
+                            "glob"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "http://bigeasy.github.io/arguable",
