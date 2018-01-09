@@ -83,7 +83,9 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> rescue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'rescue'</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> rescue = <span class="hljs-built_in">require</span>(<span class="hljs-string">'rescue'</span>)
+
+</pre></div></div>
 
         </li>
 
@@ -118,7 +120,8 @@ module.exports = function (process) {
                     process.stdout.write(error.stdout)
                     process.stdout.write('\n')
                     return error.exitCode
-                }</pre></div></div>
+                }
+</pre></div></div>
 
         </li>
 
@@ -137,26 +140,14 @@ module.exports = function (process) {
             <span class="hljs-keyword">if</span> (exitCode == <span class="hljs-literal">null</span>) {
                 exitCode = <span class="hljs-number">1</span>
             }
-        }</pre></div></div>
-
-        </li>
-
-
-        <li id="section-4">
-            <div class="annotation">
-
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>TODO We ignore this now. It is always set thorugh <code>program</code>.</p>
-
-            </div>
-
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (exitCode != <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-keyword">typeof</span> exitCode == <span class="hljs-string">'number'</span>) {
+        }
+        <span class="hljs-keyword">if</span> (exitCode != <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-keyword">typeof</span> exitCode == <span class="hljs-string">'number'</span>) {
             process.exitCode = exitCode
         }
     }
-}</pre></div></div>
+}
+
+</pre></div></div>
 
         </li>
 

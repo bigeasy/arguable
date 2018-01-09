@@ -83,7 +83,29 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bindable</span> (<span class="hljs-params">address, port</span>) </span>{
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Path</span> (<span class="hljs-params">path</span>) </span>{
+    <span class="hljs-keyword">this</span>.family = <span class="hljs-string">'unix'</span>
+    <span class="hljs-keyword">this</span>.path = path
+}
+
+Path.prototype.toString = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.path
+}
+
+Path.prototype.listen = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> vargs = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>)
+    <span class="hljs-keyword">var</span> server = vargs.shift()
+    vargs.unshift(<span class="hljs-keyword">this</span>.path)
+    server.listen.apply(server, vargs)
+}
+
+Path.prototype.connect = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">connect</span>) </span>{
+    connect.path = <span class="hljs-keyword">this</span>.path
+    <span class="hljs-keyword">return</span> connect
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Bindable</span> (<span class="hljs-params">address, port</span>) </span>{
+    <span class="hljs-keyword">this</span>.family = <span class="hljs-string">'IPv4'</span>
     <span class="hljs-keyword">this</span>.address = address
     <span class="hljs-keyword">this</span>.port = port
 }
@@ -92,9 +114,24 @@ Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyw
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.address + <span class="hljs-string">':'</span> + <span class="hljs-keyword">this</span>.port
 }
 
+Bindable.prototype.listen = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> vargs = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>)
+    <span class="hljs-keyword">var</span> server = vargs.shift()
+    vargs.unshift(<span class="hljs-keyword">this</span>.port, <span class="hljs-keyword">this</span>.address)
+    server.listen.apply(server, vargs)
+}
+
+Bindable.prototype.connect = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">connect</span>) </span>{
+    connect.port = <span class="hljs-keyword">this</span>.port
+    connect.hostname = <span class="hljs-keyword">this</span>.address == <span class="hljs-string">'0.0.0.0'</span> ? <span class="hljs-string">'127.0.0.1'</span> : <span class="hljs-keyword">this</span>.address
+    <span class="hljs-keyword">return</span> connect
+}
+
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isNumeric</span> (<span class="hljs-params">value</span>) </span>{
     <span class="hljs-keyword">return</span> !<span class="hljs-built_in">isNaN</span>(<span class="hljs-built_in">parseFloat</span>(value)) &amp;&amp; <span class="hljs-built_in">isFinite</span>(value)
-}</pre></div></div>
+}
+
+</pre></div></div>
 
         </li>
 
@@ -109,11 +146,15 @@ Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyw
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isListen</span> (<span class="hljs-params">value</span>) </span>{
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse</span> (<span class="hljs-params">value</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^[.\/]/</span>.test(value)) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Path(value)
+    }
     <span class="hljs-keyword">var</span> bind = value.split(<span class="hljs-string">':'</span>)
     <span class="hljs-keyword">if</span> (bind.length == <span class="hljs-number">1</span>) {
         bind.unshift(<span class="hljs-string">'0.0.0.0'</span>)
-    }</pre></div></div>
+    }
+</pre></div></div>
 
         </li>
 
@@ -128,28 +169,35 @@ Bindable.prototype.toString = <span class="hljs-function"><span class="hljs-keyw
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> (isNumeric(bind[<span class="hljs-number">1</span>])) {
-        <span class="hljs-keyword">var</span> parts = bind[<span class="hljs-number">0</span>].split(<span class="hljs-string">'.'</span>)
-        <span class="hljs-keyword">if</span> (parts.length == <span class="hljs-number">4</span>) {
-            <span class="hljs-keyword">return</span> parts.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">part</span>) </span>{
-                <span class="hljs-keyword">return</span> isNumeric(part) &amp;&amp; <span class="hljs-number">0</span> &lt;= +part &amp;&amp; +part &lt;= <span class="hljs-number">255</span>
-            }).length == <span class="hljs-number">4</span>
-        }
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span> (!isNumeric(bind[<span class="hljs-number">1</span>])) {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
     }
-    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-}
-
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, name</span>) </span>{
-    value = <span class="hljs-built_in">String</span>(value)
-    <span class="hljs-keyword">if</span> (!isListen(value)) {
-        <span class="hljs-keyword">throw</span> <span class="hljs-string">'%s is not bindable'</span>
+    <span class="hljs-keyword">var</span> parts = bind[<span class="hljs-number">0</span>].split(<span class="hljs-string">'.'</span>)
+    <span class="hljs-keyword">if</span> (parts.length != <span class="hljs-number">4</span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+    }
+    <span class="hljs-keyword">if</span> (parts.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">part</span>) </span>{
+        <span class="hljs-keyword">return</span> isNumeric(part) &amp;&amp; <span class="hljs-number">0</span> &lt;= +part &amp;&amp; +part &lt;= <span class="hljs-number">255</span>
+    }).length != <span class="hljs-number">4</span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
     }
     <span class="hljs-keyword">var</span> bind = value.split(<span class="hljs-string">':'</span>)
     <span class="hljs-keyword">if</span> (bind.length == <span class="hljs-number">1</span>) {
         bind.unshift(<span class="hljs-string">'0.0.0.0'</span>)
     }
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Bindable(bind[<span class="hljs-number">0</span>], +bind[<span class="hljs-number">1</span>])
-}</pre></div></div>
+}
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, name</span>) </span>{
+    value = <span class="hljs-built_in">String</span>(value)
+    value = parse(value)
+    <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-string">'%s is not bindable'</span>
+    }
+    <span class="hljs-keyword">return</span> value
+}
+
+</pre></div></div>
 
         </li>
 

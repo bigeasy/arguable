@@ -89,7 +89,9 @@
 
 <span class="hljs-keyword">var</span> Program = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./program'</span>)
 
-<span class="hljs-keyword">var</span> slice = [].slice</pre></div></div>
+<span class="hljs-keyword">var</span> slice = [].slice
+
+</pre></div></div>
 
         </li>
 
@@ -106,7 +108,8 @@
 
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createStream</span> (<span class="hljs-params">s</span>) </span>{ <span class="hljs-keyword">return</span> s || <span class="hljs-keyword">new</span> stream.PassThrough }
 
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{</pre></div></div>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</pre></div></div>
 
         </li>
 
@@ -121,7 +124,9 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>)
+
+</pre></div></div>
 
         </li>
 
@@ -136,7 +141,9 @@
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span> = vargs.shift()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span> = vargs.shift()
+
+</pre></div></div>
 
         </li>
 
@@ -154,7 +161,9 @@ comments of the main module.</p>
 
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> usage = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'string'</span>
               ? vargs.shift()
-              : <span class="hljs-built_in">module</span>.filename</pre></div></div>
+              : <span class="hljs-built_in">module</span>.filename
+
+</pre></div></div>
 
         </li>
 
@@ -170,7 +179,9 @@ invoked as a main module.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> defaults = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'object'</span> ? vargs.shift() : {}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> defaults = <span class="hljs-keyword">typeof</span> vargs[<span class="hljs-number">0</span>] == <span class="hljs-string">'object'</span> ? vargs.shift() : {}
+
+</pre></div></div>
 
         </li>
 
@@ -186,7 +197,9 @@ invoked as a main module.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>    defaults.argv || (defaults.argv = [])
-    defaults.properties || (defaults.properties = [])</pre></div></div>
+    defaults.properties || (defaults.properties = [])
+
+</pre></div></div>
 
         </li>
 
@@ -202,6 +215,8 @@ invoked as a main module.</p>
             </div>
 
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> main = vargs.shift()
+
+    <span class="hljs-keyword">var</span> properties = vargs.shift() || {}
 
     <span class="hljs-keyword">var</span> invoke = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">argv, options, callback</span>) </span>{
         <span class="hljs-keyword">var</span> vargs = slice.call(<span class="hljs-built_in">arguments</span>, <span class="hljs-built_in">arguments</span>.length &gt;= <span class="hljs-number">3</span> ? <span class="hljs-number">2</span> : <span class="hljs-number">1</span>)
@@ -248,7 +263,8 @@ invoked as a main module.</p>
                 parameters.push(argument)
                 <span class="hljs-keyword">break</span>
             }
-        }</pre></div></div>
+        }
+</pre></div></div>
 
         </li>
 
@@ -300,7 +316,8 @@ argument parser, not properties on this mystery event emitter.</p>
             options.stdin = options.events.stdin
             options.stdout = options.events.stdout
             options.stderr = options.events.stderr
-        }</pre></div></div>
+        }
+</pre></div></div>
 
         </li>
 
@@ -337,15 +354,11 @@ arguments to be interpreted by the caller. This can be experimental.</p>
             <span class="hljs-attr">stderr</span>: createStream(options.stderr),
             <span class="hljs-attr">isMainModule</span>: isMainModule,
             <span class="hljs-attr">events</span>: ee,
-            <span class="hljs-attr">properties</span>: [ defaults.properties, options.properties || {} ],
+            <span class="hljs-attr">properties</span>: [ defaults.properties, properties, options.properties || {} ],
             <span class="hljs-attr">send</span>: send || <span class="hljs-literal">null</span>,
             <span class="hljs-attr">env</span>: options.env || {}
         })
-        main.apply(<span class="hljs-literal">null</span>, [ program ].concat(vargs))
-        <span class="hljs-keyword">return</span> program
-    }
-    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">module</span> === process.mainModule) {
-        invoke(process.argv.slice(<span class="hljs-number">2</span>), {</pre></div></div>
+</pre></div></div>
 
         </li>
 
@@ -355,6 +368,27 @@ arguments to be interpreted by the caller. This can be experimental.</p>
 
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>TODO This delay is to allow users to do something with the pass
+through streams and event emitter.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        process.nextTick(main.bind.apply(main, [ <span class="hljs-literal">null</span>, program ].concat(vargs)))
+        <span class="hljs-keyword">return</span> program
+    }
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">module</span> === process.mainModule) {
+        invoke(process.argv.slice(<span class="hljs-number">2</span>), {
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-13">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>No. Stop! There is no <code>process.stdio</code>. Do not add one! (Again.)</p>
 
@@ -367,7 +401,9 @@ arguments to be interpreted by the caller. This can be experimental.</p>
             <span class="hljs-attr">events</span>: process
         }, exit(process))
     }
-}</pre></div></div>
+}
+
+</pre></div></div>
 
         </li>
 
