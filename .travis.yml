@@ -13,6 +13,5 @@ branches:
     - travis-ci
 
 install:
-  - npm install
-  - npm install istanbul coveralls
-  - git checkout .
+  - yarn install --no-lockfile
+  - yarn global add istanbul coveralls
