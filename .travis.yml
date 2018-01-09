@@ -14,4 +14,5 @@ branches:
 
 install:
   - yarn install --no-lockfile
+  - git checkout node_modules
   - yarn global add istanbul coveralls
