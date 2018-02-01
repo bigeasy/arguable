@@ -24,7 +24,7 @@
                             "cadence":                      "1.0.x",
                             "interrupt":                    "5.0.x",
                             "rescue":                       "3.2.x",
-                            "signal":                       "3.2.x",
+                            "signal":                       "3.4.x",
                             "synonymous":                   "1.0.x"
     },
     "devDependencies":
