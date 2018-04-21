@@ -1,4 +1,4 @@
-require('proof')(18, require('cadence')(prove))
+require('proof')(13, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -42,24 +42,9 @@ function prove (async, assert) {
         parameters({}, async())
     }, function (result, argv, property) {
         assert(property, 1, 'default property')
-        parameters({}, { properties: { property: 2 } },  async())
+        parameters({}, { modules: { property: 2 } },  async())
     }, function (result, argv, property) {
         assert(property, 2, 'override default property')
-        parameters({ two: 3 }, {}, async())
-    }, function (result) {
-        assert(result, { one: 1, two: 3 }, 'parameter overwrite, single object argv')
-        parameters({ two: 3, argv: [{ name: 'four', value: 4 }] }, {}, async())
-    }, function (result) {
-        assert(result, { one: 1, two: 3, four: 4 }, 'parameter overwrite, argv in object')
-        parameters([{ name: 'name', value: 'value' }], {}, async())
-    }, function (result) {
-        assert(result, { one: 1, two: 2, name: 'value' }, 'name value argument')
-        parameters([], async())
-    }, function (result) {
-        assert(result, { one: 1, two: 2 }, 'invoke without options')
-        parameters([[{ three: 3 }]], {}, async())
-    }, function (result) {
-        assert(result, { one: 1, two: 2, three: 3 }, 'nested array argument')
         var program = main([], {}, async())
         assert(program.mainModule === process.mainModule, 'default main module')
     }, function (isMainModule) {

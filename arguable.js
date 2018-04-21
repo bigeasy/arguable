@@ -22,18 +22,10 @@ module.exports = function () {
               ? vargs.shift()
               : module.filename
 
-    // Check for default values for named parameters when argument parser is
-    // invoked as a main module.
-    var defaults = typeof vargs[0] == 'object' ? vargs.shift() : {}
-
-    // Ensure we have defaults.
-    defaults.argv || (defaults.argv = [])
-    defaults.properties || (defaults.properties = [])
-
     // Main body of argument parser or program is final argument.
     var main = vargs.shift()
 
-    var properties = vargs.shift() || {}
+    var modules = vargs.shift() || {}
 
     var invoke = module.exports = function (argv, options, callback) {
         var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
@@ -55,7 +47,6 @@ module.exports = function () {
             callback = options
             options = {}
         }
-        argv.unshift(defaults.argv)
         argv = argv.slice()
         while (argv.length != 0) {
             var argument = argv.shift()
@@ -137,7 +128,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             isMainModule: isMainModule,
             events: ee,
-            properties: [ defaults.properties, properties, options.properties || {} ],
+            modules: [ modules, options.modules || {} ],
             send: send || null,
             env: options.env || {}
         })
