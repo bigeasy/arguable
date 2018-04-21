@@ -42,7 +42,7 @@ function prove (async, assert) {
         parameters({}, async())
     }, function (result, argv, property) {
         assert(property, 1, 'default property')
-        parameters({}, { modules: { property: 2 } },  async())
+        parameters({}, { attributes: { property: 2 } },  async())
     }, function (result, argv, property) {
         assert(property, 2, 'override default property')
         var program = main([], {}, async())

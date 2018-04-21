@@ -32,7 +32,7 @@ function prove (async, assert) {
     var createProgram = cadence(function (async, source, env, argv, options, main, module) {
         options.env = env
         options.module = module
-        options.modules || (options.modules = [])
+        options.attributes || (options.attributes = [])
         var program = new Program(source, argv, options)
         main(program, async())
     })
@@ -259,9 +259,9 @@ function prove (async, assert) {
     })
     createProgram(__filename, {
     }, [],  {
-        modules: [{ extension: 1 }]
+        attributes: [{ extension: 1 }]
     }, cadence(function (async, program) {
-        assert(program.modules.extension, 1, 'additional modules')
+        assert(program.attribute.extension, 1, 'additional attributes')
     }), null, function (error) {
         if (error) throw error
     })
