@@ -130,7 +130,7 @@ function Program (source, argv, options) {
     this.on('removeListener', removeListener.bind(this))
     this.on('newListener', newListener.bind(this))
 
-    this.ready = new Signal
+    this.ready = options.ready || new Signal
 }
 util.inherits(Program, events.EventEmitter)
 
@@ -365,6 +365,7 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
         env: this.env,
         stdin: this.stdin,
         stderr: this.stderr,
+        ready: this.ready,
         events: this,
         send: this.send
     }, async())

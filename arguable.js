@@ -126,6 +126,7 @@ module.exports = function () {
             stdout: createStream(options.stdout),
             stdin: createStream(options.stdin),
             stderr: createStream(options.stderr),
+            ready: options.ready,
             isMainModule: isMainModule,
             events: ee,
             attributes: [ attributes, options.attributes || {} ],
