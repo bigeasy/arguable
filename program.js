@@ -148,20 +148,20 @@ Program.prototype._setParameters = function (parameters) {
     }).filter(function (value, index, arrayj) {
         return arrayj.indexOf(value) == index
     })
-    this.grouped = {}
+    this.arrayed = {}
     this.arguable.forEach(function (name) {
-        this.grouped[name] = []
+        this.arrayed[name] = []
     }, this)
     this.parameters.forEach(function (parameter) {
-        var group = this.grouped[parameter.name]
+        var group = this.arrayed[parameter.name]
         if (group == null) {
-            group = this.grouped[parameter.name] = []
+            group = this.arrayed[parameter.name] = []
         }
         group.push(parameter.value)
     }, this)
     this.ultimate = {}
     this.given.forEach(function (key) {
-        this.ultimate[key] = this.grouped[key][this.grouped[key].length - 1]
+        this.ultimate[key] = this.arrayed[key][this.arrayed[key].length - 1]
     }, this)
 }
 
