@@ -1,4 +1,4 @@
-require('proof')(47, require('cadence')(prove))
+require('proof')(49, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -44,6 +44,12 @@ function prove (async, assert) {
     })
     createProgram(__filename, {}, [ '--' ], {}, cadence(function (async, program) {
         assert(program.terminal, 'terminal')
+    }), null, function (error) {
+        if (error) throw error
+    })
+    createProgram(__filename, {}, [ '--longonly' ], {}, cadence(function (async, program) {
+        assert(program.ultimate.longonly, 'longonly')
+        assert(program.arrayed.longonly, [ true ], 'longonly arrayed')
     }), null, function (error) {
         if (error) throw error
     })
