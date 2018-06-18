@@ -1,4 +1,4 @@
-require('proof')(49, require('cadence')(prove))
+require('proof')(50, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -39,6 +39,11 @@ function prove (async, assert) {
 
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
         assert(program.arguable, [], 'missing')
+    }), null, function (error) {
+        if (error) throw error
+    })
+    createProgram(__filename, { LANG: 'fr_FR' }, [], {}, cadence(function (async, program) {
+        assert(program.lang, 'fr_FR', 'language from environment')
     }), null, function (error) {
         if (error) throw error
     })
