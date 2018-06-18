@@ -1,4 +1,4 @@
-require('proof')(13, require('cadence')(prove))
+require('proof')(14, require('cadence')(prove))
 
 function prove (async, assert) {
     var echo1 = require('./fixtures/echo-1')
@@ -6,6 +6,7 @@ function prove (async, assert) {
     var send = require('./fixtures/send')
     var parameters = require('./fixtures/parameters')
     var disconnect = require('./fixtures/disconnect')
+    var args = require('./fixtures/arguments')
     var main = require('./fixtures/main')
     var stream = require('stream')
     var events = require('events')
@@ -55,5 +56,8 @@ function prove (async, assert) {
         disconnect([], { connected: true }, async())
     }, function (connected) {
         assert(connected, false, 'disconected')
+        args([{ name: 'value' }], {}, async())
+    }, function (name) {
+        assert(name, 'value', 'disconected')
     })
 }

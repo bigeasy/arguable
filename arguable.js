@@ -30,18 +30,8 @@ module.exports = function () {
     var invoke = module.exports = function (argv, options, callback) {
         var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
         var parameters = []
-        if (Array.isArray(argv)) {
+        if (!Array.isArray(argv)) {
             argv = [ argv ]
-        } else {
-            var object = {}
-            for (var key in argv) {
-                object[key] = argv[key]
-            }
-            argv = [ object ]
-            if (Array.isArray(object.argv)) {
-                argv.push(object.argv)
-                delete object.argv
-            }
         }
         if (typeof options == 'function') {
             callback = options
@@ -52,19 +42,18 @@ module.exports = function () {
             var argument = argv.shift()
             switch (typeof argument) {
             case 'object':
+                // TODO Probably want `Program.flatten({ name: 'a', value: 1 // }, ...)`.
+                // TODO Flattening would require knowing from the parameters
+                // whether or not they accepted arguments in the case of
+                // switch arguments.
                 if (Array.isArray(argument)) {
                     argv.unshift.apply(argv, argument)
                 } else {
-                    if (('name' in argument) &&
-                        ('value' in argument) &&
-                        Object.keys(argument).length == 2
-                    ) {
-                        parameters.push(argument)
-                    } else {
-                        for (var name in argument) {
-                            parameters.push({ name: name, value: argument[name] })
-                        }
+                    var unshift = []
+                    for (var name in argument) {
+                        unshift.push('--' + name, argument[name].toString())
                     }
+                    argv.unshift(unshift)
                 }
                 break
             default:
