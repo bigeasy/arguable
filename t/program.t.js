@@ -272,7 +272,7 @@ function prove (async, assert) {
     }, [],  {
         attributes: [{ extension: 1 }]
     }, cadence(function (async, program) {
-        assert(program.attribute.extension, 1, 'additional attributes')
+        assert(program.attributes.extension, 1, 'additional attributes')
     }), null, function (error) {
         if (error) throw error
     })
