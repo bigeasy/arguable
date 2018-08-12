@@ -23,7 +23,7 @@
     {
                             "cadence":                      "1.0.x",
                             "interrupt":                    "6.3.x",
-                            "rescue":                       "3.2.x",
+                            "rescue":                       "3.3.x",
                             "signal":                       "4.0.x",
                             "synonymous":                   "1.0.x"
     },

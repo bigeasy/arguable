@@ -1,4 +1,4 @@
-var rescue = require('rescue')
+var rescue = require('rescue/redux')
 
 // We do not set the code by calling `process.exit` immediately. We instead set
 // set the exit code by hooking the exit event. This means that we're not going
@@ -9,21 +9,24 @@ var rescue = require('rescue')
 module.exports = function (process) {
     return function (error, exitCode) {
         if (error) {
-            exitCode = rescue([
-                /^bigeasy.arguable#abend$/m, function () {
-                    if (error.stderr) {
-                        process.stderr.write(error.stderr)
-                        process.stderr.write('\n')
-                    }
-                    return error.exitCode
-                },
-                /^bigeasy.arguable#help$/m, function () {
+            exitCode = rescue([{
+                name: 'abend',
+                when: [ '..', /^bigeasy.arguable#abend$/m, 'only' ]
+            }, {
+                name: 'help',
+                when: [ '..', /^bigeasy.arguable#help$/m, 'only' ]
+            }], function (rescued) {
+                var error = rescued.errors.shift()
+                if (error.stdout) {
                     process.stdout.write(error.stdout)
                     process.stdout.write('\n')
-                    return error.exitCode
+                } else if (error.stderr) {
+                    process.stderr.write(error.stderr)
+                    process.stderr.write('\n')
                 }
+                return error.exitCode
 // TODO Where is exit?
-            ])(error)
+            })(error)
             if (exitCode == null) {
                 exitCode = 1
             }
