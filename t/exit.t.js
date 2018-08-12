@@ -4,7 +4,7 @@ function prove (assert) {
     var exit = require('../exit'),
         events = require('events'),
         stream = require('stream'),
-        interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
+        Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 
     // rethrow an exception
     try {
@@ -19,15 +19,15 @@ function prove (assert) {
     assert(process.exitCode, 0xaa, 'exit code set')
 
     process.stderr = new stream.PassThrough
-    exit(process)(interrupt('abend', { exitCode: 0x77, stderr: 'abended' }))
+    exit(process)(new Interrupt('abend', { exitCode: 0x77, stderr: 'abended' }))
     assert(process.stderr.read().toString(), 'abended\n', 'abend error message')
     assert(process.exitCode, 0x77, 'abend exit code')
     process.stdout = new stream.PassThrough
-    exit(process)(interrupt('help', { stdout: 'usage', exitCode: 0 }))
+    exit(process)(new Interrupt('help', { stdout: 'usage', exitCode: 0 }))
     assert(process.stdout.read().toString(), 'usage\n', 'help message')
     assert(process.exitCode, 0, 'help exit code')
     process.stdout = new stream.PassThrough
-    exit(process)(interrupt('abend'))
+    exit(process)(new Interrupt('abend'))
     assert(process.stdout.read(), null, 'no message')
     assert(process.exitCode, 1, 'no exit code')
     exit(process)(null)

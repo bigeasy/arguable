@@ -4,7 +4,7 @@ var assert = require('assert')
 var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
-var interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
+var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var rescue = require('rescue')
 var events = require('events')
 var Signal = require('signal')
@@ -284,7 +284,7 @@ Program.prototype.abend = function () {
         message = this._usage.format(this.lang, key, vargs)
     }
     this._redirect = 'stderr'
-    throw interrupt('abend', {
+    throw new Interrupt('abend', {
         method: 'abend',
         key: key,
         vargs: vargs,
@@ -295,7 +295,7 @@ Program.prototype.abend = function () {
 
 // Stop execution and print help message.
 Program.prototype.help = function () {
-    throw interrupt('help', {
+    throw new Interrupt('help', {
         method: 'help',
         stdout: this._usage.chooseUsage(this.lang),
         exitCode: 0
