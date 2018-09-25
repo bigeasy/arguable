@@ -124,7 +124,12 @@ module.exports = function () {
         })
         // TODO This delay is to allow users to do something with the pass
         // through streams and event emitter.
-        process.nextTick(main.bind.apply(main, [ null, program ].concat(vargs)))
+        var cb = vargs.pop()
+        var cadence = require('cadence')
+        process.nextTick(cadence(function (async) {
+            vargs.push(async())
+            main.apply(null, [ program ].concat(vargs))
+        }).bind(null, cb))
         return program
     }
     if (module === process.mainModule) {
