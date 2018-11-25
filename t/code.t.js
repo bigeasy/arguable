@@ -1,6 +1,6 @@
 require('proof')(6, prove)
 
-function prove (assert) {
+function prove (okay) {
     var code = require('../code')
     var events = require('events')
 
@@ -21,7 +21,7 @@ function prove (assert) {
         versions: { node: '0.10.0' },
         exitCode: 1,
         exit: function (exitCode) {
-            assert(exitCode, 1, 'version 0.10 or less')
+            okay(exitCode, 1, 'version 0.10 or less')
         }
     }))
     ee.emit('exit', 0)
@@ -30,7 +30,7 @@ function prove (assert) {
         versions: { node: '0.11.7' },
         exitCode: 1,
         exit: function (exitCode) {
-            assert(exitCode, 1, 'version 0.11.7 or less')
+            okay(exitCode, 1, 'version 0.11.7 or less')
         }
     }))
     ee.emit('exit', 0)
@@ -38,15 +38,15 @@ function prove (assert) {
     code(ee = extend(new events.EventEmitter, {
         versions: { node: '0.10.0' },
         exit: function (exitCode) {
-            assert(exitCode, 0, 'exit handler no exit code')
+            okay(exitCode, 0, 'exit handler no exit code')
         }
     }))
     ee.emit('exit', 0)
 
     ee = new events.EventEmitter
     ee.on('exit', function (exitCode) {
-        assert(this === ee, 'this set correctly')
-        assert(exitCode, 1, 'other exit handler called')
+        okay(this === ee, 'this set correctly')
+        okay(exitCode, 1, 'other exit handler called')
     })
 
     try {
@@ -54,7 +54,7 @@ function prove (assert) {
             versions: { node: '0.10.0' },
             exitCode: 1,
             exit: function (exitCode) {
-                assert(exitCode, 1, 'exit handler no exit code')
+                okay(exitCode, 1, 'exit handler no exit code')
                 throw new Error
             }
         }))

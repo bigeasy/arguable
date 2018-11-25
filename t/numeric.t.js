@@ -1,13 +1,13 @@
 require('proof')(2, prove)
 
-function prove (assert) {
+function prove (okay) {
     var numeric = require('../numeric')
 
-    assert(numeric('3'), 3, 'is numeric')
+    okay(numeric('3'), 3, 'is numeric')
 
     try {
         numeric('x')
     } catch (error) {
-        assert(error, '%s is not numeric', 'is not numeric')
+        okay(error, '%s is not numeric', 'is not numeric')
     }
 }

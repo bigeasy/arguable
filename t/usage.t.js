@@ -9,7 +9,7 @@ require('proof')(4, prove)
   ___ . ___
 */
 
-function prove (assert) {
+function prove (okay) {
     var fs = require('fs'),
         path = require('path'),
         extractUsage = require('../usage'), usage,
@@ -19,8 +19,8 @@ function prove (assert) {
                   ''
 
     usage = extractUsage(__filename, 'en_US', [])
-    assert(usage.chooseUsage('en_US'), message, 'usage')
-    assert(usage.getPattern(), [
+    okay(usage.chooseUsage('en_US'), message, 'usage')
+    okay(usage.getPattern(), [
     {
         terse: 'c',
         verbose: 'config',
@@ -30,7 +30,7 @@ function prove (assert) {
         verbose: 'longonly',
         arguable: false
     }], 'patterns')
-    assert(usage.chooseUsage('en_GB'), message, 'usage')
+    okay(usage.chooseUsage('en_GB'), message, 'usage')
     usage = extractUsage(path.join(__dirname, 'usageless.js'), 'en_US', [])
-    assert(usage.chooseUsage('en_GB'), '', 'no usage')
+    okay(usage.chooseUsage('en_GB'), '', 'no usage')
 }

@@ -15,7 +15,7 @@ require('proof')(50, require('cadence')(prove))
     ___ . ___
 */
 
-function prove (async, assert) {
+function prove (async, okay) {
     var stream = require('stream'),
         events = require('events'),
         path = require('path'),
@@ -38,89 +38,89 @@ function prove (async, assert) {
     })
 
     createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
-        assert(program.arguable, [], 'missing')
+        okay(program.arguable, [], 'missing')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, { LANG: 'fr_FR' }, [], {}, cadence(function (async, program) {
-        assert(program.lang, 'fr_FR', 'language from environment')
+        okay(program.lang, 'fr_FR', 'language from environment')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '--' ], {}, cadence(function (async, program) {
-        assert(program.terminal, 'terminal')
+        okay(program.terminal, 'terminal')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '--longonly' ], {}, cadence(function (async, program) {
-        assert(program.ultimate.longonly, 'longonly')
-        assert(program.arrayed.longonly, [ true ], 'longonly arrayed')
+        okay(program.ultimate.longonly, 'longonly')
+        okay(program.arrayed.longonly, [ true ], 'longonly arrayed')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '-cone=1', '-c', 'two=2' ], {
     }, cadence(function (async, program) {
-        assert(program.given, [ 'config' ], 'given')
-        assert(program.arrayed, {
+        okay(program.given, [ 'config' ], 'given')
+        okay(program.arrayed, {
             config: [ 'one=1', 'two=2' ],
             level: [],
             processes: [ ],
             bind: []
         }, 'arrayed')
-        assert(program.ultimate, { config: 'two=2' }, 'ultimate')
-        assert(!program.terminal, 'not terminal')
+        okay(program.ultimate, { config: 'two=2' }, 'ultimate')
+        okay(!program.terminal, 'not terminal')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [], io = {
         events: { exitCode: 0 }
     }, cadence(function (async, program) {
-        assert(program.exitCode, 0, 'exit code get')
+        okay(program.exitCode, 0, 'exit code get')
         program.exitCode = 1
-        assert(program.exitCode, 1, 'exit code set')
+        okay(program.exitCode, 1, 'exit code set')
     }), null, function (error) {
         if (error) throw error
-        assert(io.events.exitCode, 1, 'exit non-zero')
+        okay(io.events.exitCode, 1, 'exit non-zero')
     })
     createProgram(__filename, {}, [], io = {
         events: { connected: true, disconnect: function () { this.connected = false } }
     }, cadence(function (async, program) {
-        assert(program.connected, 'connected')
+        okay(program.connected, 'connected')
         program.disconnectIf()
         program.disconnectIf()
-        assert(!program.connected, 'not connected')
+        okay(!program.connected, 'not connected')
     }), null, function (error) {
         if (error) throw error
-        assert(!io.events.connected, 'exit not connected')
+        okay(!io.events.connected, 'exit not connected')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         throw new Error('raw')
     }), null, function (error) {
-        assert(error.message, 'raw', 'raw exception')
+        okay(error.message, 'raw', 'raw exception')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend('badness')
     }), null, function (error) {
-        assert(/^bigeasy.arguable#abend$/m.test(error.message), 'official message')
-        assert(error.stderr, 'A bad thing happened.', 'error')
-        assert(error.exitCode, 1, 'error code')
+        okay(/^bigeasy.arguable#abend$/m.test(error.message), 'official message')
+        okay(error.stderr, 'A bad thing happened.', 'error')
+        okay(error.exitCode, 1, 'error code')
     })
     createProgram(__filename, {}, [], io = {
     }, cadence(function (async, program) {
         program.abend()
     }), null, function (error) {
-        assert(!error.stderr, 'messageless error')
-        assert(error.exitCode, 1, 'messageless error code')
+        okay(!error.stderr, 'messageless error')
+        okay(error.exitCode, 1, 'messageless error code')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend(127, 'badness')
     }), null, function (error) {
-        assert(error.stderr, 'A bad thing happened.', 'error with code')
-        assert(error.exitCode, 127, 'code for error with code')
+        okay(error.stderr, 'A bad thing happened.', 'error with code')
+        okay(error.exitCode, 127, 'code for error with code')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
@@ -128,15 +128,15 @@ function prove (async, assert) {
         program.assert(true, 'badness')
         program.assert(false, 'badness')
     }), null, function (error) {
-        assert(error.stderr, 'A bad thing happened.', 'failed assertion')
+        okay(error.stderr, 'A bad thing happened.', 'failed assertion')
     })
     createProgram(__filename, {}, [], io = {
         stderr: new stream.PassThrough
     }, cadence(function (async, program) {
         program.abend('nogoodness')
     }), null, function (error) {
-        assert(error.stderr, 'nogoodness', 'error string missing')
-        assert(error.exitCode, 1, 'error string missing code')
+        okay(error.stderr, 'nogoodness', 'error string missing')
+        okay(error.exitCode, 1, 'error string missing code')
     })
     createProgram(__filename, {}, [ '-x' ], io = {
         stderr: new stream.PassThrough
@@ -144,30 +144,30 @@ function prove (async, assert) {
         program.abend('nogoodness')
         return 0
     }), null, function (error) {
-        assert(error.stderr, 'unknown argument', 'unknown argument')
-        assert(error.exitCode, 1, 'unknown argument code')
+        okay(error.stderr, 'unknown argument', 'unknown argument')
+        okay(error.exitCode, 1, 'unknown argument code')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.help()
     }), null, function (error) {
-        assert(error.stdout + '\n', usage, 'help')
+        okay(error.stdout + '\n', usage, 'help')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.helpIf(true)
     }), null, function (error) {
-        assert(error.method, 'help', 'help if')
+        okay(error.method, 'help', 'help if')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         program.helpIf(false)
     }), null, function (error) {
-        assert(!error, 'help if not')
+        okay(!error, 'help if not')
     })
     async([function () {
         createProgram(__filename, {}, [], {}, cadence(function (async, program) {
             program.delegate('delegated.%s', async())
         }), null, async())
     }, function (error) {
-        assert(error.stderr, 'sub command missing', 'sub command missing')
+        okay(error.stderr, 'sub command missing', 'sub command missing')
     }])
     createProgram(__filename, {}, [
         'found'
@@ -175,77 +175,77 @@ function prove (async, assert) {
         program.delegate('delegated.%s', async())
     }), module, function (error, exitCode) {
         if (error) throw error
-        assert(exitCode, 0, 'delegated command normal exit')
+        okay(exitCode, 0, 'delegated command normal exit')
     })
     async(function () {
         createProgram(__filename, {}, [ 'found' ], {}, cadence(function (async, program) {
             program.delegate('delegated.found', [], async())
         }), module, async())
     }, function (exitCode) {
-        assert(exitCode, 0, 'delegated by package name normal exit')
+        okay(exitCode, 0, 'delegated by package name normal exit')
     })
     createProgram(__filename, {}, [
         'unfound'
     ], {}, cadence(function (async, program) {
         program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
     }), module, function (error) {
-        assert(error.stderr, 'sub command module not found', 'delegated not found')
+        okay(error.stderr, 'sub command module not found', 'delegated not found')
     })
     createProgram(__filename, {}, [
         'broken'
     ], {}, cadence(function (async, program) {
         program.delegate('delegated.%s', async())
     }), module, function (error) {
-        assert(error.message, 'x is not defined', 'delgated program broken')
+        okay(error.message, 'x is not defined', 'delgated program broken')
     })
     createProgram(__filename, {}, [ '-l', 3 ],  {
     }, cadence(function (async, program) {
         program.required('level', 'processes')
     }), null, function (error) {
-        assert(error.stderr, 'processes is required', 'required')
+        okay(error.stderr, 'processes is required', 'required')
     })
     createProgram(__filename, {}, [ '-l', 'x', '-p', '3' ],  {
     }, cadence(function (async, program) {
         program.validate('%s is not an integer', 'processes', /^\d+$/)
-        assert(program.ultimate.processes, '3', 'successful function validation')
+        okay(program.ultimate.processes, '3', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [],  {
     }, cadence(function (async, program) {
-        assert(program.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
-        assert(program.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
+        okay(program.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
+        okay(program.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
     }), null, function (error) {
-        assert(error.stderr, 'failed attempt', 'failed attempt')
+        okay(error.stderr, 'failed attempt', 'failed attempt')
     })
     createProgram(__filename, {}, [],  {
     }, cadence(function (async, program) {
-        assert(program.attempt(function () {
+        okay(program.attempt(function () {
             throw new Error('failed attempt')
         }, /^failed attempt$/, 'failed attempt'), 1, 'attempted')
     }), null, function (error) {
-        assert(error.stderr, 'failed attempt', 'failed attempt matched')
+        okay(error.stderr, 'failed attempt', 'failed attempt matched')
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate('%s is not copacetic', 'level', function (value) {
             return 'x' == value
         })
-        assert(program.ultimate.level, 'x', 'successful function validation')
+        okay(program.ultimate.level, 'x', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate(function () { return 'y' }, 'level')
-        assert(program.ultimate.level, 'y', 'validator as first argument')
+        okay(program.ultimate.level, 'y', 'validator as first argument')
     }), null, function (error) {
         if (error) throw error
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate('level', function () { return 'y' })
-        assert(program.ultimate.level, 'y', 'validator as last argument')
+        okay(program.ultimate.level, 'y', 'validator as last argument')
     }), null, function (error) {
         if (error) throw error
     })
@@ -253,18 +253,18 @@ function prove (async, assert) {
     }, cadence(function (async, program) {
         program.validate('level', function () { throw new Error('thrown') })
     }), null, function (error) {
-        assert(error.message, 'thrown', 'rethrow actual error')
+        okay(error.message, 'thrown', 'rethrow actual error')
     })
     createProgram(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, program) {
         program.validate('%s is not an integer', 'other', 'level', /^\d+$/)
     }), null, function (error) {
-        assert(error.stderr, 'level is not an integer', 'unsuccessful regex validation')
+        okay(error.stderr, 'level is not an integer', 'unsuccessful regex validation')
     })
     createProgram(__filename, {}, [],  {
     }, cadence(function (async, program) {
-        assert(program.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
-        assert(program.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
+        okay(program.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
+        okay(program.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
     }), null, function (error) {
         if (error) throw error
     })
@@ -272,7 +272,7 @@ function prove (async, assert) {
     }, [],  {
         attributes: [{ extension: 1 }]
     }, cadence(function (async, program) {
-        assert(program.attributes.extension, 1, 'additional attributes')
+        okay(program.attributes.extension, 1, 'additional attributes')
     }), null, function (error) {
         if (error) throw error
     })
@@ -286,7 +286,7 @@ function prove (async, assert) {
         program.once('shutdown', function () { fourth() })
     }), null, function (error) {
         if (error) throw error
-        assert(true, 'signal handler')
+        okay(true, 'signal handler')
     })
     io.events.emit('SIGINT')
 }

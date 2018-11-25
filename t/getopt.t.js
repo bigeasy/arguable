@@ -1,6 +1,6 @@
 require('proof')(17, prove)
 
-function prove (assert) {
+function prove (okay) {
     var pattern = [
         { terse: 'a', verbose: 'ambiguous' },
         { terse: 'A', verbose: 'arbitrary' },
@@ -11,30 +11,30 @@ function prove (assert) {
     ]
     var getopt = require('../getopt'), params
     params = getopt(pattern, [ '-N', 'steve'])
-    assert(params, [{ name: 'name', value: 'steve' }], 'terse string')
+    okay(params, [{ name: 'name', value: 'steve' }], 'terse string')
     params = getopt(pattern, [ '-Nsteve'])
-    assert(params, [{ name: 'name', value: 'steve' }], 'terse mushed string')
+    okay(params, [{ name: 'name', value: 'steve' }], 'terse mushed string')
     params = getopt(pattern, [ '--name', 'steve'])
-    assert(params, [{ name: 'name', value: 'steve' }], 'verbose string')
+    okay(params, [{ name: 'name', value: 'steve' }], 'verbose string')
     params = getopt(pattern, [ '--n', 'steve'])
-    assert(params, [{ name: 'name', value: 'steve' }], 'verbose abbrevated string')
+    okay(params, [{ name: 'name', value: 'steve' }], 'verbose abbrevated string')
     params = getopt(pattern, [ '--name=steve'])
-    assert(params, [{ name: 'name', value: 'steve' }], 'verbose assigned string')
+    okay(params, [{ name: 'name', value: 'steve' }], 'verbose assigned string')
 
     params = getopt(pattern, [ '-a', 3 ])
-    assert(params, [{ name: 'ambiguous', value: true }], 'short opt makes it unambigouus')
+    okay(params, [{ name: 'ambiguous', value: true }], 'short opt makes it unambigouus')
     params = getopt(pattern, [ '-A', 3 ])
-    assert(params, [{ name: 'arbitrary', value: true }], 'short opt match')
+    okay(params, [{ name: 'arbitrary', value: true }], 'short opt match')
 
     params = getopt(pattern, [ '-aA' ])
-    assert(params, [{
+    okay(params, [{
         name: 'ambiguous', value: true
     }, {
         name: 'arbitrary', value: true
     }], 'catenated short opt without argument')
 
     params = getopt(pattern, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ])
-    assert(params, [{
+    okay(params, [{
         name: 'config', value: 'one=1'
     }, {
         name: 'config', value: 'two=2'
@@ -44,11 +44,11 @@ function prove (assert) {
 
     var argv = [ '-p', '3', '--', '-A' ]
     params = getopt(pattern, argv)
-    assert(argv, [ '--', '-A' ], 'stop on double hyphens')
-    assert(params, [{ name: 'processes', value: '3' }], 'stop on double hyphens params')
+    okay(argv, [ '--', '-A' ], 'stop on double hyphens')
+    okay(params, [{ name: 'processes', value: '3' }], 'stop on double hyphens params')
 
     var argv = [ '-a', '-p', '3' ]
-    assert(getopt(pattern, argv), [
+    okay(getopt(pattern, argv), [
         { name: 'ambiguous', value: true },
         { name: 'processes', value: '3' }
     ], 'ordered')
@@ -57,7 +57,7 @@ function prove (assert) {
         try {
             getopt(pattern, args)
         } catch (error) {
-            assert(error.abend, expected, message)
+            okay(error.abend, expected, message)
             return
         }
         throw new Error
