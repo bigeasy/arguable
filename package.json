@@ -22,7 +22,7 @@
     "dependencies":
     {
                             "cadence":                      "3.0.x",
-                            "interrupt":                    "6.4.x",
+                            "interrupt":                    "7.0.x",
                             "rescue":                       "5.0.x",
                             "signal":                       "7.0.x",
                             "synonymous":                   "1.0.x"
