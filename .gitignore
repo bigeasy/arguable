@@ -5,4 +5,5 @@
 !/node_modules/delegated.broken.js
 /.proof.out
 /coverage
+/.nyc_output
 /npm-debug.log

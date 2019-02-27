@@ -29,11 +29,11 @@
     },
     "devDependencies":
     {
-                            "proof":                        "5.0.x"
+                            "proof":                        "7.0.x"
     },
     "main":                 "arguable",
     "scripts":
     {
-                            "test": "proof platform win32 && proof test */*.t.js || t/test"
+                            "test": "proof test test/*.t.js"
     }
 }
