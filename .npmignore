@@ -1,7 +1,6 @@
 /.*
 /*.md
 /coverage
-/.nyc_output
 /docs
 /node_modules
 /notes
