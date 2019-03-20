@@ -1,6 +1,7 @@
 require('../../redux').main(module, {
-    argv: process.argv
-}, function (destructible, options) {
+    $shutdown: [ 'SIGTERM' ],
+    stderr: process.stderr
+}, function (destructible, arguable) {
     var cadence = require('cadence')
     cadence(function () {
         return options.value

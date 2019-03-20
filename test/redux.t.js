@@ -8,6 +8,5 @@ function prove (async, okay) {
     }, function (exitCode, value) {
         okay(exitCode, 0, 'exit okay')
         okay(value, 1, 'return')
-        var program = require('./fixtures/return')
     })
 }
