@@ -22,10 +22,9 @@ module.exports = function () {
               ? vargs.shift()
               : module.filename
 
-    // Main body of argument parser or program is final argument.
-    var main = vargs.shift()
+    var attributes = typeof vargs[0] == 'object' ? vargs.shift() : {}
 
-    var attributes = vargs.shift() || {}
+    var main = vargs.shift()
 
     var invoke = module.exports = function (argv, options, callback) {
         var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
