@@ -11,6 +11,9 @@ exports.parse = function (source, argv) {
     }
 }
 
+function Arguable (parameters, remaining) {
+}
+
 exports.main = function () {
     var vargs = []
     vargs.push.apply(vargs, arguments)
@@ -34,8 +37,11 @@ exports.main = function () {
     }).map(function (pattern) {
         return pattern.verbose
     })
-    module.exports = function (options, callback) {
-        var argv = options
+    module.exports = function (argv, options, callback) {
+        var vargs = []
+        vargs.push.apply(vargs, arguments)
+
+        argv = vargs.shift()
 
         if (!Array.isArray(argv)) {
             argv = [ argv ]
