@@ -2,12 +2,27 @@ var stream = require('stream')
 var events = require('events')
 var exit = require('./exit')
 
+var Destructible = require('destructible')
+
+var coalesce = require('extant')
+
 var Program = require('./program')
 
 var slice = [].slice
 
+var Signal = require('signal')
+
 // Use given stream or create pseudo-stream.
 function createStream (s) { return s || new stream.PassThrough }
+
+function Child (destructible) {
+    this.exit = new Signal
+    this._destructible = destructible
+}
+
+Child.prototype.destroy = function () {
+    this._destructible.destroy()
+}
 
 module.exports = function () {
     // Variadic arguments.
@@ -124,12 +139,75 @@ module.exports = function () {
         // TODO This delay is to allow users to do something with the pass
         // through streams and event emitter.
         var cb = vargs.pop()
-        var cadence = require('cadence')
-        process.nextTick(cadence(function (async) {
-            vargs.push(async())
-            main.apply(null, [ program ].concat(vargs))
-        }).bind(null, cb))
-        return program
+        if (attributes.$destructible) {
+            var identifier = typeof attributes.$destructible == 'boolean'
+                           ? module.filename : attributes.$destructible
+            var destructible = new Destructible(identifier)
+            var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
+            var $trap = ('$trap' in attributes) ? attributes.$trap : {}
+            var signals = coalesce(attributes.$signals, process)
+            if (typeof $trap == 'boolean') {
+                if (!$trap) {
+                    trap = {}
+                }
+            } else {
+                for (var signal in $trap) {
+                    trap[signal] = $trap[signal]
+                }
+            }
+            var traps = [], listener
+            for (var signal in trap) {
+                switch (trap[signal]) {
+                case 'destroy':
+                    traps.push({
+                        signal: signal,
+                        listener: listener = destructible.destroy.bind(destructible)
+                    })
+                    signals.on(signal, listener)
+                case 'swallow':
+                    traps.push({
+                        signal: signal,
+                        listener: listener = function () {}
+                    })
+                    signals.on(signal, listener)
+                    break
+                case 'default':
+                    break
+                }
+            }
+            var child = new Child(destructible)
+            destructible.completed.wait(function () {
+                var vargs = []
+                vargs.push.apply(vargs, arguments)
+                traps.forEach(function (trap) {
+                    signals.removeListener(trap.signal, trap.listener)
+                })
+                if (vargs[0]) {
+                    child.exit.unlatch(vargs[0])
+                } else {
+                    child.exit.unlatch.bind(exit, [ null ].concat(vargs.slice(1)))
+                }
+            })
+            destructible.durable('main', function (destructible, callack) {
+                console.log('calling main')
+                main(destructible, program, attributes, function () {
+                    var vargs = []
+                    vargs.push.apply(vargs, arguments)
+                    if (vargs[0]) {
+                        callback(vargs[0])
+                    } else {
+                        callback.apply(null, [ null ].concat(vargs.slice(1), child, attributes))
+                    }
+                })
+            }, cb)
+        } else {
+            var cadence = require('cadence')
+            process.nextTick(cadence(function (async) {
+                vargs.push(async())
+                main.apply(null, [ program ].concat(vargs))
+            }).bind(null, cb))
+            return program
+        }
     }
     if (module === process.mainModule) {
         invoke(process.argv.slice(2), {
