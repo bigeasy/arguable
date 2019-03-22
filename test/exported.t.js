@@ -41,16 +41,19 @@ function prove (async, okay) {
             })
         })
     }, function () {
-        ee = new events.EventEmitter
-        ee.stdout = new stream.PassThrough
-        chunks = []
-        ee.stdout.on('data', function (data) { chunks.push(data.toString()) })
-        stdout = new stream.PassThrough
-        chunks = []
-        stdout.on('data', function (data) { chunks.push(data.toString()) })
-        var ee = new events.EventEmitter
-        ee.send = function (message) { okay(message, { key: 'value' }, 'send') }
-        send([], { events: ee }, async())
+        var messaged = require('./fixtures/messaged')
+        var Messenger = require('../messenger')
+        var stream = require('stream')
+        async(function () {
+            messaged({}, { $stdout: new stream.PassThrough, messenger: new Messenger }, async())
+        }, function (child, options) {
+            options.messenger.emit('message', { method: 'shutdown' })
+            async(function () {
+                child.exit(async())
+            }, function () {
+                okay(options.$stdout.read().toString(), 'shutdown\n', 'send')
+            })
+        })
     }, function () {
         okay(true, 'direct ee called back')
     }, function () {

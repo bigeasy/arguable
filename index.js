@@ -105,19 +105,6 @@ module.exports = function () {
         // function that takes the argument array and use the argument parser
         // module of their choice. Additional properties are arguments to the
         // argument parser, not properties on this mystery event emitter.
-
-        // TODO Okay, now we have space for additional arguments that follow the
-        // event emitter or the options. These can be passed in as variadic
-        // arguments to be interpreted by the caller. This can be experimental.
-        //
-        var send = options.send || options.events && options.events.send && function () {
-            options.events.send.apply(options.events, slice.call(arguments))
-        }
-        var ee = options.events
-        if (ee == null) {
-            ee = new events.EventEmitter
-            ee.mainModule = process.mainModule
-        }
         var program = new Program(usage, parameters, {
             module: module,
             stdout: createStream(options.stdout),
@@ -125,9 +112,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             ready: options.ready,
             isMainModule: isMainModule,
-            events: ee,
             attributes: [ attributes, options.attributes || {} ],
-            send: send || null,
             env: options.env || {}
         })
         // TODO This delay is to allow users to do something with the pass
