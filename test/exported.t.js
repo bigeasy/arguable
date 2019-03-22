@@ -1,4 +1,4 @@
-require('proof')(19, require('cadence')(prove))
+require('proof')(20, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -15,8 +15,15 @@ function prove (async, okay) {
     var ee
     async(function () {
         var events = require('events')
+        var identified = require('./fixtures/identified')
+        async(function () {
+            identified({}, async())
+        }, function (identifier) {
+            okay(identifier, [ 1 ], 'set identifier')
+        })
+    }, function () {
+        var events = require('events')
         var errored = require('./fixtures/errored')
-        var child
         async([function () {
             errored({}, async())
         }, function (error) {

@@ -146,6 +146,7 @@ module.exports = function () {
         if (attributes.$destructible) {
             var identifier = typeof attributes.$destructible == 'boolean'
                            ? module.filename : attributes.$destructible
+            program.identifier = identifier
             var destructible = new Destructible(identifier)
             var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
             var $trap = ('$trap' in attributes) ? attributes.$trap : {}
