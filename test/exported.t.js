@@ -1,4 +1,4 @@
-require('proof')(15, require('cadence')(prove))
+require('proof')(18, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -62,6 +62,34 @@ function prove (async, okay) {
         optional({}, { attributes: { property: 2 } },  async())
     }, function (property) {
         okay(property, 2, 'override default property')
+    }, function () {
+        var events = require('events')
+        var signaled = require('./fixtures/signaled')
+        async(function () {
+            signaled({}, {
+                $signals: new events.EventEmitter
+            }, async())
+        }, function (destructed, child, options) {
+            options.$signals.once('SIGINT', function () {
+                okay('SIGINT swallowed')
+            })
+            okay(!destructed[0], 'SIGINT did not destroy')
+            options.$signals.emit('SIGHUP') // Should do nothing.
+            okay(!destructed[0], 'SIGHUP did not destroy')
+            async(function () {
+                child.exit(async())
+                options.$signals.emit('SIGTERM')
+            }, function (exitCode) {
+                okay({
+                    exitCode: exitCode,
+                    destructed: destructed[0]
+                }, {
+                    exitCode: 0,
+                    destructed: true
+                },  'SIGTERM did destroy')
+            })
+        })
+    }, function () {
         var program = main([], {}, async())
         okay(program.mainModule === process.mainModule, 'default main module')
     }, function (isMainModule) {

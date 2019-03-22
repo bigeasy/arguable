@@ -149,7 +149,7 @@ module.exports = function () {
             var destructible = new Destructible(identifier)
             var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
             var $trap = ('$trap' in attributes) ? attributes.$trap : {}
-            var signals = coalesce(attributes.$signals, process)
+            var signals = coalesce(options.$signals, process)
             if (typeof $trap == 'boolean') {
                 if (!$trap) {
                     trap = {}
@@ -200,7 +200,7 @@ module.exports = function () {
                     if (vargs[0]) {
                         callback(vargs[0])
                     } else {
-                        callback.apply(null, [ null ].concat(vargs.slice(1), child, attributes))
+                        callback.apply(null, [ null ].concat(vargs.slice(1), child, options))
                     }
                 })
             }, cb)
