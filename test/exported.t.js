@@ -60,38 +60,38 @@ function prove (async, okay) {
         var optional = require('./fixtures/optional')
         async(function () {
             optional({}, async())
-        }, function (property, child) {
-            okay(property, 1, 'default property return')
+        }, function (pid, child) {
+            okay(pid, process.pid, 'default property return')
             async(function () {
                 child.exit(async())
                 child.destroy()
-            }, function (exitCode, property) {
+            }, function (exitCode, pid) {
                 okay({
                     exitCode: exitCode,
-                    property: property
+                    pid: pid
                 }, {
                     exitCode: 0,
-                    property: 1
+                    pid: process.pid
                 },  'default property exit')
             })
         })
     }, function () {
         var optional = require('./fixtures/optional')
         async(function () {
-            optional({}, { property: 2 },  async())
-        }, function (property, child) {
-            okay(property, 2, 'override default property return')
+            optional({}, { pid: 2 },  async())
+        }, function (pid, child) {
+            okay(pid, 2, 'override default property return')
             async(function () {
                 child.exit(async())
                 child.destroy()
-            }, function (exitCode, property) {
+            }, function (exitCode, pid) {
                 okay({
                     exitCode: exitCode,
-                    property: property
+                    pid: pid
                 }, {
                     exitCode: 0,
-                    property: 2
-                },  'override default property exit')
+                    pid: 2
+                },  'override default pid exit')
             })
         })
     }, function () {
