@@ -1,4 +1,4 @@
-require('proof')(44, require('cadence')(prove))
+require('proof')(42, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -141,39 +141,24 @@ function prove (async, okay) {
     }), null, function (error) {
         okay(!error, 'help if not')
     })
-    async([function () {
-        createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-            program.delegate('delegated.%s', async())
-        }), null, async())
-    }, function (error) {
-        okay(error.stderr, 'sub command missing', 'sub command missing')
-    }])
-    createProgram(__filename, {}, [
-        'found'
-    ], {}, cadence(function (async, program) {
-        program.delegate('delegated.%s', async())
-    }), module, function (error, exitCode) {
+    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
+        var pkg = path.resolve(__dirname, './fixtures/delegate')
+        program.delegate(pkg, [], async())
+    }), module, function (error, child) {
         if (error) throw error
-        okay(exitCode, 0, 'delegated command normal exit')
-    })
-    async(function () {
-        createProgram(__filename, {}, [ 'found' ], {}, cadence(function (async, program) {
-            program.delegate('delegated.found', [], async())
-        }), module, async())
-    }, function (exitCode) {
-        okay(exitCode, 0, 'delegated by package name normal exit')
+        okay(child, 'delegated command normal exit')
     })
     createProgram(__filename, {}, [
         'unfound'
     ], {}, cadence(function (async, program) {
-        program.delegate(function (moduleName) { return 'delegated.' + moduleName }, async())
+        program.delegate(path.resolve(__dirname, './fixtures/missing'), [], async())
     }), module, function (error) {
         okay(error.stderr, 'sub command module not found', 'delegated not found')
     })
     createProgram(__filename, {}, [
         'broken'
     ], {}, cadence(function (async, program) {
-        program.delegate('delegated.%s', async())
+        program.delegate(path.resolve(__dirname, './fixtures/broken'), async())
     }), module, function (error) {
         okay(error.message, 'x is not defined', 'delgated program broken')
     })

@@ -301,40 +301,21 @@ Arguable.prototype.helpIf = function (help) {
 //
 // We're only going to support accepting a package name, but leave the
 // formatting logic in for now to see where it's being used.
-Arguable.prototype.delegate = cadence(function (async, format, argv) {
-    if (argv == null) {
-        if (this.argv.length == 0) {
-            this.abend('sub command missing')
-        }
-        var argv = this.argv.slice()
-        var command = argv.shift()
-        var pkg
-        if (typeof format == 'function') {
-            pkg = format(command, this)
-        } else {
-            pkg = util.format(format, command)
-        }
-    } else {
-        pkg = format
-    }
-    var arguable
+Arguable.prototype.delegate = cadence(function (async, pkg, argv) {
+    var program
     try {
-        arguable = this._module.require(pkg)
+        program = this._module.require(pkg)
     } catch (error) {
         if (error.code == 'MODULE_NOT_FOUND') {
-            this.abend('sub command module not found', command, pkg)
+            this.abend('sub command module not found', pkg)
         } else {
             throw error
         }
     }
-    arguable(argv, {
-        stdout: this.stdout,
-        env: this.env,
-        stdin: this.stdin,
-        stderr: this.stderr,
-        ready: this.ready,
-        events: this,
-        send: this.send
+    program(argv, {
+        $stdout: this.stdout,
+        $stdin: this.stdin,
+        $stderr: this.stderr
     }, async())
 })
 
