@@ -183,14 +183,12 @@ module.exports = function () {
             var exit = new Signal
             var child = new Child(destructible, exit)
             destructible.completed.wait(function () {
-                console.log('scramming')
                 var vargs = []
                 vargs.push.apply(vargs, arguments)
                 traps.forEach(function (trap) {
                     signals.removeListener(trap.signal, trap.listener)
                 })
                 if (vargs[0]) {
-                console.log(vargs[0].stack)
                     exit.unlatch(vargs[0])
                 } else {
                     exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
