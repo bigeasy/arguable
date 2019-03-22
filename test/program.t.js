@@ -27,7 +27,7 @@ function prove (async, okay) {
                 '    -p, --processes <value>\n' +
                 '    -b, --bind <address>\n' +
                 ''
-    var Program = require('../program.js'), io
+    var Program = require('../arguable.js'), io
 
     var createProgram = cadence(function (async, source, env, argv, options, main, module) {
         options.env = env

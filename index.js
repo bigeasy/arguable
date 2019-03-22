@@ -6,7 +6,7 @@ var Destructible = require('destructible')
 
 var coalesce = require('extant')
 
-var Program = require('./program')
+var Program = require('./arguable')
 
 var slice = [].slice
 
