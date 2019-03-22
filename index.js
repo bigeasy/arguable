@@ -144,6 +144,15 @@ module.exports = function () {
         // through streams and event emitter.
         var cb = vargs.pop()
         if (attributes.$destructible) {
+            // New option merging.
+            var combined = {}
+            for (var attribute in attributes) {
+                combined[attribute] = attributes[attribute]
+            }
+            for (var attribute in options) {
+                combined[attribute] = options[attribute]
+            }
+            attributes = combined
             var identifier = typeof attributes.$destructible == 'boolean'
                            ? module.filename : attributes.$destructible
             program.identifier = identifier
