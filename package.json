@@ -31,7 +31,6 @@
     {
                             "proof":                        "7.0.x"
     },
-    "main":                 "arguable",
     "scripts":
     {
                             "test": "proof test test/*.t.js"
