@@ -1,4 +1,4 @@
-require('proof')(24, require('cadence')(prove))
+require('proof')(25, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -162,6 +162,20 @@ function prove (async, okay) {
             okay(isMainModule, 'is still main module')
             okay(options.$signals.listenerCount('SIGINT'), 0, 'main module untrapped')
             child.exit(async())
+        })
+    }, function () {
+        // Also tests untrap as false.
+        var abend = require('./fixtures/abend')
+        var events = require('events')
+        async([function () {
+            abend({}, async())
+        }, function (error) {
+            console.log(error)
+            okay(error.exitCode, 1, 'abend exit code')
+            console.log(error.stack)
+            return [ async.return ]
+        }], function () {
+            throw new Error('abend expected')
         })
     }, function () {
         args([{ name: 'value' }], {}, async())

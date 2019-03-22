@@ -10,6 +10,8 @@ var Program = require('./arguable')
 
 var slice = [].slice
 
+var rescue = require('rescue')
+
 var Signal = require('signal')
 
 // Use given stream or create pseudo-stream.
@@ -204,7 +206,18 @@ module.exports = function () {
                     })
                 }
                 if (vargs[0]) {
-                    exit.unlatch(vargs[0])
+                    try {
+                        rescue([{
+                            name: 'message',
+                            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
+                        }])(function (rescued) {
+                            exit.unlatch({
+                                exitCode: rescued.errors[0].exitCode
+                            })
+                        })(vargs[0])
+                    } catch (error) {
+                        exit.unlatch(vargs[0])
+                    }
                 } else {
                     exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
                 }
