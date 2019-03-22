@@ -15,13 +15,17 @@ var Signal = require('signal')
 // Use given stream or create pseudo-stream.
 function createStream (s) { return s || new stream.PassThrough }
 
-function Child (destructible) {
-    this.exit = new Signal
+function Child (destructible, exit) {
     this._destructible = destructible
+    this._exit = exit
 }
 
 Child.prototype.destroy = function () {
     this._destructible.destroy()
+}
+
+Child.prototype.exit = function (callback) {
+    this._exit.wait(callback)
 }
 
 module.exports = function () {
@@ -175,7 +179,8 @@ module.exports = function () {
                     break
                 }
             }
-            var child = new Child(destructible)
+            var exit = new Signal
+            var child = new Child(destructible, exit)
             destructible.completed.wait(function () {
                 var vargs = []
                 vargs.push.apply(vargs, arguments)
@@ -183,13 +188,12 @@ module.exports = function () {
                     signals.removeListener(trap.signal, trap.listener)
                 })
                 if (vargs[0]) {
-                    child.exit.unlatch(vargs[0])
+                    exit.unlatch(vargs[0])
                 } else {
-                    child.exit.unlatch.bind(exit, [ null ].concat(vargs.slice(1)))
+                    exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
                 }
             })
-            destructible.durable('main', function (destructible, callack) {
-                console.log('calling main')
+            destructible.durable('main', function (destructible, callback) {
                 main(destructible, program, attributes, function () {
                     var vargs = []
                     vargs.push.apply(vargs, arguments)

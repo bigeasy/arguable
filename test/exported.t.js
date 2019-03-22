@@ -1,10 +1,10 @@
-require('proof')(14, require('cadence')(prove))
+require('proof')(15, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
     var echo2 = require('./fixtures/echo-2')
     var send = require('./fixtures/send')
-    var parameters = require('./fixtures/parameters')
+    var optional = require('./fixtures/optional')
     var disconnect = require('./fixtures/disconnect')
     var args = require('./fixtures/arguments')
     var main = require('./fixtures/main')
@@ -40,11 +40,27 @@ function prove (async, okay) {
         send([], { events: ee }, async())
     }, function () {
         okay(true, 'direct ee called back')
-        parameters({}, async())
-    }, function (result, argv, property) {
-        okay(property, 1, 'default property')
-        parameters({}, { attributes: { property: 2 } },  async())
-    }, function (result, argv, property) {
+    }, function () {
+        async(function () {
+        optional({}, async())
+        }, function (property, child) {
+            okay(property, 1, 'default property return')
+            async(function () {
+                child.exit(async())
+                child.destroy()
+            }, function (exitCode, property) {
+                okay({
+                    exitCode: exitCode,
+                    property: property
+                }, {
+                    exitCode: 0,
+                    property: 1
+                },  'default property exit')
+            })
+        })
+    }, function () {
+        optional({}, { attributes: { property: 2 } },  async())
+    }, function (property) {
         okay(property, 2, 'override default property')
         var program = main([], {}, async())
         okay(program.mainModule === process.mainModule, 'default main module')
