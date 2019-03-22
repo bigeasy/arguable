@@ -106,13 +106,6 @@ module.exports = function () {
         // module of their choice. Additional properties are arguments to the
         // argument parser, not properties on this mystery event emitter.
 
-        // Note that all the other options are debugging options.
-        if (options instanceof events.EventEmitter) {
-            options = { events: options }
-            options.stdin = options.events.stdin
-            options.stdout = options.events.stdout
-            options.stderr = options.events.stderr
-        }
         // TODO Okay, now we have space for additional arguments that follow the
         // event emitter or the options. These can be passed in as variadic
         // arguments to be interpreted by the caller. This can be experimental.
@@ -153,6 +146,9 @@ module.exports = function () {
             for (var attribute in options) {
                 combined[attribute] = options[attribute]
             }
+            program.stdout = coalesce(options.$stdout, process.stdout)
+            program.stderr = coalesce(options.$stderr, process.stderr)
+            program.stdin = coalesce(options.$stdin, process.stdin)
             attributes = combined
             var identifier = typeof attributes.$destructible == 'boolean'
                            ? module.filename : attributes.$destructible

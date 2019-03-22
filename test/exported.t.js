@@ -1,7 +1,6 @@
-require('proof')(23, require('cadence')(prove))
+require('proof')(21, require('cadence')(prove))
 
 function prove (async, okay) {
-    var echo1 = require('./fixtures/echo-1')
     var send = require('./fixtures/send')
     var optional = require('./fixtures/optional')
     var args = require('./fixtures/arguments')
@@ -28,20 +27,24 @@ function prove (async, okay) {
             okay(/^destructible#error$/m.test(error.message), 'error from constructor')
         }])
     }, function () {
-        stdout = new stream.PassThrough
-        chunks = []
-        stdout.on('data', function (data) { chunks.push(data.toString()) })
-        echo1([ 'a', 'b' ], { stdout: stdout }, async())
+        var stream = require('stream')
+        var echo = require('./fixtures/echo')
+        async(function () {
+            echo([ 'a', 'b' ], {
+                $stdout: new stream.PassThrough
+            }, async())
+        }, function (child, options) {
+            async(function () {
+                child.exit(async())
+            }, function () {
+                okay(options.$stdout.read().toString(), 'a b\n', 'echo')
+            })
+        })
     }, function () {
-        okay(true, 'echo 1 called back')
-        okay(chunks.join(''), 'a b\n', 'echo 1 executed')
         ee = new events.EventEmitter
         ee.stdout = new stream.PassThrough
         chunks = []
         ee.stdout.on('data', function (data) { chunks.push(data.toString()) })
-        echo1([ 'a', 'b' ], ee, async())
-    }, function () {
-        okay(chunks.join(''), 'a b\n', 'echo 1 direct ee executed')
         stdout = new stream.PassThrough
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })
