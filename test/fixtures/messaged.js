@@ -1,8 +1,8 @@
 require('../..')(module, {
     $destructible: true
-}, require('cadence')(function (async, destructible, arguable, options) {
+}, require('cadence')(function (async, destructible, arguable) {
     var assert = require('assert')
-    options.messenger.on('message', function (message) {
+    arguable.options.messenger.on('message', function (message) {
         if (message.method == 'shutdown') {
             arguable.stdout.write('shutdown\n')
             destructible.destroy()

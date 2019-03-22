@@ -8,7 +8,7 @@
 
 require('..')(module, {
     $destructible: true,
-}, function (destructible, arguable, options, callback) {
+}, function (destructible, arguable, callback) {
     destructible.destroy()
     console.log('1..1')
     console.log('ok 1')

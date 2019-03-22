@@ -1,4 +1,4 @@
-require('proof')(41, require('cadence')(prove))
+require('proof')(40, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -229,14 +229,6 @@ function prove (async, okay) {
     }, cadence(function (async, arguable) {
         okay(arguable.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
         okay(arguable.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
-    }), null, function (error) {
-        if (error) throw error
-    })
-    createArguable(__filename, {
-    }, [],  {
-        attributes: [{ extension: 1 }]
-    }, cadence(function (async, arguable) {
-        okay(arguable.attributes.extension, 1, 'additional attributes')
     }), null, function (error) {
         if (error) throw error
     })

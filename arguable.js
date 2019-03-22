@@ -25,12 +25,7 @@ function Arguable (source, argv, options) {
     this._process = options.events
     this._module = options.module
     this.attributes = {}
-
-    options.attributes.forEach(function (attributes) {
-        for (var key in attributes) {
-            this.attributes[key] = attributes[key]
-        }
-    }, this)
+    this.options = options.options
 
     // Use environment `LANG` or else language of first usage definition.
     this.lang = this.env.LANG ? this.env.LANG.split('.')[0] : this._usage.language

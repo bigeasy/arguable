@@ -33,11 +33,11 @@ function prove (async, okay) {
             echo([ 'a', 'b' ], {
                 $stdout: new stream.PassThrough
             }, async())
-        }, function (child, options) {
+        }, function (child) {
             async(function () {
                 child.exit(async())
             }, function () {
-                okay(options.$stdout.read().toString(), 'a b\n', 'echo')
+                okay(child.options.$stdout.read().toString(), 'a b\n', 'echo')
             })
         })
     }, function () {
@@ -46,12 +46,12 @@ function prove (async, okay) {
         var stream = require('stream')
         async(function () {
             messaged({}, { $stdout: new stream.PassThrough, messenger: new Messenger }, async())
-        }, function (child, options) {
-            options.messenger.emit('message', { method: 'shutdown' })
+        }, function (child) {
+            child.options.messenger.emit('message', { method: 'shutdown' })
             async(function () {
                 child.exit(async())
             }, function () {
-                okay(options.$stdout.read().toString(), 'shutdown\n', 'send')
+                okay(child.options.$stdout.read().toString(), 'shutdown\n', 'send')
             })
         })
     }, function () {
@@ -78,7 +78,7 @@ function prove (async, okay) {
     }, function () {
         var optional = require('./fixtures/optional')
         async(function () {
-            optional({}, { attributes: { property: 2 } },  async())
+            optional({}, { property: 2 },  async())
         }, function (property, child) {
             okay(property, 2, 'override default property return')
             async(function () {
@@ -101,16 +101,16 @@ function prove (async, okay) {
             signaled({}, {
                 $signals: new events.EventEmitter
             }, async())
-        }, function (destructed, child, options) {
-            options.$signals.once('SIGINT', function () {
+        }, function (destructed, child) {
+            child.options.$signals.once('SIGINT', function () {
                 okay('SIGINT swallowed')
             })
             okay(!destructed[0], 'SIGINT did not destroy')
-            options.$signals.emit('SIGHUP') // Should do nothing.
+            child.options.$signals.emit('SIGHUP') // Should do nothing.
             okay(!destructed[0], 'SIGHUP did not destroy')
             async(function () {
                 child.exit(async())
-                options.$signals.emit('SIGTERM')
+                child.options.$signals.emit('SIGTERM')
             }, function (exitCode) {
                 okay({
                     exitCode: exitCode,
@@ -129,9 +129,9 @@ function prove (async, okay) {
                 $signals: new events.EventEmitter,
                 $trap: false
             }, async())
-        }, function (destructed, child, options) {
-            okay(options.$signals.listenerCount('SIGINT'), 0, 'no traps')
-            options.$signals.emit('SIGINT')
+        }, function (destructed, child) {
+            okay(child.options.$signals.listenerCount('SIGINT'), 0, 'no traps')
+            child.options.$signals.emit('SIGINT')
             okay(!destructed[0], 'SIGINT did not destroy')
             child.destroy()
             child.exit(async())
@@ -144,9 +144,9 @@ function prove (async, okay) {
                 $signals: new events.EventEmitter,
                 $trap: true
             }, async())
-        }, function (destructed, child, options) {
-            okay(options.$signals.listenerCount('SIGINT'), 1, 'has a SIGINT trap')
-            options.$signals.emit('SIGINT')
+        }, function (destructed, child) {
+            okay(child.options.$signals.listenerCount('SIGINT'), 1, 'has a SIGINT trap')
+            child.options.$signals.emit('SIGINT')
             okay(destructed[0], 'SIGINT destroyed')
             child.destroy()
             child.exit(async())
@@ -160,9 +160,9 @@ function prove (async, okay) {
                 $signals: new events.EventEmitter,
                 $isMainModule: true
             }, async())
-        }, function (isMainModule, child, options) {
+        }, function (isMainModule, child) {
             okay(isMainModule, 'is main module')
-            okay(options.$signals.listenerCount('SIGINT'), 1, 'main module still trapped')
+            okay(child.options.$signals.listenerCount('SIGINT'), 1, 'main module still trapped')
             child.exit(async())
         })
     }, function () {
@@ -175,9 +175,9 @@ function prove (async, okay) {
                 $isMainModule: true,
                 $untrap: true
             }, async())
-        }, function (isMainModule, child, options) {
+        }, function (isMainModule, child) {
             okay(isMainModule, 'is still main module')
-            okay(options.$signals.listenerCount('SIGINT'), 0, 'main module untrapped')
+            okay(child.options.$signals.listenerCount('SIGINT'), 0, 'main module untrapped')
             child.exit(async())
         })
     }, function () {
@@ -187,9 +187,7 @@ function prove (async, okay) {
         async([function () {
             abend({}, async())
         }, function (error) {
-            console.log(error)
             okay(error.exitCode, 1, 'abend exit code')
-            console.log(error.stack)
             return [ async.return ]
         }], function () {
             throw new Error('abend expected')

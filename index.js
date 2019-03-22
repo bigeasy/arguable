@@ -17,9 +17,10 @@ var Signal = require('signal')
 // Use given stream or create pseudo-stream.
 function createStream (s) { return s || new stream.PassThrough }
 
-function Child (destructible, exit) {
+function Child (destructible, exit, options) {
     this._destructible = destructible
     this._exit = exit
+    this.options = options
 }
 
 Child.prototype.destroy = function () {
@@ -43,20 +44,35 @@ module.exports = function () {
               ? vargs.shift()
               : module.filename
 
-    var attributes = typeof vargs[0] == 'object' ? vargs.shift() : {}
+    // Optional options that both configure Arguable and provide our dear user
+    // with a means to specify production objects for production and mock
+    // objects for testing.
+    var definition = typeof vargs[0] == 'object' ? vargs.shift() : {}
 
+    // The main method.
     var main = vargs.shift()
 
-    var invoke = module.exports = function (argv, options, callback) {
-        var vargs = slice.call(arguments, arguments.length >= 3 ? 2 : 1)
+    // TODO How about an optinal method here for command line completion logic?
+
+    var invoke = module.exports = function (argv, invocation, callback) {
+        var vargs = []
+        vargs.push.apply(vargs, arguments)
+
+        var argv = vargs.shift()
+
+        var options = {}
+        for (var option in definition) {
+            options[option] = definition[option]
+        }
+        for (var option in invocation) {
+            options[option] = invocation[option]
+        }
+
         var parameters = []
         if (!Array.isArray(argv)) {
             argv = [ argv ]
         }
-        if (typeof options == 'function') {
-            callback = options
-            options = {}
-        }
+
         argv = argv.slice()
         while (argv.length != 0) {
             var argument = argv.shift()
@@ -81,6 +97,7 @@ module.exports = function () {
                 break
             }
         }
+
         // What we're shooting for here is this:
         //
         //   Create a signature that would be a reasonable signature for a
@@ -112,7 +129,7 @@ module.exports = function () {
             stderr: createStream(options.stderr),
             ready: options.ready,
             isMainModule: isMainModule,
-            attributes: [ attributes, options.attributes || {} ],
+            options: options,
             env: options.env || {}
         })
 
@@ -122,26 +139,17 @@ module.exports = function () {
                          ? options.$isMainModule
                          : process.mainModule === module
         program.isMainModule = isMainModule
-        // New option merging.
-        var combined = {}
-        for (var attribute in attributes) {
-            combined[attribute] = attributes[attribute]
-        }
-        for (var attribute in options) {
-            combined[attribute] = options[attribute]
-        }
         program.stdout = coalesce(options.$stdout, process.stdout)
         program.stderr = coalesce(options.$stderr, process.stderr)
         program.stdin = coalesce(options.$stdin, process.stdin)
-        attributes = combined
-        var identifier = typeof attributes.$destructible == 'boolean'
-                       ? module.filename : attributes.$destructible
+        var identifier = typeof options.$destructible == 'boolean'
+                       ? module.filename : options.$destructible
         program.identifier = identifier
         var destructible = new Destructible(identifier)
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
-        var $trap = ('$trap' in attributes) ? attributes.$trap : {}
-        var $untrap = ('$untrap' in attributes)
-                    ? attributes.$untrap
+        var $trap = ('$trap' in options) ? options.$trap : {}
+        var $untrap = ('$untrap' in options)
+                    ? options.$untrap
                     : isMainModule ? false
                                    : true
         var signals = coalesce(options.$signals, process)
@@ -176,7 +184,7 @@ module.exports = function () {
             }
         }
         var exit = new Signal
-        var child = new Child(destructible, exit)
+        var child = new Child(destructible, exit, options)
         destructible.completed.wait(function () {
             var vargs = []
             vargs.push.apply(vargs, arguments)
@@ -206,13 +214,13 @@ module.exports = function () {
         var initialize = destructible.ephemeral('initialize')
         destructible.durable('main', cadence(function (async, destructible) {
             async([function () {
-                main(destructible, program, attributes, async())
+                main(destructible, program, async())
             }, function (error) {
                 initialize(error)
                 throw error
             }], [], function (vargs) {
                 initialize()
-                return vargs.concat(child, options)
+                return vargs.concat(child)
             })
         }), function () {
             if (arguments[0] == null) {
