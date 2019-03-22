@@ -1,4 +1,4 @@
-require('proof')(21, require('cadence')(prove))
+require('proof')(22, require('cadence')(prove))
 
 function prove (async, okay) {
     var send = require('./fixtures/send')
@@ -54,8 +54,9 @@ function prove (async, okay) {
     }, function () {
         okay(true, 'direct ee called back')
     }, function () {
+        var optional = require('./fixtures/optional')
         async(function () {
-        optional({}, async())
+            optional({}, async())
         }, function (property, child) {
             okay(property, 1, 'default property return')
             async(function () {
@@ -72,9 +73,24 @@ function prove (async, okay) {
             })
         })
     }, function () {
-        optional({}, { attributes: { property: 2 } },  async())
-    }, function (property) {
-        okay(property, 2, 'override default property')
+        var optional = require('./fixtures/optional')
+        async(function () {
+            optional({}, { attributes: { property: 2 } },  async())
+        }, function (property, child) {
+            okay(property, 2, 'override default property return')
+            async(function () {
+                child.exit(async())
+                child.destroy()
+            }, function (exitCode, property) {
+                okay({
+                    exitCode: exitCode,
+                    property: property
+                }, {
+                    exitCode: 0,
+                    property: 2
+                },  'override default property exit')
+            })
+        })
     }, function () {
         var events = require('events')
         var signaled = require('./fixtures/signaled')
