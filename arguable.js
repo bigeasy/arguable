@@ -6,55 +6,7 @@ var util = require('util')
 var slice = [].slice
 var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var rescue = require('rescue')
-var events = require('events')
 var Signal = require('signal')
-
-// The program is an event emitter that proxies events from the Node.js
-// `Process` object with a single special event of its own.
-
-
-// The `newListner` function is used to hook the `"newListener"` event of the
-// `Program` object. It will set a proxy event on the parent Node.js `Process`
-// or Arguable `Program`.
-
-//
-function newListener (eventName) {
-    switch (eventName) {
-    // The `"shutdown"` event is a convenience event that responds to both
-    // `SIGINT` and `SIGTERM`.
-    case 'shutdown':
-        if (this._shutdown.count == 0) {
-            this.on('SIGINT', this._shutdown.listener)
-            this.on('SIGTERM', this._shutdown.listener)
-        }
-        this._shutdown.count++
-        break
-    // Default is to proxy the event on the parent `Process` or `Program`.
-    default:
-        this._getListenerProxy(eventName).count++
-        break
-    }
-}
-
-function removeListener (eventName) {
-    switch (eventName) {
-    case 'shutdown':
-        this._shutdown.count--
-        if (this._shutdown.count == 0) {
-            this.removeListener('SIGINT', this._shutdown.listener)
-            this.removeListener('SIGTERM', this._shutdown.listener)
-        }
-        break
-    default:
-        var proxy = this._getListenerProxy(eventName)
-        proxy.count--
-        if (proxy.count == 0) {
-            this._process.removeListener(eventName, proxy.listener)
-            delete this._proxies[eventName]
-        }
-        break
-    }
-}
 
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
@@ -114,25 +66,12 @@ function Arguable (source, argv, options) {
     this.stdin = options.stdin
     this.send = options.send
 
-    // Become an `EventEmitter` and proxy parent events.
-    events.EventEmitter.call(this)
-
     this.pid = process.pid
     this.platform = process.platform
     this.release = process.release
 
-    this._proxies = {}
-    this._shutdown = {
-        count: 0,
-        listener: function () { this.emit('shutdown') }.bind(this)
-    }
-
-    this.on('removeListener', removeListener.bind(this))
-    this.on('newListener', newListener.bind(this))
-
     this.ready = options.ready || new Signal
 }
-util.inherits(Arguable, events.EventEmitter)
 
 // Use an array of key/value pairs to populate some useful shortcut properties
 // for working with parameters.
@@ -163,19 +102,6 @@ Arguable.prototype._setParameters = function (parameters) {
     this.given.forEach(function (key) {
         this.ultimate[key] = this.arrayed[key][this.arrayed[key].length - 1]
     }, this)
-}
-
-// Register a listener proxy with the parent process or Arguable program.
-Arguable.prototype._getListenerProxy = function (eventName) {
-    var proxy = this._proxies[eventName]
-    if (proxy == null) {
-        var listener = function () {
-            this.emit.apply(this, [ eventName ].concat(slice.call(arguments)))
-        }.bind(this)
-        this._process.addListener(eventName, listener)
-        proxy = this._proxies[eventName] = { listener: listener, count: 0 }
-    }
-    return proxy
 }
 
 // Assert that there is a value present for a required argument.

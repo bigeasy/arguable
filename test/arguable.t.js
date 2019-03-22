@@ -1,4 +1,4 @@
-require('proof')(42, require('cadence')(prove))
+require('proof')(41, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -240,17 +240,4 @@ function prove (async, okay) {
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [], io = {
-        events: new events.EventEmitter
-    }, cadence(function (async, program) {
-        var first = async(), second = async(), third = async(), fourth = async()
-        program.once('SIGINT', function () { first() })
-        program.once('SIGINT', function () { second() })
-        program.once('shutdown', function () { third() })
-        program.once('shutdown', function () { fourth() })
-    }), null, function (error) {
-        if (error) throw error
-        okay(true, 'signal handler')
-    })
-    io.events.emit('SIGINT')
 }
