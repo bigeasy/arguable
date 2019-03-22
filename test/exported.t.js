@@ -1,4 +1,4 @@
-require('proof')(18, require('cadence')(prove))
+require('proof')(19, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -14,6 +14,15 @@ function prove (async, okay) {
     var chunks
     var ee
     async(function () {
+        var events = require('events')
+        var errored = require('./fixtures/errored')
+        var child
+        async([function () {
+            errored({}, async())
+        }, function (error) {
+            okay(/^destructible#error$/m.test(error.message), 'error from constructor')
+        }])
+    }, function () {
         stdout = new stream.PassThrough
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })

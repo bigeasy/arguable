@@ -182,28 +182,40 @@ module.exports = function () {
             var exit = new Signal
             var child = new Child(destructible, exit)
             destructible.completed.wait(function () {
+                console.log('scramming')
                 var vargs = []
                 vargs.push.apply(vargs, arguments)
                 traps.forEach(function (trap) {
                     signals.removeListener(trap.signal, trap.listener)
                 })
                 if (vargs[0]) {
+                console.log(vargs[0].stack)
                     exit.unlatch(vargs[0])
                 } else {
                     exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
                 }
             })
-            destructible.durable('main', function (destructible, callback) {
-                main(destructible, program, attributes, function () {
-                    var vargs = []
-                    vargs.push.apply(vargs, arguments)
-                    if (vargs[0]) {
-                        callback(vargs[0])
-                    } else {
-                        callback.apply(null, [ null ].concat(vargs.slice(1), child, options))
-                    }
+            var cadence = require('cadence')
+            var initialize = destructible.ephemeral('initialize')
+            destructible.durable('main', cadence(function (async, destructible) {
+                async([function () {
+                    main(destructible, program, attributes, async())
+                }, function (error) {
+                    initialize(error)
+                    throw error
+                }], [], function (vargs) {
+                    initialize()
+                    return vargs.concat(child, options)
                 })
-            }, cb)
+            }), function () {
+                if (arguments[0] == null) {
+                    cb.apply(null, arguments)
+                } else {
+                    destructible.destroy()
+                    exit.wait(cb)
+                }
+            })
+            return child
         } else {
             var cadence = require('cadence')
             process.nextTick(cadence(function (async) {
