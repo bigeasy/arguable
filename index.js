@@ -115,123 +115,113 @@ module.exports = function () {
             attributes: [ attributes, options.attributes || {} ],
             env: options.env || {}
         })
-        // TODO This delay is to allow users to do something with the pass
-        // through streams and event emitter.
+
         var cb = vargs.pop()
-        if (attributes.$destructible) {
-            var isMainModule = ('$isMainModule' in options)
-                             ? options.$isMainModule
-                             : process.mainModule === module
-            program.isMainModule = isMainModule
-            // New option merging.
-            var combined = {}
-            for (var attribute in attributes) {
-                combined[attribute] = attributes[attribute]
+
+        var isMainModule = ('$isMainModule' in options)
+                         ? options.$isMainModule
+                         : process.mainModule === module
+        program.isMainModule = isMainModule
+        // New option merging.
+        var combined = {}
+        for (var attribute in attributes) {
+            combined[attribute] = attributes[attribute]
+        }
+        for (var attribute in options) {
+            combined[attribute] = options[attribute]
+        }
+        program.stdout = coalesce(options.$stdout, process.stdout)
+        program.stderr = coalesce(options.$stderr, process.stderr)
+        program.stdin = coalesce(options.$stdin, process.stdin)
+        attributes = combined
+        var identifier = typeof attributes.$destructible == 'boolean'
+                       ? module.filename : attributes.$destructible
+        program.identifier = identifier
+        var destructible = new Destructible(identifier)
+        var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
+        var $trap = ('$trap' in attributes) ? attributes.$trap : {}
+        var $untrap = ('$untrap' in attributes)
+                    ? attributes.$untrap
+                    : isMainModule ? false
+                                   : true
+        var signals = coalesce(options.$signals, process)
+        if (typeof $trap == 'boolean') {
+            if (!$trap) {
+                trap = {}
             }
-            for (var attribute in options) {
-                combined[attribute] = options[attribute]
+        } else {
+            for (var signal in $trap) {
+                trap[signal] = $trap[signal]
             }
-            program.stdout = coalesce(options.$stdout, process.stdout)
-            program.stderr = coalesce(options.$stderr, process.stderr)
-            program.stdin = coalesce(options.$stdin, process.stdin)
-            attributes = combined
-            var identifier = typeof attributes.$destructible == 'boolean'
-                           ? module.filename : attributes.$destructible
-            program.identifier = identifier
-            var destructible = new Destructible(identifier)
-            var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
-            var $trap = ('$trap' in attributes) ? attributes.$trap : {}
-            var $untrap = ('$untrap' in attributes)
-                        ? attributes.$untrap
-                        : isMainModule ? false
-                                       : true
-            var signals = coalesce(options.$signals, process)
-            if (typeof $trap == 'boolean') {
-                if (!$trap) {
-                    trap = {}
+        }
+        var traps = [], listener
+        for (var signal in trap) {
+            switch (trap[signal]) {
+            case 'destroy':
+                traps.push({
+                    signal: signal,
+                    listener: listener = destructible.destroy.bind(destructible)
+                })
+                signals.on(signal, listener)
+                break
+            case 'swallow':
+                traps.push({
+                    signal: signal,
+                    listener: listener = function () {}
+                })
+                signals.on(signal, listener)
+                break
+            case 'default':
+                break
+            }
+        }
+        var exit = new Signal
+        var child = new Child(destructible, exit)
+        destructible.completed.wait(function () {
+            var vargs = []
+            vargs.push.apply(vargs, arguments)
+            if ($untrap) {
+                traps.forEach(function (trap) {
+                    signals.removeListener(trap.signal, trap.listener)
+                })
+            }
+            if (vargs[0]) {
+                try {
+                    rescue([{
+                        name: 'message',
+                        when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
+                    }])(function (rescued) {
+                        exit.unlatch({
+                            exitCode: rescued.errors[0].exitCode
+                        })
+                    })(vargs[0])
+                } catch (error) {
+                    exit.unlatch(vargs[0])
                 }
             } else {
-                for (var signal in $trap) {
-                    trap[signal] = $trap[signal]
-                }
+                exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
             }
-            var traps = [], listener
-            for (var signal in trap) {
-                switch (trap[signal]) {
-                case 'destroy':
-                    traps.push({
-                        signal: signal,
-                        listener: listener = destructible.destroy.bind(destructible)
-                    })
-                    signals.on(signal, listener)
-                    break
-                case 'swallow':
-                    traps.push({
-                        signal: signal,
-                        listener: listener = function () {}
-                    })
-                    signals.on(signal, listener)
-                    break
-                case 'default':
-                    break
-                }
+        })
+        var cadence = require('cadence')
+        var initialize = destructible.ephemeral('initialize')
+        destructible.durable('main', cadence(function (async, destructible) {
+            async([function () {
+                main(destructible, program, attributes, async())
+            }, function (error) {
+                initialize(error)
+                throw error
+            }], [], function (vargs) {
+                initialize()
+                return vargs.concat(child, options)
+            })
+        }), function () {
+            if (arguments[0] == null) {
+                cb.apply(null, arguments)
+            } else {
+                destructible.destroy()
+                exit.wait(cb)
             }
-            var exit = new Signal
-            var child = new Child(destructible, exit)
-            destructible.completed.wait(function () {
-                var vargs = []
-                vargs.push.apply(vargs, arguments)
-                if ($untrap) {
-                    traps.forEach(function (trap) {
-                        signals.removeListener(trap.signal, trap.listener)
-                    })
-                }
-                if (vargs[0]) {
-                    try {
-                        rescue([{
-                            name: 'message',
-                            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
-                        }])(function (rescued) {
-                            exit.unlatch({
-                                exitCode: rescued.errors[0].exitCode
-                            })
-                        })(vargs[0])
-                    } catch (error) {
-                        exit.unlatch(vargs[0])
-                    }
-                } else {
-                    exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
-                }
-            })
-            var cadence = require('cadence')
-            var initialize = destructible.ephemeral('initialize')
-            destructible.durable('main', cadence(function (async, destructible) {
-                async([function () {
-                    main(destructible, program, attributes, async())
-                }, function (error) {
-                    initialize(error)
-                    throw error
-                }], [], function (vargs) {
-                    initialize()
-                    return vargs.concat(child, options)
-                })
-            }), function () {
-                if (arguments[0] == null) {
-                    cb.apply(null, arguments)
-                } else {
-                    destructible.destroy()
-                    exit.wait(cb)
-                }
-            })
-            return child
-        } else {
-            var cadence = require('cadence')
-            process.nextTick(cadence(function (async) {
-                vargs.push(async())
-                main.apply(null, [ program ].concat(vargs))
-            }).bind(null, cb))
-            return program
-        }
+        })
     }
     if (module === process.mainModule) {
         invoke(process.argv.slice(2), {
