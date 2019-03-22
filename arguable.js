@@ -61,11 +61,11 @@ function removeListener (eventName) {
 // ideology.
 
 //
-function Program (source, argv, options) {
+function Arguable (source, argv, options) {
     this._usage = createUsage(source)
 
     // As opposed to being the actual `Process` object it mocks.
-    this.isProgram = true
+    this.isArguable = true
 
     // Capture environment.
     this.env = options.env
@@ -132,7 +132,7 @@ function Program (source, argv, options) {
 
     this.ready = options.ready || new Signal
 }
-util.inherits(Program, events.EventEmitter)
+util.inherits(Arguable, events.EventEmitter)
 
 // Use an array of key/value pairs to populate some useful shortcut properties
 // for working with parameters.
@@ -141,7 +141,7 @@ util.inherits(Program, events.EventEmitter)
 // `arguments` is a JavaScript reserved word.
 
 //
-Program.prototype._setParameters = function (parameters) {
+Arguable.prototype._setParameters = function (parameters) {
     this.parameters = parameters
     this.given = parameters.map(function (parameter) {
         return parameter.name
@@ -166,7 +166,7 @@ Program.prototype._setParameters = function (parameters) {
 }
 
 // Register a listener proxy with the parent process or Arguable program.
-Program.prototype._getListenerProxy = function (eventName) {
+Arguable.prototype._getListenerProxy = function (eventName) {
     var proxy = this._proxies[eventName]
     if (proxy == null) {
         var listener = function () {
@@ -179,7 +179,7 @@ Program.prototype._getListenerProxy = function (eventName) {
 }
 
 // Assert that there is a value present for a required argument.
-Program.prototype.required = function () {
+Arguable.prototype.required = function () {
     slice.call(arguments).forEach(function (name) {
         if (!(name in this.ultimate)) {
             this.abend(name + ' is required')
@@ -192,7 +192,7 @@ Program.prototype.required = function () {
 // parameters in the in the parameters array, so valiation is also
 // transmogrifcation of strings into appropriately typed and structured
 // parameters for your program.
-Program.prototype.validate = function () {
+Arguable.prototype.validate = function () {
     var vargs = slice.call(arguments)
     var validator = null
     var type = typeof vargs[0]
@@ -235,12 +235,12 @@ Program.prototype.validate = function () {
 }
 
 // Format a message using the string tables provided in the usage message.
-Program.prototype.format = function (key) {
+Arguable.prototype.format = function (key) {
     return this._usage.format(this.lang, key, slice.call(arguments, 1))
 }
 
 // abend helper stops execution and prints a message
-Program.prototype.abend = function () {
+Arguable.prototype.abend = function () {
     var vargs = slice.call(arguments), key = vargs.shift(), exitCode = 1
     if (typeof key == 'number') {
         exitCode = key
@@ -261,7 +261,7 @@ Program.prototype.abend = function () {
 }
 
 // Stop execution and print help message.
-Program.prototype.help = function () {
+Arguable.prototype.help = function () {
     throw new Interrupt('help', {
         method: 'help',
         stdout: this._usage.chooseUsage(this.lang),
@@ -269,11 +269,11 @@ Program.prototype.help = function () {
     })
 }
 
-Program.prototype.assert = function (condition, message) {
+Arguable.prototype.assert = function (condition, message) {
     if (!condition) this.abend(message)
 }
 
-Program.prototype.attempt = function (f) {
+Arguable.prototype.attempt = function (f) {
     try {
         return f()
     } catch (error) {
@@ -291,7 +291,7 @@ Program.prototype.attempt = function (f) {
 
 // Saves having to write a unit test for every application that checks a branch
 // that does exactly this.
-Program.prototype.helpIf = function (help) {
+Arguable.prototype.helpIf = function (help) {
     if (help) this.help()
 }
 
@@ -301,7 +301,7 @@ Program.prototype.helpIf = function (help) {
 //
 // We're only going to support accepting a package name, but leave the
 // formatting logic in for now to see where it's being used.
-Program.prototype.delegate = cadence(function (async, format, argv) {
+Arguable.prototype.delegate = cadence(function (async, format, argv) {
     if (argv == null) {
         if (this.argv.length == 0) {
             this.abend('sub command missing')
@@ -338,4 +338,4 @@ Program.prototype.delegate = cadence(function (async, format, argv) {
     }, async())
 })
 
-module.exports = Program
+module.exports = Arguable
