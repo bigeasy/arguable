@@ -1,8 +1,7 @@
-require('proof')(25, require('cadence')(prove))
+require('proof')(23, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
-    var echo2 = require('./fixtures/echo-2')
     var send = require('./fixtures/send')
     var optional = require('./fixtures/optional')
     var args = require('./fixtures/arguments')
@@ -46,10 +45,6 @@ function prove (async, okay) {
         stdout = new stream.PassThrough
         chunks = []
         stdout.on('data', function (data) { chunks.push(data.toString()) })
-        echo2([ 'a', 'b' ], { stdout: stdout }, async())
-    }, function () {
-        okay(true, 'echo 2 called back')
-        okay(chunks.join(''), 'a b\n', 'echo 2 executed')
         var ee = new events.EventEmitter
         ee.send = function (message) { okay(message, { key: 'value' }, 'send') }
         send([], { events: ee }, async())
