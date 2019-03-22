@@ -263,10 +263,6 @@ Program.prototype.__defineGetter__('connected', function () {
     return this._process.connected
 })
 
-Program.prototype.__defineGetter__('mainModule', function () {
-    return this._process.mainModule
-})
-
 // Format a message using the string tables provided in the usage message.
 Program.prototype.format = function (key) {
     return this._usage.format(this.lang, key, slice.call(arguments, 1))

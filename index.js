@@ -125,9 +125,6 @@ module.exports = function () {
             ee.connected = ('connected' in options) ? options.connected : true
             ee.disconnect = function () { this.connected = false }
         }
-        var isMainModule = ('isMainModule' in options)
-                         ? options.isMainModule
-                         : process.mainModule === module
         var program = new Program(usage, parameters, {
             module: module,
             stdout: createStream(options.stdout),
@@ -144,6 +141,10 @@ module.exports = function () {
         // through streams and event emitter.
         var cb = vargs.pop()
         if (attributes.$destructible) {
+            var isMainModule = ('$isMainModule' in options)
+                             ? options.$isMainModule
+                             : process.mainModule === module
+            program.isMainModule = isMainModule
             // New option merging.
             var combined = {}
             for (var attribute in attributes) {
@@ -159,6 +160,10 @@ module.exports = function () {
             var destructible = new Destructible(identifier)
             var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
             var $trap = ('$trap' in attributes) ? attributes.$trap : {}
+            var $untrap = ('$untrap' in attributes)
+                        ? attributes.$untrap
+                        : isMainModule ? false
+                                       : true
             var signals = coalesce(options.$signals, process)
             if (typeof $trap == 'boolean') {
                 if (!$trap) {
@@ -195,9 +200,11 @@ module.exports = function () {
             destructible.completed.wait(function () {
                 var vargs = []
                 vargs.push.apply(vargs, arguments)
-                traps.forEach(function (trap) {
-                    signals.removeListener(trap.signal, trap.listener)
-                })
+                if ($untrap) {
+                    traps.forEach(function (trap) {
+                        signals.removeListener(trap.signal, trap.listener)
+                    })
+                }
                 if (vargs[0]) {
                     exit.unlatch(vargs[0])
                 } else {

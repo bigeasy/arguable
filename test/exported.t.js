@@ -1,4 +1,4 @@
-require('proof')(24, require('cadence')(prove))
+require('proof')(25, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -136,13 +136,35 @@ function prove (async, okay) {
             child.exit(async())
         })
     }, function () {
-        var program = main([], {}, async())
-        okay(program.mainModule === process.mainModule, 'default main module')
-    }, function (isMainModule) {
-        okay(isMainModule, false, 'main module')
-        main([], { isMainModule: true }, async())
-    }, function (isMainModule) {
-        okay(isMainModule, true, 'is main module')
+        // Also tests untrap as false.
+        var main = require('./fixtures/main')
+        var events = require('events')
+        async(function () {
+            main({}, {
+                $signals: new events.EventEmitter,
+                $isMainModule: true
+            }, async())
+        }, function (isMainModule, child, options) {
+            okay(isMainModule, 'is main module')
+            okay(options.$signals.listenerCount('SIGINT'), 1, 'main module still trapped')
+            child.exit(async())
+        })
+    }, function () {
+        // Also tests untrap as false.
+        var main = require('./fixtures/main')
+        var events = require('events')
+        async(function () {
+            main({}, {
+                $signals: new events.EventEmitter,
+                $isMainModule: true,
+                $untrap: true
+            }, async())
+        }, function (isMainModule, child, options) {
+            okay(isMainModule, 'is still main module')
+            okay(options.$signals.listenerCount('SIGINT'), 0, 'main module untrapped')
+            child.exit(async())
+        })
+    }, function () {
         disconnect([], { connected: true }, async())
     }, function (connected) {
         okay(connected, false, 'disconected')

@@ -1,3 +1,6 @@
-require('../..')(module, function (program, callback) {
-    callback(null, program.isMainModule)
-})
+require('../..')(module, {
+    $destructible: true
+}, require('cadence')(function (async, destructible, arguable) {
+    destructible.destroy()
+    return [ arguable.isMainModule ]
+}))
