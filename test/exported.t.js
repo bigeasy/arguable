@@ -1,11 +1,10 @@
-require('proof')(25, require('cadence')(prove))
+require('proof')(24, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
     var echo2 = require('./fixtures/echo-2')
     var send = require('./fixtures/send')
     var optional = require('./fixtures/optional')
-    var disconnect = require('./fixtures/disconnect')
     var args = require('./fixtures/arguments')
     var main = require('./fixtures/main')
     var stream = require('stream')
@@ -165,9 +164,6 @@ function prove (async, okay) {
             child.exit(async())
         })
     }, function () {
-        disconnect([], { connected: true }, async())
-    }, function (connected) {
-        okay(connected, false, 'disconected')
         args([{ name: 'value' }], {}, async())
     }, function (name) {
         okay(name, 'value', 'disconected')

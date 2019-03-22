@@ -234,20 +234,6 @@ Program.prototype.validate = function () {
     this._setParameters(parameters)
 }
 
-// Proxy to parent's disconnect.
-Program.prototype.disconnect = function () {
-    this._process.disconnect()
-}
-
-// Disconnect if not already disconnected. Disconnecting is the only way to
-// terminate an additional parent/child socket, so I'll write this up to a
-// shutdown handler that might be called twice.
-Program.prototype.disconnectIf = function () {
-    if (this.connected) {
-        this.disconnect()
-    }
-}
-
 // Process properties that are proxied to the parent.
 
 //
@@ -257,10 +243,6 @@ Program.prototype.__defineSetter__('exitCode', function (exitCode) {
 
 Program.prototype.__defineGetter__('exitCode', function () {
     return this._process.exitCode
-})
-
-Program.prototype.__defineGetter__('connected', function () {
-    return this._process.connected
 })
 
 // Format a message using the string tables provided in the usage message.

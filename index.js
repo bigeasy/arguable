@@ -122,8 +122,6 @@ module.exports = function () {
         if (ee == null) {
             ee = new events.EventEmitter
             ee.mainModule = process.mainModule
-            ee.connected = ('connected' in options) ? options.connected : true
-            ee.disconnect = function () { this.connected = false }
         }
         var program = new Program(usage, parameters, {
             module: module,

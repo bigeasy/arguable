@@ -1,4 +1,4 @@
-require('proof')(50, require('cadence')(prove))
+require('proof')(47, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -81,17 +81,6 @@ function prove (async, okay) {
     }), null, function (error) {
         if (error) throw error
         okay(io.events.exitCode, 1, 'exit non-zero')
-    })
-    createProgram(__filename, {}, [], io = {
-        events: { connected: true, disconnect: function () { this.connected = false } }
-    }, cadence(function (async, program) {
-        okay(program.connected, 'connected')
-        program.disconnectIf()
-        program.disconnectIf()
-        okay(!program.connected, 'not connected')
-    }), null, function (error) {
-        if (error) throw error
-        okay(!io.events.connected, 'exit not connected')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         throw new Error('raw')
