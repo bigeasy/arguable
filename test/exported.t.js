@@ -176,8 +176,12 @@ function prove (async, okay) {
             throw new Error('abend expected')
         })
     }, function () {
-        args([{ name: 'value' }], {}, async())
-    }, function (name) {
-        okay(name, 'value', 'disconected')
+        var args = require('./fixtures/arguments')
+        async(function () {
+            args([{ name: 'value' }], {}, async())
+        }, function (name, child) {
+            okay(name, 'value', 'disconected')
+            child.exit(async())
+        })
     })
 }

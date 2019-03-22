@@ -5,6 +5,9 @@
     -n, --name <string> named argument
   ___ . ___
 */
-require('../..')(module, module.filename, function (program, callback) {
-    callback(null, program.ultimate.name)
-})
+require('../..')(module, module.filename, {
+    $destructible: true
+}, require('cadence')(function (async, destructible, arguable) {
+    destructible.destroy()
+    return [ arguable.ultimate.name ]
+}))
