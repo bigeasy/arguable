@@ -1,4 +1,4 @@
-require('proof')(20, require('cadence')(prove))
+require('proof')(24, require('cadence')(prove))
 
 function prove (async, okay) {
     var echo1 = require('./fixtures/echo-1')
@@ -104,6 +104,36 @@ function prove (async, okay) {
                     destructed: true
                 },  'SIGTERM did destroy')
             })
+        })
+    }, function () {
+        var events = require('events')
+        var signaled = require('./fixtures/signaled')
+        async(function () {
+            signaled({}, {
+                $signals: new events.EventEmitter,
+                $trap: false
+            }, async())
+        }, function (destructed, child, options) {
+            okay(options.$signals.listenerCount('SIGINT'), 0, 'no traps')
+            options.$signals.emit('SIGINT')
+            okay(!destructed[0], 'SIGINT did not destroy')
+            child.destroy()
+            child.exit(async())
+        })
+    }, function () {
+        var events = require('events')
+        var signaled = require('./fixtures/signaled')
+        async(function () {
+            signaled({}, {
+                $signals: new events.EventEmitter,
+                $trap: true
+            }, async())
+        }, function (destructed, child, options) {
+            okay(options.$signals.listenerCount('SIGINT'), 1, 'has a SIGINT trap')
+            options.$signals.emit('SIGINT')
+            okay(destructed[0], 'SIGINT destroyed')
+            child.destroy()
+            child.exit(async())
         })
     }, function () {
         var program = main([], {}, async())

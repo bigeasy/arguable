@@ -178,6 +178,7 @@ module.exports = function () {
                         listener: listener = destructible.destroy.bind(destructible)
                     })
                     signals.on(signal, listener)
+                    break
                 case 'swallow':
                     traps.push({
                         signal: signal,
