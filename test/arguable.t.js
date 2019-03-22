@@ -27,216 +27,216 @@ function prove (async, okay) {
                 '    -p, --processes <value>\n' +
                 '    -b, --bind <address>\n' +
                 ''
-    var Program = require('../arguable.js'), io
+    var Arguable = require('../arguable.js'), io
 
-    var createProgram = cadence(function (async, source, env, argv, options, main, module) {
+    var createArguable = cadence(function (async, source, env, argv, options, main, module) {
         options.env = env
         options.module = module
         options.attributes || (options.attributes = [])
-        var program = new Program(source, argv, options)
-        main(program, async())
+        var arguable = new Arguable(source, argv, options)
+        main(arguable, async())
     })
 
-    createProgram(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, program) {
-        okay(program.arguable, [], 'missing')
+    createArguable(path.join(__dirname, 'endless.js'), {}, [], {}, cadence(function (async, arguable) {
+        okay(arguable.arguable, [], 'missing')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, { LANG: 'fr_FR' }, [], {}, cadence(function (async, program) {
-        okay(program.lang, 'fr_FR', 'language from environment')
+    createArguable(__filename, { LANG: 'fr_FR' }, [], {}, cadence(function (async, arguable) {
+        okay(arguable.lang, 'fr_FR', 'language from environment')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '--' ], {}, cadence(function (async, program) {
-        okay(program.terminal, 'terminal')
+    createArguable(__filename, {}, [ '--' ], {}, cadence(function (async, arguable) {
+        okay(arguable.terminal, 'terminal')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '--longonly' ], {}, cadence(function (async, program) {
-        okay(program.ultimate.longonly, 'longonly')
-        okay(program.arrayed.longonly, [ true ], 'longonly arrayed')
+    createArguable(__filename, {}, [ '--longonly' ], {}, cadence(function (async, arguable) {
+        okay(arguable.ultimate.longonly, 'longonly')
+        okay(arguable.arrayed.longonly, [ true ], 'longonly arrayed')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '-cone=1', '-c', 'two=2' ], {
-    }, cadence(function (async, program) {
-        okay(program.given, [ 'config' ], 'given')
-        okay(program.arrayed, {
+    createArguable(__filename, {}, [ '-cone=1', '-c', 'two=2' ], {
+    }, cadence(function (async, arguable) {
+        okay(arguable.given, [ 'config' ], 'given')
+        okay(arguable.arrayed, {
             config: [ 'one=1', 'two=2' ],
             level: [],
             processes: [ ],
             bind: []
         }, 'arrayed')
-        okay(program.ultimate, { config: 'two=2' }, 'ultimate')
-        okay(!program.terminal, 'not terminal')
+        okay(arguable.ultimate, { config: 'two=2' }, 'ultimate')
+        okay(!arguable.terminal, 'not terminal')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
         throw new Error('raw')
     }), null, function (error) {
         okay(error.message, 'raw', 'raw exception')
     })
-    createProgram(__filename, {}, [], io = {
+    createArguable(__filename, {}, [], io = {
         stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        program.abend('badness')
+    }, cadence(function (async, arguable) {
+        arguable.abend('badness')
     }), null, function (error) {
         okay(/^bigeasy.arguable#abend$/m.test(error.message), 'official message')
         okay(error.stderr, 'A bad thing happened.', 'error')
         okay(error.exitCode, 1, 'error code')
     })
-    createProgram(__filename, {}, [], io = {
-    }, cadence(function (async, program) {
-        program.abend()
+    createArguable(__filename, {}, [], io = {
+    }, cadence(function (async, arguable) {
+        arguable.abend()
     }), null, function (error) {
         okay(!error.stderr, 'messageless error')
         okay(error.exitCode, 1, 'messageless error code')
     })
-    createProgram(__filename, {}, [], io = {
+    createArguable(__filename, {}, [], io = {
         stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        program.abend(127, 'badness')
+    }, cadence(function (async, arguable) {
+        arguable.abend(127, 'badness')
     }), null, function (error) {
         okay(error.stderr, 'A bad thing happened.', 'error with code')
         okay(error.exitCode, 127, 'code for error with code')
     })
-    createProgram(__filename, {}, [], io = {
+    createArguable(__filename, {}, [], io = {
         stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        program.assert(true, 'badness')
-        program.assert(false, 'badness')
+    }, cadence(function (async, arguable) {
+        arguable.assert(true, 'badness')
+        arguable.assert(false, 'badness')
     }), null, function (error) {
         okay(error.stderr, 'A bad thing happened.', 'failed assertion')
     })
-    createProgram(__filename, {}, [], io = {
+    createArguable(__filename, {}, [], io = {
         stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        program.abend('nogoodness')
+    }, cadence(function (async, arguable) {
+        arguable.abend('nogoodness')
     }), null, function (error) {
         okay(error.stderr, 'nogoodness', 'error string missing')
         okay(error.exitCode, 1, 'error string missing code')
     })
-    createProgram(__filename, {}, [ '-x' ], io = {
+    createArguable(__filename, {}, [ '-x' ], io = {
         stderr: new stream.PassThrough
-    }, cadence(function (async, program) {
-        program.abend('nogoodness')
+    }, cadence(function (async, arguable) {
+        arguable.abend('nogoodness')
         return 0
     }), null, function (error) {
         okay(error.stderr, 'unknown argument', 'unknown argument')
         okay(error.exitCode, 1, 'unknown argument code')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-        program.help()
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
+        arguable.help()
     }), null, function (error) {
         okay(error.stdout + '\n', usage, 'help')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-        program.helpIf(true)
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
+        arguable.helpIf(true)
     }), null, function (error) {
         okay(error.method, 'help', 'help if')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
-        program.helpIf(false)
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
+        arguable.helpIf(false)
     }), null, function (error) {
         okay(!error, 'help if not')
     })
-    createProgram(__filename, {}, [], {}, cadence(function (async, program) {
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
         var pkg = path.resolve(__dirname, './fixtures/delegate')
-        program.delegate(pkg, [], async())
+        arguable.delegate(pkg, [], async())
     }), module, function (error, child) {
         if (error) throw error
         okay(child, 'delegated command normal exit')
     })
-    createProgram(__filename, {}, [
+    createArguable(__filename, {}, [
         'unfound'
-    ], {}, cadence(function (async, program) {
-        program.delegate(path.resolve(__dirname, './fixtures/missing'), [], async())
+    ], {}, cadence(function (async, arguable) {
+        arguable.delegate(path.resolve(__dirname, './fixtures/missing'), [], async())
     }), module, function (error) {
         okay(error.stderr, 'sub command module not found', 'delegated not found')
     })
-    createProgram(__filename, {}, [
+    createArguable(__filename, {}, [
         'broken'
-    ], {}, cadence(function (async, program) {
-        program.delegate(path.resolve(__dirname, './fixtures/broken'), async())
+    ], {}, cadence(function (async, arguable) {
+        arguable.delegate(path.resolve(__dirname, './fixtures/broken'), async())
     }), module, function (error) {
-        okay(error.message, 'x is not defined', 'delgated program broken')
+        okay(error.message, 'x is not defined', 'delgated arguable broken')
     })
-    createProgram(__filename, {}, [ '-l', 3 ],  {
-    }, cadence(function (async, program) {
-        program.required('level', 'processes')
+    createArguable(__filename, {}, [ '-l', 3 ],  {
+    }, cadence(function (async, arguable) {
+        arguable.required('level', 'processes')
     }), null, function (error) {
         okay(error.stderr, 'processes is required', 'required')
     })
-    createProgram(__filename, {}, [ '-l', 'x', '-p', '3' ],  {
-    }, cadence(function (async, program) {
-        program.validate('%s is not an integer', 'processes', /^\d+$/)
-        okay(program.ultimate.processes, '3', 'successful function validation')
+    createArguable(__filename, {}, [ '-l', 'x', '-p', '3' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate('%s is not an integer', 'processes', /^\d+$/)
+        okay(arguable.ultimate.processes, '3', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [],  {
-    }, cadence(function (async, program) {
-        okay(program.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
-        okay(program.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
+    createArguable(__filename, {}, [],  {
+    }, cadence(function (async, arguable) {
+        okay(arguable.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
+        okay(arguable.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
     }), null, function (error) {
         okay(error.stderr, 'failed attempt', 'failed attempt')
     })
-    createProgram(__filename, {}, [],  {
-    }, cadence(function (async, program) {
-        okay(program.attempt(function () {
+    createArguable(__filename, {}, [],  {
+    }, cadence(function (async, arguable) {
+        okay(arguable.attempt(function () {
             throw new Error('failed attempt')
         }, /^failed attempt$/, 'failed attempt'), 1, 'attempted')
     }), null, function (error) {
         okay(error.stderr, 'failed attempt', 'failed attempt matched')
     })
-    createProgram(__filename, {}, [ '-l', 'x' ],  {
-    }, cadence(function (async, program) {
-        program.validate('%s is not copacetic', 'level', function (value) {
+    createArguable(__filename, {}, [ '-l', 'x' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate('%s is not copacetic', 'level', function (value) {
             return 'x' == value
         })
-        okay(program.ultimate.level, 'x', 'successful function validation')
+        okay(arguable.ultimate.level, 'x', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '-l', 'x' ],  {
-    }, cadence(function (async, program) {
-        program.validate(function () { return 'y' }, 'level')
-        okay(program.ultimate.level, 'y', 'validator as first argument')
+    createArguable(__filename, {}, [ '-l', 'x' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate(function () { return 'y' }, 'level')
+        okay(arguable.ultimate.level, 'y', 'validator as first argument')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '-l', 'x' ],  {
-    }, cadence(function (async, program) {
-        program.validate('level', function () { return 'y' })
-        okay(program.ultimate.level, 'y', 'validator as last argument')
+    createArguable(__filename, {}, [ '-l', 'x' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate('level', function () { return 'y' })
+        okay(arguable.ultimate.level, 'y', 'validator as last argument')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {}, [ '-l', 'x' ],  {
-    }, cadence(function (async, program) {
-        program.validate('level', function () { throw new Error('thrown') })
+    createArguable(__filename, {}, [ '-l', 'x' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate('level', function () { throw new Error('thrown') })
     }), null, function (error) {
         okay(error.message, 'thrown', 'rethrow actual error')
     })
-    createProgram(__filename, {}, [ '-l', 'x' ],  {
-    }, cadence(function (async, program) {
-        program.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+    createArguable(__filename, {}, [ '-l', 'x' ],  {
+    }, cadence(function (async, arguable) {
+        arguable.validate('%s is not an integer', 'other', 'level', /^\d+$/)
     }), null, function (error) {
         okay(error.stderr, 'level is not an integer', 'unsuccessful regex validation')
     })
-    createProgram(__filename, {}, [],  {
-    }, cadence(function (async, program) {
-        okay(program.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
-        okay(program.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
+    createArguable(__filename, {}, [],  {
+    }, cadence(function (async, arguable) {
+        okay(arguable.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
+        okay(arguable.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
     }), null, function (error) {
         if (error) throw error
     })
-    createProgram(__filename, {
+    createArguable(__filename, {
     }, [],  {
         attributes: [{ extension: 1 }]
-    }, cadence(function (async, program) {
-        okay(program.attributes.extension, 1, 'additional attributes')
+    }, cadence(function (async, arguable) {
+        okay(arguable.attributes.extension, 1, 'additional attributes')
     }), null, function (error) {
         if (error) throw error
     })
