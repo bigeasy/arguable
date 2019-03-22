@@ -1,4 +1,4 @@
-require('proof')(47, require('cadence')(prove))
+require('proof')(44, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -71,16 +71,6 @@ function prove (async, okay) {
         okay(!program.terminal, 'not terminal')
     }), null, function (error) {
         if (error) throw error
-    })
-    createProgram(__filename, {}, [], io = {
-        events: { exitCode: 0 }
-    }, cadence(function (async, program) {
-        okay(program.exitCode, 0, 'exit code get')
-        program.exitCode = 1
-        okay(program.exitCode, 1, 'exit code set')
-    }), null, function (error) {
-        if (error) throw error
-        okay(io.events.exitCode, 1, 'exit non-zero')
     })
     createProgram(__filename, {}, [], {}, cadence(function (async, program) {
         throw new Error('raw')

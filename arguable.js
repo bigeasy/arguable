@@ -234,17 +234,6 @@ Program.prototype.validate = function () {
     this._setParameters(parameters)
 }
 
-// Process properties that are proxied to the parent.
-
-//
-Program.prototype.__defineSetter__('exitCode', function (exitCode) {
-    this._process.exitCode = exitCode
-})
-
-Program.prototype.__defineGetter__('exitCode', function () {
-    return this._process.exitCode
-})
-
 // Format a message using the string tables provided in the usage message.
 Program.prototype.format = function (key) {
     return this._usage.format(this.lang, key, slice.call(arguments, 1))
