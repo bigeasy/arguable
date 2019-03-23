@@ -1,17 +1,7 @@
 require('proof')(22, require('cadence')(prove))
 
 function prove (async, okay) {
-    var send = require('./fixtures/send')
-    var optional = require('./fixtures/optional')
-    var args = require('./fixtures/arguments')
-    var main = require('./fixtures/main')
-    var stream = require('stream')
-    var events = require('events')
-    var stdout
-    var chunks
-    var ee
     async(function () {
-        var events = require('events')
         var identified = require('./fixtures/identified')
         async(function () {
             identified({}, async())
@@ -19,7 +9,6 @@ function prove (async, okay) {
             okay(identifier, [ 1 ], 'set identifier')
         })
     }, function () {
-        var events = require('events')
         var errored = require('./fixtures/errored')
         async([function () {
             errored({}, async())
@@ -197,7 +186,6 @@ function prove (async, okay) {
     }, function () {
         // Also tests untrap as false.
         var abend = require('./fixtures/abend')
-        var events = require('events')
         async([function () {
             abend({}, async())
         }, function (error) {
