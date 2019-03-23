@@ -1,4 +1,4 @@
-require('proof')(23, require('cadence')(prove))
+require('proof')(22, require('cadence')(prove))
 
 function prove (async, okay) {
     var send = require('./fixtures/send')
@@ -70,8 +70,6 @@ function prove (async, okay) {
             okay(lang, 'fr_FR', 'language from environment')
             child.exit(async())
         })
-    }, function () {
-        okay(true, 'direct ee called back')
     }, function () {
         var optional = require('./fixtures/optional')
         async(function () {
