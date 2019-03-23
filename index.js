@@ -95,7 +95,7 @@ module.exports = function () {
             lang: lang
         })
 
-        var cb = vargs.pop()
+        var callback = vargs.pop()
 
         var identifier = typeof options.$destructible == 'boolean'
                        ? module.filename : options.$destructible
@@ -179,10 +179,10 @@ module.exports = function () {
             })
         }), function () {
             if (arguments[0] == null) {
-                cb.apply(null, arguments)
+                callback.apply(null, arguments)
             } else {
                 destructible.destroy()
-                exit.wait(cb)
+                exit.wait(callback)
             }
         })
     }
