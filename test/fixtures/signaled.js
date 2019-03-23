@@ -1,5 +1,4 @@
 require('../..')(module, {
-    $destructible: true,
     $trap: { SIGINT: 'default' }
 }, require('cadence')(function (async, destructible, arguable) {
     var destructed = [ false ]

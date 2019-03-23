@@ -1,5 +1,4 @@
 require('../..')(module, {
-    $destructible: true,
     pid: process.pid
 }, require('cadence')(function (async, destructible, arguable) {
     destructible.durable('response')(null, arguable.options.pid)

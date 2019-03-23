@@ -6,9 +6,7 @@
   ___ . ___
 */
 
-require('../..')(module, {
-    $destructible: true
-}, require('cadence')(function (async, destructible, arguable) {
+require('../..')(module, require('cadence')(function (async, destructible, arguable) {
     if (arguable.argv.length) {
         var separator = ''
         arguable.argv.forEach(function (arg) {
