@@ -6,7 +6,7 @@ var Destructible = require('destructible')
 
 var coalesce = require('extant')
 
-var Program = require('./arguable')
+var Arguable = require('./arguable')
 
 var slice = [].slice
 
@@ -62,7 +62,7 @@ module.exports = function () {
             var argument = argv.shift()
             switch (typeof argument) {
             case 'object':
-                // TODO Probably want `Program.flatten({ name: 'a', value: 1 // }, ...)`.
+                // TODO Probably want `Arguable.flatten({ name: 'a', value: 1 // }, ...)`.
                 // TODO Flattening would require knowing from the parameters
                 // whether or not they accepted arguments in the case of
                 // switch arguments.
@@ -82,53 +82,24 @@ module.exports = function () {
             }
         }
 
+        var isMainModule = ('$isMainModule' in options)
+                         ? options.$isMainModule
+                         : process.mainModule === module
         var lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
-        // What we're shooting for here is this:
-        //
-        //   Create a signature that would be a reasonable signature for a
-        //   generic function that is not an Arguable argument parser.
-        //
-        //   Or put another way, tell the user to create an argument parser that
-        //   accepts an arguments array and a pseudo-process, the program, and a
-        //   callback, so that you can tell them to either use Arguable, or else
-        //   implement an argument parser that accepts reasonable arguments as
-        //   opposed to accepting convoluted named parameters.
-        //
-        // If options is really an `EventEmitter`, then our argument parser is
-        // being called as a universal submodule. This is an interface that
-        // allows a library module author to document that a submodule accepts
-        // an arguments array and a signal handler. The library module author
-        // can document as many `Program` features as they would like, or they
-        // could simply say that it is only for events, or they can say that it
-        // is mean to be ignored by the submodule author.
-        //
-        // Now the submodule author can use Arguable for their argument parser
-        // and program will be correctly configured, or they can create a
-        // function that takes the argument array and use the argument parser
-        // module of their choice. Additional properties are arguments to the
-        // argument parser, not properties on this mystery event emitter.
-        var program = new Program(usage, parameters, {
-            module: module,
+        var arguable = new Arguable(usage, parameters, {
+            isMainModule: isMainModule,
             stdin: coalesce(options.$stdin, process.stdin),
             stdout: coalesce(options.$stdout, process.stdout),
             stderr: coalesce(options.$stderr, process.stderr),
-            isMainModule: isMainModule,
             options: options,
             lang: lang
         })
 
         var cb = vargs.pop()
 
-        var isMainModule = ('$isMainModule' in options)
-                         ? options.$isMainModule
-                         : process.mainModule === module
-        program.isMainModule = isMainModule
-        program.stdout = coalesce(options.$stdout, process.stdout)
-        program.stderr = coalesce(options.$stderr, process.stderr)
-        program.stdin = coalesce(options.$stdin, process.stdin)
         var identifier = typeof options.$destructible == 'boolean'
                        ? module.filename : options.$destructible
-        program.identifier = identifier
+        arguable.identifier = identifier
         var destructible = new Destructible(identifier)
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}
@@ -198,7 +169,7 @@ module.exports = function () {
         var initialize = destructible.ephemeral('initialize')
         destructible.durable('main', cadence(function (async, destructible) {
             async([function () {
-                main(destructible, program, async())
+                main(destructible, arguable, async())
             }, function (error) {
                 initialize(error)
                 throw error
