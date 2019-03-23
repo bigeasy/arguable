@@ -23,7 +23,6 @@ function Arguable (source, argv, options) {
     this.env = options.env
     this.isMainModule = options.isMainModule
     this._process = options.events
-    this._module = options.module
     this.attributes = {}
     this.options = options.options
 
@@ -222,10 +221,10 @@ Arguable.prototype.helpIf = function (help) {
 //
 // We're only going to support accepting a package name, but leave the
 // formatting logic in for now to see where it's being used.
-Arguable.prototype.delegate = cadence(function (async, pkg, argv) {
+Arguable.prototype.delegate = cadence(function (async, require, pkg, argv) {
     var program
     try {
-        program = this._module.require(pkg)
+        program = require(pkg)
     } catch (error) {
         if (error.code == 'MODULE_NOT_FOUND') {
             this.abend('sub command module not found', pkg)

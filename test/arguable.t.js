@@ -143,7 +143,7 @@ function prove (async, okay) {
     })
     createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
         var pkg = path.resolve(__dirname, './fixtures/delegate')
-        arguable.delegate(pkg, [], async())
+        arguable.delegate(require, pkg, [], async())
     }), module, function (error, child) {
         if (error) throw error
         okay(child, 'delegated command normal exit')
@@ -151,14 +151,14 @@ function prove (async, okay) {
     createArguable(__filename, {}, [
         'unfound'
     ], {}, cadence(function (async, arguable) {
-        arguable.delegate(path.resolve(__dirname, './fixtures/missing'), [], async())
+        arguable.delegate(require, path.resolve(__dirname, './fixtures/missing'), [], async())
     }), module, function (error) {
         okay(error.stderr, 'sub command module not found', 'delegated not found')
     })
     createArguable(__filename, {}, [
         'broken'
     ], {}, cadence(function (async, arguable) {
-        arguable.delegate(path.resolve(__dirname, './fixtures/broken'), async())
+        arguable.delegate(require, path.resolve(__dirname, './fixtures/broken'), async())
     }), module, function (error) {
         okay(error.message, 'x is not defined', 'delgated arguable broken')
     })
