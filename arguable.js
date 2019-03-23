@@ -1,12 +1,11 @@
 var cadence = require('cadence')
 var createUsage = require('./usage')
-var assert = require('assert')
 var getopt = require('./getopt')
 var util = require('util')
 var slice = [].slice
 var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var rescue = require('rescue')
-var Signal = require('signal')
+var coalesce = require('extant')
 
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
@@ -16,23 +15,16 @@ var Signal = require('signal')
 function Arguable (source, argv, options) {
     this._usage = createUsage(source)
 
-    // As opposed to being the actual `Process` object it mocks.
-    this.isArguable = true
-
-    // Capture environment.
-    this.env = options.env
     this.isMainModule = options.isMainModule
-    this._process = options.events
-    this.attributes = {}
     this.options = options.options
 
     // Use environment `LANG` or else language of first usage definition.
-    this.lang = this.env.LANG ? this.env.LANG.split('.')[0] : this._usage.language
-
-    this.path = []
+    this.lang = coalesce(options.lang, this._usage.language)
 
     // Extract argument patterns from usage.
     var patterns = this._usage.getPattern()
+
+    // Extract the arguments that accept values, TODO maybe call `valuable`.
     this.arguable = patterns.filter(function (pattern) {
         return pattern.arguable
     }).map(function (pattern) {
@@ -46,25 +38,21 @@ function Arguable (source, argv, options) {
         this.abend(error.abend, error.context)
     }
 
+    // Extract an argument end sigil and note that it was there.
     if (this.terminal = argv[0] == '--')  {
         argv.shift()
     }
 
+    // Slice and dice results into convenience structures.
     this._setParameters(gotopts)
 
+    // Remaining arguments.
     this.argv = argv
 
     // Assign I/O provide in `options`.
     this.stdout = options.stdout
     this.stderr = options.stderr
     this.stdin = options.stdin
-    this.send = options.send
-
-    this.pid = process.pid
-    this.platform = process.platform
-    this.release = process.release
-
-    this.ready = options.ready || new Signal
 }
 
 // Use an array of key/value pairs to populate some useful shortcut properties

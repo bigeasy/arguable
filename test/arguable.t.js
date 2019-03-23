@@ -30,9 +30,6 @@ function prove (async, okay) {
     var Arguable = require('../arguable.js'), io
 
     var createArguable = cadence(function (async, source, env, argv, options, main, module) {
-        options.env = env
-        options.module = module
-        options.attributes || (options.attributes = [])
         var arguable = new Arguable(source, argv, options)
         main(arguable, async())
     })
@@ -42,8 +39,8 @@ function prove (async, okay) {
     }), null, function (error) {
         if (error) throw error
     })
-    createArguable(__filename, { LANG: 'fr_FR' }, [], {}, cadence(function (async, arguable) {
-        okay(arguable.lang, 'fr_FR', 'language from environment')
+    createArguable(__filename, {}, [], { lang: 'fr_FR' }, cadence(function (async, arguable) {
+        okay(arguable.lang, 'fr_FR', 'override language')
     }), null, function (error) {
         if (error) throw error
     })

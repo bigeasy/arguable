@@ -1,4 +1,4 @@
-require('proof')(22, require('cadence')(prove))
+require('proof')(23, require('cadence')(prove))
 
 function prove (async, okay) {
     var send = require('./fixtures/send')
@@ -53,6 +53,22 @@ function prove (async, okay) {
             }, function () {
                 okay(child.options.$stdout.read().toString(), 'shutdown\n', 'send')
             })
+        })
+    }, function () {
+        var language = require('./fixtures/language')
+        var LANG = process.env.LANG
+        async(function () {
+            process.env.LANG = 'fr_FR'
+            console.log(process.env.LANG)
+            language({}, {}, async())
+        }, function (lang, child) {
+            if (LANG != null) {
+                process.env.LANG = LANG
+            } else {
+                delete process.env.LANG
+            }
+            okay(lang, 'fr_FR', 'language from environment')
+            child.exit(async())
         })
     }, function () {
         okay(true, 'direct ee called back')
