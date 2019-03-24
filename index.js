@@ -179,34 +179,36 @@ module.exports = function () {
         }
         var exit = new Signal
         var child = new Child(destructible, exit, options)
-        destructible.completed.wait(function () {
-            var vargs = []
-            vargs.push.apply(vargs, arguments)
-            if ($untrap) {
-                traps.forEach(function (trap) {
-                    signals.removeListener(trap.signal, trap.listener)
-                })
-            }
-            if (vargs[0]) {
-                try {
-                    rescue([{
-                        name: 'message',
-                        when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
-                    }])(function (rescued) {
-                        exit.unlatch(rescued.errors[0])
-                    })(vargs[0])
-                } catch (error) {
-                    exit.unlatch(vargs[0])
+        destructible.durable('run', cadence(function (async, destructible) {
+            var initialize = destructible.ephemeral('initialize')
+            destructible.completed.wait(function () {
+                var vargs = []
+                vargs.push.apply(vargs, arguments)
+                if ($untrap) {
+                    traps.forEach(function (trap) {
+                        signals.removeListener(trap.signal, trap.listener)
+                    })
                 }
-            } else {
-                var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
-                exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
-            }
-        })
-        var initialize = destructible.ephemeral('initialize')
-        destructible.durable('main', cadence(function (async, destructible) {
+                if (vargs[0]) {
+                    try {
+                        rescue([{
+                            name: 'message',
+                            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
+                        }])(function (rescued) {
+                            exit.unlatch(rescued.errors[0])
+                        })(vargs[0])
+                    } catch (error) {
+                        exit.unlatch(vargs[0])
+                    }
+                } else {
+                    var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
+                    exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
+                }
+            })
             async([function () {
-                main(destructible, arguable, async())
+                destructible.durable('main', cadence(function (async, destructible) {
+                    main(destructible, arguable, async())
+                }), async())
             }, function (error) {
                 initialize(error)
                 throw error
