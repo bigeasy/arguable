@@ -191,7 +191,8 @@ module.exports = function () {
                     exit.unlatch(vargs[0])
                 }
             } else {
-                exit.unlatch.apply(exit, [ null ].concat(0, vargs.slice(1)))
+                var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
+                exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
             }
         })
         var cadence = require('cadence')

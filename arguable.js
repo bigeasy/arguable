@@ -18,6 +18,9 @@ function Arguable (usage, argv, options) {
     // user.
     this.options = options.options
 
+    // We'll use this for an exit code if it is set and if we exit normally.
+    this.exitCode = null
+
     // Are we running as a main module?
     this.isMainModule = options.isMainModule
 
