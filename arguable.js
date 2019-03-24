@@ -2,7 +2,6 @@ var cadence = require('cadence')
 var createUsage = require('./usage')
 var getopt = require('./getopt')
 var util = require('util')
-var slice = [].slice
 var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
 var rescue = require('rescue')
 var coalesce = require('extant')
@@ -95,11 +94,11 @@ Arguable.prototype._setParameters = function (parameters) {
 
 // Assert that there is a value present for a required argument.
 Arguable.prototype.required = function () {
-    slice.call(arguments).forEach(function (name) {
-        if (!(name in this.ultimate)) {
-            this.abend(name + ' is required')
+    for (var i = 0, I = arguments.length; i < I; i++) {
+        if (!(arguments[i] in this.ultimate)) {
+            this.abend(arguments[i] + ' is required')
         }
-    }, this)
+    }
 }
 
 // Variadic nonsense to support handful of different ways to invoke this
@@ -108,7 +107,8 @@ Arguable.prototype.required = function () {
 // transmogrifcation of strings into appropriately typed and structured
 // parameters for your program.
 Arguable.prototype.validate = function () {
-    var vargs = slice.call(arguments)
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
     var validator = null
     var type = typeof vargs[0]
     if (type == 'string' && ~vargs[0].indexOf('%s')) {
@@ -151,12 +151,17 @@ Arguable.prototype.validate = function () {
 
 // Format a message using the string tables provided in the usage message.
 Arguable.prototype.format = function (key) {
-    return this._usage.format(this.lang, key, slice.call(arguments, 1))
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
+    var key = vargs.shift()
+    return this._usage.format(this.lang, key, vargs)
 }
 
 // abend helper stops execution and prints a message
 Arguable.prototype.abend = function () {
-    var vargs = slice.call(arguments), key = vargs.shift(), exitCode = 1
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
+    var key = vargs.shift(), exitCode = 1
     if (typeof key == 'number') {
         exitCode = key
         key = vargs.shift()

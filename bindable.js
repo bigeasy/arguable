@@ -8,7 +8,8 @@ Path.prototype.toString = function () {
 }
 
 Path.prototype.listen = function () {
-    var vargs = Array.prototype.slice.call(arguments)
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
     var server = vargs.shift()
     vargs.unshift(this.path)
     server.listen.apply(server, vargs)
@@ -30,7 +31,8 @@ Bindable.prototype.toString = function () {
 }
 
 Bindable.prototype.listen = function () {
-    var vargs = Array.prototype.slice.call(arguments)
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
     var server = vargs.shift()
     vargs.unshift(this.port, this.address)
     server.listen.apply(server, vargs)

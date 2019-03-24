@@ -8,8 +8,6 @@ var coalesce = require('extant')
 
 var Arguable = require('./arguable')
 
-var slice = [].slice
-
 var rescue = require('rescue')
 
 var Signal = require('signal')
@@ -18,7 +16,8 @@ var Child = require('./child')
 
 module.exports = function () {
     // Variadic arguments.
-    var vargs = slice.call(arguments)
+    var vargs = []
+    vargs.push.apply(vargs, arguments)
 
     // First argument is always the module.
     var module = vargs.shift()
