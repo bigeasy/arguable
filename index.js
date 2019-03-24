@@ -113,16 +113,11 @@ module.exports = function () {
         var lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
 
         var destructible, identifier
-        if (options.$destructible instanceof Destructible) {
-            destructible = options.$destructible
-            identifier = destructible.key
-        } else {
-            identifier = ('$destructible' in options)
-                        ? typeof options.$destructible == 'boolean'
+        var identifier = ('$destructible' in options)
+                       ? typeof options.$destructible == 'boolean'
                             ? module.filename : options.$destructible
-                        : module.filename
-            destructible = new Destructible(identifier)
-        }
+                       : module.filename
+        var destructible = new Destructible(identifier)
 
         var arguable = new Arguable(usage, parameters, {
             identifier: identifier,
@@ -179,36 +174,34 @@ module.exports = function () {
         }
         var exit = new Signal
         var child = new Child(destructible, exit, options)
-        destructible.durable('run', cadence(function (async, destructible) {
-            var initialize = destructible.ephemeral('initialize')
-            destructible.completed.wait(function () {
-                var vargs = []
-                vargs.push.apply(vargs, arguments)
-                if ($untrap) {
-                    traps.forEach(function (trap) {
-                        signals.removeListener(trap.signal, trap.listener)
-                    })
+        destructible.completed.wait(function () {
+            var vargs = []
+            vargs.push.apply(vargs, arguments)
+            if ($untrap) {
+                traps.forEach(function (trap) {
+                    signals.removeListener(trap.signal, trap.listener)
+                })
+            }
+            if (vargs[0]) {
+                try {
+                    rescue([{
+                        name: 'message',
+                        when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
+                    }])(function (rescued) {
+                        exit.unlatch(rescued.errors[0])
+                    })(vargs[0])
+                } catch (error) {
+                    exit.unlatch(vargs[0])
                 }
-                if (vargs[0]) {
-                    try {
-                        rescue([{
-                            name: 'message',
-                            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
-                        }])(function (rescued) {
-                            exit.unlatch(rescued.errors[0])
-                        })(vargs[0])
-                    } catch (error) {
-                        exit.unlatch(vargs[0])
-                    }
-                } else {
-                    var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
-                    exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
-                }
-            })
+            } else {
+                var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
+                exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
+            }
+        })
+        var initialize = destructible.ephemeral('initialize')
+        destructible.durable('main', cadence(function (async, destructible) {
             async([function () {
-                destructible.durable('main', cadence(function (async, destructible) {
-                    main(destructible, arguable, async())
-                }), async())
+                main(destructible, arguable, async())
             }, function (error) {
                 initialize(error)
                 throw error

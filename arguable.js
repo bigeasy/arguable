@@ -165,6 +165,7 @@ Arguable.prototype.format = function (key) {
 
 // abend helper stops execution and prints a message
 Arguable.prototype.abend = function () {
+    console.log('abend')
     var vargs = []
     vargs.push.apply(vargs, arguments)
     var key = vargs.shift(), exitCode = 1

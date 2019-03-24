@@ -1,4 +1,4 @@
-require('proof')(25, require('cadence')(prove))
+require('proof')(24, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
@@ -7,15 +7,6 @@ function prove (async, okay) {
             identified({}, async())
         }, function (identifier) {
             okay(identifier, [ 1 ], 'set identifier')
-        })
-    }, function () {
-        var Destructible = require('destructible')
-        var destructible = new Destructible([ 2 ])
-        var identified = require('./fixtures/identified')
-        async(function () {
-            identified([], { $destructible: destructible }, async())
-        }, function (identifier) {
-            okay(identifier, [ 2 ], 'set destructible')
         })
     }, function () {
         var errored = require('./fixtures/errored')
