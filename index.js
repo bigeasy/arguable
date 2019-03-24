@@ -1,7 +1,7 @@
 var stream = require('stream')
 var events = require('events')
-var exit = require('./exit')
 
+var cadence = require('cadence')
 var Destructible = require('destructible')
 
 var coalesce = require('extant')
@@ -203,7 +203,6 @@ module.exports = function () {
                 exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
             }
         })
-        var cadence = require('cadence')
         var initialize = destructible.ephemeral('initialize')
         destructible.durable('main', cadence(function (async, destructible) {
             async([function () {
@@ -226,6 +225,12 @@ module.exports = function () {
     }
 
     if (module === process.mainModule) {
-        module.exports(process.argv.slice(2), {}, exit(process))
+        cadence(function (async, main, argv) {
+            async(function () {
+                main(argv, async())
+            }, function (child) {
+                child.exit(async())
+            })
+        })(module.exports, process.argv.slice(2), require('./exit')(process))
     }
 }
