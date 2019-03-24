@@ -112,7 +112,20 @@ module.exports = function () {
                          : process.mainModule === module
         var lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
 
+        var destructible, identifier
+        if (options.$destructible instanceof Destructible) {
+            destructible = options.$destructible
+            identifier = destructible.key
+        } else {
+            identifier = ('$destructible' in options)
+                        ? typeof options.$destructible == 'boolean'
+                            ? module.filename : options.$destructible
+                        : module.filename
+            destructible = new Destructible(identifier)
+        }
+
         var arguable = new Arguable(usage, parameters, {
+            identifier: identifier,
             isMainModule: isMainModule,
             stdin: coalesce(options.$stdin, process.stdin),
             stdout: coalesce(options.$stdout, process.stdout),
@@ -121,19 +134,6 @@ module.exports = function () {
             pipes: pipes,
             lang: lang
         })
-
-        var destructible, identifier
-        if (options.$destructible instanceof Destructible) {
-            destructible = options.$destructible
-            arguable.identifier = options.$destructible.key
-        } else {
-            identifier = ('$destructible' in options)
-                        ? typeof options.$destructible == 'boolean'
-                            ? module.filename : options.$destructible
-                        : module.filename
-            arguable.identifier = identifier
-            var destructible = new Destructible(identifier)
-        }
 
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}

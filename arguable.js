@@ -18,6 +18,9 @@ function Arguable (usage, argv, options) {
     // user.
     this.options = options.options
 
+    // The key used to create the `Destructible`.
+    this.identifier = options.identifier
+
     // We'll use this for an exit code if it is set and if we exit normally.
     this.exitCode = null
 
