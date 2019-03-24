@@ -121,10 +121,19 @@ module.exports = function () {
 
         var callback = vargs.pop()
 
-        var identifier = typeof options.$destructible == 'boolean'
-                       ? module.filename : options.$destructible
-        arguable.identifier = identifier
-        var destructible = new Destructible(identifier)
+        var destructible, identifier
+        if (options.$destructible instanceof Destructible) {
+            destructible = options.$destructible
+            arguable.identifier = options.$destructible.key
+        } else {
+            identifier = ('$destructible' in options)
+                        ? typeof options.$destructible == 'boolean'
+                            ? module.filename : options.$destructible
+                        : module.filename
+            arguable.identifier = identifier
+            var destructible = new Destructible(identifier)
+        }
+
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}
         var $untrap = ('$untrap' in options)
