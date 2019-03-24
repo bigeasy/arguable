@@ -15,8 +15,12 @@ var coalesce = require('extant')
 function Arguable (source, argv, options) {
     this._usage = createUsage(source)
 
-    this.isMainModule = options.isMainModule
+    // These are the merged defintion and invocation options provided by the
+    // user.
     this.options = options.options
+
+    // Are we running as a main module?
+    this.isMainModule = options.isMainModule
 
     // Use environment `LANG` or else language of first usage definition.
     this.lang = coalesce(options.lang, this._usage.language)
@@ -49,10 +53,12 @@ function Arguable (source, argv, options) {
     // Remaining arguments.
     this.argv = argv
 
-    // Assign I/O provide in `options`.
+    // Assign standard I/O provide in `options`.
     this.stdout = options.stdout
     this.stderr = options.stderr
     this.stdin = options.stdin
+
+    // Assign pipes open to our parent.
     this.pipes = options.pipes
 }
 
@@ -178,8 +184,14 @@ Arguable.prototype.help = function () {
     })
 }
 
-Arguable.prototype.assert = function (condition, message) {
-    if (!condition) this.abend(message)
+// Assert the given condition is true or else abend with the given abend
+// arguments.
+Arguable.prototype.assert = function (condition) {
+    if (!condition) {
+        var vargs = []
+        vargs.push.apply(vargs, arguments)
+        this.abend.apply(this, vargs.slice(1))
+    }
 }
 
 Arguable.prototype.attempt = function (f) {
@@ -228,4 +240,5 @@ Arguable.prototype.delegate = cadence(function (async, require, pkg, argv) {
     }, async())
 })
 
+// Export `Arugable`.
 module.exports = Arguable
