@@ -11,8 +11,8 @@ var coalesce = require('extant')
 // ideology.
 
 //
-function Arguable (source, argv, options) {
-    this._usage = createUsage(source)
+function Arguable (usage, argv, options) {
+    this._usage = usage
 
     // These are the merged defintion and invocation options provided by the
     // user.

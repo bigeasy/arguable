@@ -14,6 +14,8 @@ var Signal = require('signal')
 
 var Child = require('./child')
 
+var Usage = require('./usage')
+
 module.exports = function () {
     // Variadic arguments.
     var vargs = []
@@ -24,9 +26,9 @@ module.exports = function () {
 
     // Usage source can be specified explicitly, or else it is sought in the
     // comments of the main module.
-    var usage = typeof vargs[0] == 'string'
-              ? vargs.shift()
-              : module.filename
+    var source = typeof vargs[0] == 'string' ? vargs.shift() : module.filename
+
+    var usage = Usage(source)
 
     // Optional options that both configure Arguable and provide our dear user
     // with a means to specify production objects for production and mock

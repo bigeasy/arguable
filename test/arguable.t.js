@@ -27,10 +27,11 @@ function prove (async, okay) {
                 '    -p, --processes <value>\n' +
                 '    -b, --bind <address>\n' +
                 ''
-    var Arguable = require('../arguable.js'), io
+    var Usage = require('../usage')
+    var Arguable = require('../arguable'), io
 
     var createArguable = cadence(function (async, source, env, argv, options, main, module) {
-        var arguable = new Arguable(source, argv, options)
+        var arguable = new Arguable(Usage(source), argv, options)
         main(arguable, async())
     })
 
