@@ -188,7 +188,7 @@ Arguable.prototype.abend = function () {
 
 // Stop execution and print help message.
 Arguable.prototype.help = function () {
-    throw new Interrupt('help', {
+    throw new Interrupt('abend', {
         method: 'help',
         stdout: this._usage.chooseUsage(this.lang),
         exitCode: 0
