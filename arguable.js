@@ -53,6 +53,7 @@ function Arguable (source, argv, options) {
     this.stdout = options.stdout
     this.stderr = options.stderr
     this.stdin = options.stdin
+    this.pipes = options.pipes
 }
 
 // Use an array of key/value pairs to populate some useful shortcut properties

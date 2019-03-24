@@ -82,6 +82,28 @@ module.exports = function () {
             }
         }
 
+        var pipes = {}
+        if (options.$pipes != null) {
+            options.$pipes = {}
+            for (var fd in coalesce(definition.$pipes, {})) {
+                options.$pipes[fd] = definition.$pipes[fd]
+            }
+            for (var fd in coalesce(invocation.$pipes, {})) {
+                options.$pipes[fd] = invocation.$pipes[fd]
+            }
+            for (var fd in coalesce(options.$pipes)) {
+                if (options.$pipes[fd] instanceof require('stream').Stream) {
+                    pipes[fd] = options.$pipes[fd]
+                } else {
+                    var socket = { fd: +fd }
+                    for (var property in options.$pipes[fd]) {
+                        socket[property] = options.$pipes[fd][property]
+                    }
+                    pipes[fd] = new require('net').Socket(socket)
+                }
+            }
+        }
+
         var isMainModule = ('$isMainModule' in options)
                          ? options.$isMainModule
                          : process.mainModule === module
@@ -92,6 +114,7 @@ module.exports = function () {
             stdout: coalesce(options.$stdout, process.stdout),
             stderr: coalesce(options.$stderr, process.stderr),
             options: options,
+            pipes: pipes,
             lang: lang
         })
 

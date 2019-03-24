@@ -1,4 +1,4 @@
-require('proof')(22, require('cadence')(prove))
+require('proof')(24, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
@@ -48,7 +48,6 @@ function prove (async, okay) {
         var LANG = process.env.LANG
         async(function () {
             process.env.LANG = 'fr_FR'
-            console.log(process.env.LANG)
             language({}, {}, async())
         }, function (lang, child) {
             if (LANG != null) {
@@ -167,6 +166,31 @@ function prove (async, okay) {
             okay(isMainModule, 'is main module')
             okay(child.options.$signals.listenerCount('SIGINT'), 1, 'main module still trapped')
             child.exit(async())
+        })
+    }, function () {
+        var path = require('path')
+        var children = require('child_process')
+        var child = children.spawn('node', [ path.join(__dirname, 'fixtures/piped') ], {
+            stdio: [ 'inherit', 'inherit', 'inherit', 'pipe' ]
+        })
+        child.stdio[3].on('data', function (buffer) {
+            okay(buffer.toString(), 'piped\n', 'piped')
+        })
+        child.stdio[3].on('end', async())
+    }, function () {
+        var piped = require('./fixtures/piped')
+        var stream = require('stream')
+        async(function () {
+            piped([], {
+                $pipes: { 3: new stream.PassThrough },
+                $isMainModule: true
+            }, async())
+        }, function (child) {
+            async(function () {
+                child.exit(async())
+            }, function () {
+                okay(child.options.$pipes[3].read().toString(), 'piped\n', 'psuedo piped')
+            })
         })
     }, function () {
         // Also tests untrap as false.
