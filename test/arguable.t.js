@@ -1,4 +1,4 @@
-require('proof')(40, require('cadence')(prove))
+require('proof')(37, require('cadence')(prove))
 
 /*
     ___ usage ___ en_US ___
@@ -166,21 +166,6 @@ function prove (async, okay) {
         okay(arguable.ultimate.processes, '3', 'successful function validation')
     }), null, function (error) {
         if (error) throw error
-    })
-    createArguable(__filename, {}, [],  {
-    }, cadence(function (async, arguable) {
-        okay(arguable.attempt(function () { return 1 }, 'attempt'), 1, 'attempted')
-        okay(arguable.attempt(function () { throw new Error }, 'failed attempt'), 1, 'attempted')
-    }), null, function (error) {
-        okay(error.stderr, 'failed attempt', 'failed attempt')
-    })
-    createArguable(__filename, {}, [],  {
-    }, cadence(function (async, arguable) {
-        okay(arguable.attempt(function () {
-            throw new Error('failed attempt')
-        }, /^failed attempt$/, 'failed attempt'), 1, 'attempted')
-    }), null, function (error) {
-        okay(error.stderr, 'failed attempt', 'failed attempt matched')
     })
     createArguable(__filename, {}, [ '-l', 'x' ],  {
     }, cadence(function (async, arguable) {

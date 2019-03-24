@@ -194,22 +194,6 @@ Arguable.prototype.assert = function (condition) {
     }
 }
 
-Arguable.prototype.attempt = function (f) {
-    try {
-        return f()
-    } catch (error) {
-        var vargs = slice.call(arguments, 1)
-        var abend = function () {
-            this.abend.apply(this, vargs)
-        }.bind(this)
-        if (vargs[0] instanceof RegExp) {
-            rescue(vargs.shift(), abend)(error)
-        } else {
-            abend()
-        }
-    }
-}
-
 // Saves having to write a unit test for every application that checks a branch
 // that does exactly this.
 Arguable.prototype.helpIf = function (help) {
