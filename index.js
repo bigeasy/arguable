@@ -183,9 +183,7 @@ module.exports = function () {
                         name: 'message',
                         when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
                     }])(function (rescued) {
-                        exit.unlatch({
-                            exitCode: rescued.errors[0].exitCode
-                        })
+                        exit.unlatch(rescued.errors[0])
                     })(vargs[0])
                 } catch (error) {
                     exit.unlatch(vargs[0])

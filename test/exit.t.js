@@ -1,4 +1,4 @@
-require('proof')(9, prove)
+require('proof')(7, prove)
 
 function prove (okay) {
     var exit = require('../exit'),
@@ -23,13 +23,10 @@ function prove (okay) {
     okay(process.stderr.read().toString(), 'abended\n', 'abend error message')
     okay(process.exitCode, 0x77, 'abend exit code')
     process.stdout = new stream.PassThrough
-    exit(process)(new Interrupt('help', { stdout: 'usage', exitCode: 0 }))
+    exit(process)(new Interrupt('abend', { stdout: 'usage', exitCode: 0 }))
     okay(process.stdout.read().toString(), 'usage\n', 'help message')
     okay(process.exitCode, 0, 'help exit code')
     process.stdout = new stream.PassThrough
     exit(process)(new Interrupt('abend'))
     okay(process.stdout.read(), null, 'no message')
-    okay(process.exitCode, 1, 'no exit code')
-    exit(process)(null)
-    okay(process.exitCode, 1, 'exit code with no error')
 }

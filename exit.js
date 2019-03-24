@@ -9,14 +9,7 @@ var rescue = require('rescue')
 module.exports = function (process) {
     return function (error, exitCode) {
         if (error) {
-            exitCode = rescue([{
-                name: 'abend',
-                when: [ '..', /^bigeasy.arguable#abend$/m, 'only' ]
-            }, {
-                name: 'help',
-                when: [ '..', /^bigeasy.arguable#help$/m, 'only' ]
-            }], function (rescued) {
-                var error = rescued.errors.shift()
+            if (/^bigeasy\.arguable#abend/m.test(error.message)) {
                 if (error.stdout) {
                     process.stdout.write(error.stdout)
                     process.stdout.write('\n')
@@ -24,11 +17,9 @@ module.exports = function (process) {
                     process.stderr.write(error.stderr)
                     process.stderr.write('\n')
                 }
-                return error.exitCode
-// TODO Where is exit?
-            })(error)
-            if (exitCode == null) {
-                exitCode = 1
+                exitCode = error.exitCode
+            } else {
+                throw error
             }
         }
         if (exitCode != null && typeof exitCode == 'number') {
