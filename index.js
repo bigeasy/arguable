@@ -146,7 +146,12 @@ module.exports = function () {
             case 'destroy':
                 traps.push({
                     signal: signal,
-                    listener: listener = destructible.destroy.bind(destructible)
+                    listener: listener = function () {
+                        // We don't use `bind` because some signal handlers send
+                        // an argument and `destroy` asserts that it receives
+                        // none.
+                        destructible.destroy()
+                    }
                 })
                 signals.on(signal, listener)
                 break
