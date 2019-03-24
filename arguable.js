@@ -220,25 +220,21 @@ Arguable.prototype.helpIf = function (help) {
 // at all certain that I want to have all this formatting nonsense. Can't the
 // parent simply invoke it with a string?
 //
-// We're only going to support accepting a package name, but leave the
-// formatting logic in for now to see where it's being used.
-Arguable.prototype.delegate = cadence(function (async, require, pkg, argv) {
-    var program
+// Look up a delegate module and raise an exception if it is not found.
+
+//
+Arguable.prototype.delegate = function (require, format, command) {
+    var pkg = util.format(format, command)
     try {
-        program = require(pkg)
+        return require(pkg)
     } catch (error) {
         if (error.code == 'MODULE_NOT_FOUND') {
-            this.abend('sub command module not found', pkg)
+            this.abend('sub command module not found', command, pkg, format)
         } else {
             throw error
         }
     }
-    program(argv, {
-        $stdout: this.stdout,
-        $stdin: this.stdin,
-        $stderr: this.stderr
-    }, async())
-})
+}
 
 // Export `Arugable`.
 module.exports = Arguable

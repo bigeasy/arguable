@@ -1,1 +1,1 @@
-x.x = 1
+throw new Error('broken')

@@ -139,25 +139,20 @@ function prove (async, okay) {
         okay(!error, 'help if not')
     })
     createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
-        var pkg = path.resolve(__dirname, './fixtures/delegate')
-        arguable.delegate(require, pkg, [], async())
+        okay(arguable.delegate(require, './fixtures/%s', 'delegate') != null, 'got delegate')
     }), module, function (error, child) {
         if (error) throw error
-        okay(child, 'delegated command normal exit')
     })
-    createArguable(__filename, {}, [
-        'unfound'
-    ], {}, cadence(function (async, arguable) {
-        arguable.delegate(require, path.resolve(__dirname, './fixtures/missing'), [], async())
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
+        arguable.delegate(require, './fixtures/%s', 'missing')
     }), module, function (error) {
+        console.log(error.stack)
         okay(error.stderr, 'sub command module not found', 'delegated not found')
     })
-    createArguable(__filename, {}, [
-        'broken'
-    ], {}, cadence(function (async, arguable) {
-        arguable.delegate(require, path.resolve(__dirname, './fixtures/broken'), async())
+    createArguable(__filename, {}, [], {}, cadence(function (async, arguable) {
+        arguable.delegate(require, './fixtures/%s', 'broken')
     }), module, function (error) {
-        okay(error.message, 'x is not defined', 'delgated arguable broken')
+        okay(error.message, 'broken', 'delegate broken')
     })
     createArguable(__filename, {}, [ '-l', 3 ],  {
     }, cadence(function (async, arguable) {
