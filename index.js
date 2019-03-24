@@ -83,6 +83,8 @@ module.exports = function () {
             }
         }
 
+        var callback = vargs.pop()
+
         var pipes = {}
         if (options.$pipes != null) {
             options.$pipes = {}
@@ -109,6 +111,7 @@ module.exports = function () {
                          ? options.$isMainModule
                          : process.mainModule === module
         var lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
+
         var arguable = new Arguable(usage, parameters, {
             isMainModule: isMainModule,
             stdin: coalesce(options.$stdin, process.stdin),
@@ -118,8 +121,6 @@ module.exports = function () {
             pipes: pipes,
             lang: lang
         })
-
-        var callback = vargs.pop()
 
         var destructible, identifier
         if (options.$destructible instanceof Destructible) {
