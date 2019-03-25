@@ -3,6 +3,7 @@ var util = require('util')
 
 function Messenger () {
     this.parent = new events.EventEmitter
+    this.connected = true
     events.EventEmitter.call(this)
 }
 util.inherits(Messenger, events.EventEmitter)
