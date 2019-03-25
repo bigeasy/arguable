@@ -1,4 +1,4 @@
-require('proof')(24, require('cadence')(prove))
+require('proof')(26, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
@@ -150,6 +150,21 @@ function prove (async, okay) {
             okay(child.options.$signals.listenerCount('SIGINT'), 1, 'has a SIGINT trap')
             child.options.$signals.emit('SIGINT')
             okay(destructed[0], 'SIGINT destroyed')
+            child.destroy()
+            child.exit(async())
+        })
+    }, function () {
+        var events = require('events')
+        var signaled = require('./fixtures/signaled')
+        async(function () {
+            signaled({}, {
+                $signals: new events.EventEmitter,
+                $trap: 'swallow'
+            }, async())
+        }, function (destructed, child) {
+            okay(child.options.$signals.listenerCount('SIGINT'), 1, 'string $trap has a SIGINT trap')
+            child.options.$signals.emit('SIGINT')
+            okay(!destructed[0], 'string $trap SIGINT not destroyed')
             child.destroy()
             child.exit(async())
         })

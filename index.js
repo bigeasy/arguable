@@ -137,14 +137,22 @@ module.exports = function () {
                     : isMainModule ? false
                                    : true
         var signals = coalesce(options.$signals, process)
-        if (typeof $trap == 'boolean') {
+        switch (typeof $trap) {
+        case 'boolean':
             if (!$trap) {
                 trap = {}
             }
-        } else {
+            break
+        case 'string':
+            for (var signal in trap) {
+                trap[signal] = $trap
+            }
+            break
+        default:
             for (var signal in $trap) {
                 trap[signal] = $trap[signal]
             }
+            break
         }
         var traps = [], listener
         for (var signal in trap) {
