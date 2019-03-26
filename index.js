@@ -117,7 +117,6 @@ module.exports = function () {
                        ? typeof options.$destructible == 'boolean'
                             ? module.filename : options.$destructible
                        : module.filename
-        var destructible = new Destructible(identifier)
 
         var arguable = new Arguable(usage, parameters, {
             identifier: identifier,
@@ -129,6 +128,30 @@ module.exports = function () {
             pipes: pipes,
             lang: lang
         })
+
+        var scram = coalesce(options.$scram, 10000)
+        switch (typeof scram) {
+        case 'object':
+            var parameter = Object.keys(scram)[0]
+            scram = {
+                name: parameter,
+                value: +coalesce(arguable.ultimate[parameter], scram[parameter])
+            }
+            break
+        case 'string':
+            scram = {
+                name: options.$scram,
+                value: +coalesce(arguable.ultimate[options.$scram], scram)
+            }
+            break
+        case 'number':
+            scram = { name: null, value: scram }
+            break
+        }
+
+        arguable.scram = scram.value
+
+        var destructible = new Destructible(scram, identifier)
 
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}
@@ -208,6 +231,9 @@ module.exports = function () {
         })
         var initialize = destructible.ephemeral('initialize')
         destructible.durable('main', cadence(function (async, destructible) {
+            arguable.assert(
+                scram.name == null || (Number.isInteger(scram.value) && scram.value > 0),
+                scram.name + ' must be an integer greater than zero', scram.value)
             async([function () {
                 main(destructible, arguable, async())
             }, function (error) {

@@ -65,6 +65,9 @@ function Arguable (usage, argv, options) {
 
     // Assign pipes open to our parent.
     this.pipes = options.pipes
+
+    // Set after we get our arguments.
+    this.scram = 0
 }
 
 // Use an array of key/value pairs to populate some useful shortcut properties

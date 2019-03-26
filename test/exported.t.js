@@ -1,4 +1,4 @@
-require('proof')(26, require('cadence')(prove))
+require('proof')(29, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
@@ -239,6 +239,30 @@ function prove (async, okay) {
             args([{ name: 'value' }], {}, async())
         }, function (name, child) {
             okay(name, 'value', 'disconected')
+            child.exit(async())
+        })
+    }, function () {
+        var scrammed = require('./fixtures/scrammed')
+        async(function () {
+            scrammed({}, { $scram: 2000 }, async())
+        }, function (scram, child) {
+            okay(scram, 2000, 'scram as integer')
+            child.exit(async())
+        })
+    }, function () {
+        var scrammed = require('./fixtures/scrammed')
+        async(function () {
+            scrammed({ scram: '2000' }, { $scram: 'scram' }, async())
+        }, function (scram, child) {
+            okay(scram, 2000, 'scram as argument')
+            child.exit(async())
+        })
+    }, function () {
+        var scrammed = require('./fixtures/scrammed')
+        async(function () {
+            scrammed({}, { $scram: { scram: 2000 } }, async())
+        }, function (scram, child) {
+            okay(scram, 2000, 'scram as argument with default')
             child.exit(async())
         })
     })
