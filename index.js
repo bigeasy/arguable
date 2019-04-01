@@ -206,6 +206,7 @@ module.exports = function () {
         var exit = new Signal
         var child = new Child(destructible, exit, options)
         destructible.completed.wait(function () {
+            arguable.exited.unlatch()
             var vargs = []
             vargs.push.apply(vargs, arguments)
             if ($untrap) {

@@ -1,8 +1,13 @@
-var cadence = require('cadence')
-var getopt = require('./getopt')
 var util = require('util')
-var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
+
+var cadence = require('cadence')
+var Signal = require('signal')
+
 var coalesce = require('extant')
+
+var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
+
+var getopt = require('./getopt')
 
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
@@ -66,6 +71,9 @@ function Arguable (usage, argv, options) {
 
     // Set after we get our arguments.
     this.scram = 0
+
+    // Called when we exit with no arguments.
+    this.exited = new Signal
 }
 
 // Use an array of key/value pairs to populate some useful shortcut properties
