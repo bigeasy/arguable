@@ -151,7 +151,7 @@ module.exports = function () {
 
         arguable.scram = scram.value
 
-        var destructible = new Destructible(scram, identifier)
+        var destructible = new Destructible(arguable.scram, identifier)
 
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}
