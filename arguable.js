@@ -1,9 +1,7 @@
 var cadence = require('cadence')
-var createUsage = require('./usage')
 var getopt = require('./getopt')
 var util = require('util')
 var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
-var rescue = require('rescue')
 var coalesce = require('extant')
 
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
