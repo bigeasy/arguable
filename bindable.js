@@ -7,41 +7,22 @@ Path.prototype.toString = function () {
     return this.path
 }
 
-Path.prototype.listen = function () {
-    var vargs = []
-    vargs.push.apply(vargs, arguments)
-    var server = vargs.shift()
-    vargs.unshift(this.path)
-    server.listen.apply(server, vargs)
+Path.prototype.options = function (connect) {
+    return { path: this.path, ...connect }
 }
 
-Path.prototype.connect = function (connect) {
-    connect.path = this.path
-    return connect
-}
-
-function Bindable (address, port) {
+function Bindable (host, port) {
     this.family = 'IPv4'
-    this.address = address
+    this.host = host
     this.port = port
 }
 
 Bindable.prototype.toString = function () {
-    return this.address + ':' + this.port
+    return this.host + ':' + this.port
 }
 
-Bindable.prototype.listen = function () {
-    var vargs = []
-    vargs.push.apply(vargs, arguments)
-    var server = vargs.shift()
-    vargs.unshift(this.port, this.address)
-    server.listen.apply(server, vargs)
-}
-
-Bindable.prototype.connect = function (connect) {
-    connect.port = this.port
-    connect.hostname = this.address == '0.0.0.0' ? '127.0.0.1' : this.address
-    return connect
+Bindable.prototype.options = function (connect) {
+    return { host: this.host, port: this.port, ...connect }
 }
 
 function isNumeric (value) {
