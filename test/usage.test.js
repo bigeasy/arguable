@@ -30,11 +30,11 @@ describe('usage', () => {
         {
             terse: 'c',
             verbose: 'config',
-            arguable: true,
+            valuable: true,
         }, {
             terse: null,
             verbose: 'longonly',
-            arguable: false
+            valuable: false
         }], 'patterns')
     })
     it('can fall back to the default usage when a language is missing', () => {

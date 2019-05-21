@@ -1,13 +1,10 @@
-var util = require('util')
+const util = require('util')
 
-var cadence = require('cadence')
-var Signal = require('signal')
+const coalesce = require('extant')
 
-var coalesce = require('extant')
+const Interrupt = require('interrupt')
 
-var Interrupt = require('interrupt').createInterrupter('bigeasy.arguable')
-
-var getopt = require('./getopt')
+const getopt = require('./getopt')
 
 // This will never be pretty. Let it be ugly. Let it swallow all the sins before
 // they enter your program, so that your program can be a garden of pure
@@ -37,8 +34,8 @@ function Arguable (usage, argv, options) {
     var patterns = this._usage.getPattern()
 
     // Extract the arguments that accept values, TODO maybe call `valuable`.
-    this.arguable = patterns.filter(function (pattern) {
-        return pattern.arguable
+    this.valuable = patterns.filter(function (pattern) {
+        return pattern.valuable
     }).map(function (pattern) {
         return pattern.verbose
     })
@@ -51,7 +48,7 @@ function Arguable (usage, argv, options) {
     }
 
     // Extract an argument end sigil and note that it was there.
-    if (this.terminal = argv[0] == '--')  {
+    if (this.terminator = argv[0] == '--')  {
         argv.shift()
     }
 
@@ -68,12 +65,6 @@ function Arguable (usage, argv, options) {
 
     // Assign pipes open to our parent.
     this.pipes = options.pipes
-
-    // Set after we get our arguments.
-    this.scram = 0
-
-    // Called when we exit with no arguments.
-    this.exited = new Signal
 }
 
 // Use an array of key/value pairs to populate some useful shortcut properties
@@ -91,7 +82,7 @@ Arguable.prototype._setParameters = function (parameters) {
         return arrayj.indexOf(value) == index
     })
     this.arrayed = {}
-    this.arguable.forEach(function (name) {
+    this.valuable.forEach(function (name) {
         this.arrayed[name] = []
     }, this)
     this.parameters.forEach(function (parameter) {
@@ -186,7 +177,7 @@ Arguable.prototype.abend = function () {
         message = this._usage.format(this.lang, key, vargs)
     }
     this._redirect = 'stderr'
-    throw new Interrupt('abend', {
+    throw new Arguable.Error('abend', {
         method: 'abend',
         key: key,
         vargs: vargs,
@@ -197,7 +188,7 @@ Arguable.prototype.abend = function () {
 
 // Stop execution and print help message.
 Arguable.prototype.help = function () {
-    throw new Interrupt('abend', {
+    throw new Arguable.Error('abend', {
         method: 'help',
         stdout: this._usage.chooseUsage(this.lang),
         exitCode: 0
@@ -239,6 +230,8 @@ Arguable.prototype.delegate = function (require, format, command) {
         }
     }
 }
+
+Arguable.Error = Interrupt.create('Arguable.Error')
 
 // Export `Arugable`.
 module.exports = Arguable

@@ -1,7 +1,7 @@
 function getopt (patterns, argv) {
     patterns = patterns.map(function (pattern) {
         return {
-            arguable: pattern.arguable,
+            valuable: pattern.valuable,
             verbose: '--' + pattern.verbose,
             terse: pattern.terse ? '-' + pattern.terse : '',
             key: pattern.verbose
@@ -36,7 +36,7 @@ function getopt (patterns, argv) {
         }
 
         var pattern = alternates.shift()
-        if (pattern.arguable) {
+        if (pattern.valuable) {
             if (!catenated) {
                 if (argv.length == 0) {
                     throw {

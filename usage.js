@@ -17,13 +17,9 @@ Usage.prototype.getPattern = function (command) {
             var out = $[0]
             var terse = $[1] ? $[1].substring(1) : null
             var verbose = $[2].substring(2)
-            var arguable = !! $[3]
+            var valuable = !! $[3]
             line = line.substring(out.length)
-            patterns.push({
-                terse: terse,
-                verbose: verbose,
-                arguable: arguable
-            })
+            patterns.push({ terse, verbose, valuable })
         }
     }, this)
     return patterns

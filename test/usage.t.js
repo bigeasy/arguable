@@ -24,11 +24,11 @@ function prove (okay) {
     {
         terse: 'c',
         verbose: 'config',
-        arguable: true,
+        valuable: true,
     }, {
         terse: null,
         verbose: 'longonly',
-        arguable: false
+        valuable: false
     }], 'patterns')
     okay(usage.chooseUsage('en_GB'), message, 'usage')
     usage = extractUsage(path.join(__dirname, 'usageless.js'), 'en_US', [])

@@ -21,8 +21,10 @@
     },
     "dependencies":
     {
-                            "destructible":                 "2.0.x",
-                            "interrupt":                    "7.0.x",
+                            "destructible":                 "4.0.x",
+                            "extant":                       "1.0.x",
+                            "interrupt":                    "8.0.x",
+                            "prospective":                  "0.0.x",
                             "rescue":                       "5.0.x",
                             "synonymous":                   "1.0.x"
     },

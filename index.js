@@ -1,26 +1,47 @@
-var stream = require('stream')
-var events = require('events')
+const Future = require('prospective/future')
 
-var cadence = require('cadence')
-var Destructible = require('destructible')
+const stream = require('stream')
 
-var coalesce = require('extant')
+const coalesce = require('extant')
 
-var Arguable = require('./arguable')
+const Arguable = require('./arguable')
 
-var rescue = require('rescue')
+const Usage = require('./usage')
+const _main = require('./main')
+const rethrow = require('./rethrow')
 
-var Signal = require('signal')
+const rescue = require('rescue')
 
-var Child = require('./child')
+class Child {
+    constructor (promise, destroyed, options) {
+        this.promise = promise
+        this._destroyed = destroyed
+        this.options = options
+    }
 
-var Usage = require('./usage')
+    destroy () {
+        this._destroyed.call()
+    }
+}
 
-module.exports = function () {
-    // Variadic arguments.
-    var vargs = []
-    vargs.push.apply(vargs, arguments)
+async function _execute (main, arguable) {
+    try {
+        const promise = main(arguable)
+        if (promise instanceof Promise) {
+            return await promise
+        }
+        return promise
+    } catch (error) {
+        rescue([{
+            name: 'message',
+            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
+        }])(function (rescued) {
+            throw rescued.errors[0]
+        })(error)
+    }
+}
 
+module.exports = function (...vargs) {
     // First argument is always the module.
     var module = vargs.shift()
 
@@ -39,17 +60,12 @@ module.exports = function () {
     var main = vargs.shift()
 
     // TODO How about an optinal method here for command line completion logic?
-    module.exports = function (argv, invocation, callback) {
-        var vargs = []
-        vargs.push.apply(vargs, arguments)
-
-        var argv = vargs.shift()
-
+    module.exports = function (argv, invocation) {
         var options = {}
         for (var option in definition) {
             options[option] = definition[option]
         }
-        for (var option in invocation) {
+        for (var option in coalesce(invocation, {})) {
             options[option] = invocation[option]
         }
 
@@ -128,6 +144,8 @@ module.exports = function () {
             pipes: pipes,
             lang: lang
         })
+        let _destroyed = null
+        arguable.destroyed = new Promise(resolve => _destroyed = resolve)
 
         var scram = coalesce(options.$scram, 10000)
         switch (typeof scram) {
@@ -150,8 +168,6 @@ module.exports = function () {
         }
 
         arguable.scram = scram.value
-
-        var destructible = new Destructible(arguable.scram, identifier)
 
         var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         var $trap = ('$trap' in options) ? options.$trap : {}
@@ -183,12 +199,7 @@ module.exports = function () {
             case 'destroy':
                 traps.push({
                     signal: signal,
-                    listener: listener = function () {
-                        // We don't use `bind` because some signal handlers send
-                        // an argument and `destroy` asserts that it receives
-                        // none.
-                        destructible.destroy()
-                    }
+                    listener: listener = () => _destroyed.call()
                 })
                 signals.on(signal, listener)
                 break
@@ -203,64 +214,10 @@ module.exports = function () {
                 break
             }
         }
-        var exit = new Signal
-        var child = new Child(destructible, exit, options)
-        destructible.completed.wait(function () {
-            arguable.exited.unlatch()
-            var vargs = []
-            vargs.push.apply(vargs, arguments)
-            if ($untrap) {
-                traps.forEach(function (trap) {
-                    signals.removeListener(trap.signal, trap.listener)
-                })
-            }
-            if (vargs[0]) {
-                try {
-                    rescue([{
-                        name: 'message',
-                        when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
-                    }])(function (rescued) {
-                        exit.unlatch(rescued.errors[0])
-                    })(vargs[0])
-                } catch (error) {
-                    exit.unlatch(vargs[0])
-                }
-            } else {
-                var exitCode = coalesce(arguable.exitCode, process.exitCode, 0)
-                exit.unlatch.apply(exit, [ null ].concat(exitCode, vargs.slice(1)))
-            }
-        })
-        var initialize = destructible.ephemeral('initialize')
-        destructible.durable('main', cadence(function (async, destructible) {
-            arguable.assert(
-                scram.name == null || (Number.isInteger(scram.value) && scram.value > 0),
-                scram.name + ' must be an integer greater than zero', scram.value)
-            async([function () {
-                main(destructible, arguable, async())
-            }, function (error) {
-                initialize(error)
-                throw error
-            }], [], function (vargs) {
-                initialize()
-                return vargs.concat(child)
-            })
-        }), function () {
-            if (arguments[0] == null) {
-                callback.apply(null, arguments)
-            } else {
-                destructible.destroy()
-                exit.wait(callback)
-            }
-        })
+        return new Child(_execute(main, arguable), _destroyed, arguable.options)
     }
 
     if (module === process.mainModule) {
-        cadence(function (async, main, argv) {
-            async(function () {
-                main(argv, async())
-            }, function (child) {
-                child.exit(async())
-            })
-        })(module.exports, process.argv.slice(2), require('./exit')(process))
+        _main(process)(module.exports, process.argv.slice(2), rethrow)
     }
 }
