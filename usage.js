@@ -46,7 +46,7 @@ Usage.prototype.chooseUsage = function (language) {
 
 Usage.prototype.format = function (language, key, vargs) {
     var path = [], string
-    var languages = this.getLanguageOptions()
+    var languages = this.getLanguageOptions(language)
     while (languages.length) {
         var language = languages.shift()
         string = this.dictionary.format.apply(this.dictionary, [ language, path, key ].concat(vargs))
