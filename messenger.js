@@ -1,17 +1,16 @@
-var events = require('events')
-var util = require('util')
+const events = require('events')
+const util = require('util')
 
-function Messenger () {
-    this.parent = new events.EventEmitter
-    this.connected = true
-    events.EventEmitter.call(this)
-}
-util.inherits(Messenger, events.EventEmitter)
+class Messenger extends events.EventEmitter {
+    constructor () {
+        super()
+        this.parent = new events.EventEmitter
+        this.connected = true
+    }
 
-Messenger.prototype.send = function () {
-    var vargs = []
-    vargs.push.apply(vargs, arguments)
-    this.parent.emit.apply(this.parent, [ 'message' ].concat(vargs.slice(0, 2)))
+    send (...vargs) {
+        this.parent.emit.apply(this.parent, [ 'message' ].concat(vargs.slice(0, 2)))
+    }
 }
 
 module.exports = Messenger
