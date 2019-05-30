@@ -1,36 +1,37 @@
+describe('exported', () => {
+    const assert = require('assert')
+    it('can propagate an error', async () => {
+        const test = []
+        const errored = require('./fixtures/errored')
+        const child = errored([])
+        try {
+            await child.promise
+        } catch (error) {
+            test.push(error.message)
+        }
+        assert.deepStrictEqual(test, [ 'panic' ], 'caught')
+    })
+    it('can mock standard I/O streams', async () => {
+        const stream = require('stream')
+        const echo = require('./fixtures/echo')
+        const child = echo([ 'a', 'b' ], { $stdout: new stream.PassThrough })
+        assert.equal(await child.promise, 0, 'exit')
+        assert.equal(child.options.$stdout.read().toString(), 'a b\n', 'stdout')
+    })
+    it('can mock ipc', async () => {
+        const Messenger = require('../messenger')
+        const messaged = require('./fixtures/messaged')
+        const child = messaged({}, { messenger: new Messenger })
+        child.options.messenger.emit('message', { method: 'ignore' })
+        child.options.messenger.emit('message', { method: 'shutdown' })
+        assert.equal(await child.promise, 0, 'exit')
+    })
+})
+return
 require('proof')(29, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
-        var identified = require('./fixtures/identified')
-        async(function () {
-            identified({}, async())
-        }, function (identifier) {
-            okay(identifier, [ 1 ], 'set identifier')
-        })
-    }, function () {
-        var errored = require('./fixtures/errored')
-        async([function () {
-            errored({}, async())
-        }, function (error) {
-            okay(/^destructible#error$/m.test(error.message), 'error from constructor')
-        }])
-    }, function () {
-        var stream = require('stream')
-        var echo = require('./fixtures/echo')
-        async(function () {
-            echo([ 'a', 'b' ], {
-                $stdout: new stream.PassThrough
-            }, async())
-        }, function (child) {
-            async(function () {
-                child.exit(async())
-            }, function () {
-                okay(child.options.$stdout.read().toString(), 'a b\n', 'echo')
-            })
-        })
-    }, function () {
-        var messaged = require('./fixtures/messaged')
         var Messenger = require('../messenger')
         var stream = require('stream')
         async(function () {
