@@ -26,94 +26,52 @@ describe('exported', () => {
         child.options.messenger.emit('message', { method: 'shutdown' })
         assert.equal(await child.promise, 0, 'exit')
     })
+    it('can choose a language based on environment', async () => {
+        const LANG = process.env.LANG
+        process.env.LANG = 'fr_FR'
+        const language = require('./fixtures/language')
+        const child = language({})
+        if (LANG != null) {
+            process.env.LANG = LANG
+        } else {
+            delete process.env.LANG
+        }
+        assert.equal(await child.promise, 'fr_FR', 'language from environment')
+    })
+    it('can set a default option', async () => {
+        const optional = require('./fixtures/optional')
+        const child = optional([])
+        assert.equal(await child.promise, process.pid, 'default property return')
+    })
+    it('can override a default option', async () => {
+        const optional = require('./fixtures/optional')
+        const child = optional([], { pid: 2 })
+        assert.equal(await child.promise, 2, 'override property return')
+    })
+    it('can specify how to respond to the default signals', async () => {
+        const events = require('events')
+        const signaled = require('./fixtures/signaled')
+        const child = signaled([], { $signals: new events.EventEmitter })
+        child.options.$signals.emit('SIGHUP') // Should do nothing.
+        child.options.$signals.emit('SIGTERM')
+        assert.equal(await child.promise, 'SIGTERM', 'signal destroyed')
+    })
 })
 return
 require('proof')(29, require('cadence')(prove))
 
 function prove (async, okay) {
     async(function () {
-        var Messenger = require('../messenger')
-        var stream = require('stream')
-        async(function () {
-            messaged({}, { $stdout: new stream.PassThrough, messenger: new Messenger }, async())
-        }, function (child) {
-            child.options.messenger.emit('message', { method: 'shutdown' })
-            async(function () {
-                child.exit(async())
-            }, function () {
-                okay(child.options.$stdout.read().toString(), 'shutdown\n', 'send')
-            })
-        })
-    }, function () {
-        var language = require('./fixtures/language')
-        var LANG = process.env.LANG
-        async(function () {
-            process.env.LANG = 'fr_FR'
-            language({}, {}, async())
-        }, function (lang, child) {
-            if (LANG != null) {
-                process.env.LANG = LANG
-            } else {
-                delete process.env.LANG
-            }
-            okay(lang, 'fr_FR', 'language from environment')
-            child.exit(async())
-        })
-    }, function () {
-        var optional = require('./fixtures/optional')
-        async(function () {
-            optional({}, async())
-        }, function (pid, child) {
-            okay(pid, process.pid, 'default property return')
-            async(function () {
-                child.exit(async())
-                child.destroy()
-            }, function (exitCode, pid) {
-                okay({
-                    exitCode: exitCode,
-                    pid: pid
-                }, {
-                    exitCode: 0,
-                    pid: process.pid
-                },  'default property exit')
-            })
-        })
-    }, function () {
-        var optional = require('./fixtures/optional')
-        async(function () {
-            optional({}, { pid: 2 },  async())
-        }, function (pid, child) {
-            okay(pid, 2, 'override default property return')
-            async(function () {
-                child.exit(async())
-                child.destroy()
-            }, function (exitCode, pid) {
-                okay({
-                    exitCode: exitCode,
-                    pid: pid
-                }, {
-                    exitCode: 0,
-                    pid: 2
-                },  'override default pid exit')
-            })
-        })
-    }, function () {
         var events = require('events')
-        var signaled = require('./fixtures/signaled')
         async(function () {
             signaled({}, {
                 $signals: new events.EventEmitter
             }, async())
         }, function (destructed, child) {
-            child.options.$signals.once('SIGINT', function () {
-                okay('SIGINT swallowed')
-            })
             okay(!destructed[0], 'SIGINT did not destroy')
-            child.options.$signals.emit('SIGHUP') // Should do nothing.
             okay(!destructed[0], 'SIGHUP did not destroy')
             async(function () {
                 child.exit(async())
-                child.options.$signals.emit('SIGTERM')
             }, function (exitCode) {
                 okay({
                     exitCode: exitCode,
@@ -240,30 +198,6 @@ function prove (async, okay) {
             args([{ name: 'value' }], {}, async())
         }, function (name, child) {
             okay(name, 'value', 'disconected')
-            child.exit(async())
-        })
-    }, function () {
-        var scrammed = require('./fixtures/scrammed')
-        async(function () {
-            scrammed({}, { $scram: 2000 }, async())
-        }, function (scram, child) {
-            okay(scram, 2000, 'scram as integer')
-            child.exit(async())
-        })
-    }, function () {
-        var scrammed = require('./fixtures/scrammed')
-        async(function () {
-            scrammed({ scram: '2000' }, { $scram: 'scram' }, async())
-        }, function (scram, child) {
-            okay(scram, 2000, 'scram as argument')
-            child.exit(async())
-        })
-    }, function () {
-        var scrammed = require('./fixtures/scrammed')
-        async(function () {
-            scrammed({}, { $scram: { scram: 2000 } }, async())
-        }, function (scram, child) {
-            okay(scram, 2000, 'scram as argument with default')
             child.exit(async())
         })
     })

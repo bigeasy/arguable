@@ -19,8 +19,8 @@ class Child {
         this.options = options
     }
 
-    destroy () {
-        this._destroyed.call()
+    destroy (...vargs) {
+        this._destroyed.apply(null, vargs)
     }
 }
 
@@ -137,7 +137,7 @@ module.exports = function (...vargs) {
         const $untrap = ('$untrap' in options)
                       ? options.$untrap
                       : isMainModule ? false
-                                   : true
+                                     : true
         const signals = coalesce(options.$signals, process)
         switch (typeof $trap) {
         case 'boolean':
@@ -160,7 +160,9 @@ module.exports = function (...vargs) {
         for (const signal in trap) {
             switch (trap[signal]) {
             case 'destroy': {
-                const listener = () => _destroyed.call()
+                const listener = () => {
+                    _destroyed(signal)
+                }
                 traps.push({ signal, listener })
                 signals.on(signal, listener)
                 break

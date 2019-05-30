@@ -5,7 +5,4 @@
     -n, --name <string> named argument
   ___ . ___
 */
-require('../..')(module, module.filename, require('cadence')(function (async, destructible, arguable) {
-    destructible.destroy()
-    return [ arguable.lang ]
-}))
+require('../..')(module, module.filename, (arguable) => arguable.lang)
