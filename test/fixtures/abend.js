@@ -1,3 +1,1 @@
-require('../..')(module, require('cadence')(function (async, destructible, arguable) {
-    arguable.abend(1)
-}))
+require('../..')(module, arguable => arguable.abend(1))

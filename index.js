@@ -19,18 +19,14 @@ class Child {
         this.options = options
     }
 
-    destroy () {
-        this._destroyed.call()
+    destroy (...vargs) {
+        this._destroyed.apply(null, vargs)
     }
 }
 
-async function _execute (main, arguable) {
+async function _execute (main, arguable, signals, untrap) {
     try {
-        const promise = main(arguable)
-        if (promise instanceof Promise) {
-            return await promise
-        }
-        return promise
+        return await main(arguable)
     } catch (error) {
         rescue([{
             name: 'message',
@@ -38,45 +34,43 @@ async function _execute (main, arguable) {
         }])(function (rescued) {
             throw rescued.errors[0]
         })(error)
+    } finally {
+        for (const trap of untrap) {
+            signals.removeListener(trap.signal, trap.listener)
+        }
     }
 }
 
 module.exports = function (...vargs) {
     // First argument is always the module.
-    var module = vargs.shift()
+    const module = vargs.shift()
 
     // Usage source can be specified explicitly, or else it is sought in the
     // comments of the main module.
-    var source = typeof vargs[0] == 'string' ? vargs.shift() : module.filename
+    const source = typeof vargs[0] == 'string' ? vargs.shift() : module.filename
 
-    var usage = Usage(source)
+    const usage = Usage(source)
 
     // Optional options that both configure Arguable and provide our dear user
     // with a means to specify production objects for production and mock
     // objects for testing.
-    var definition = typeof vargs[0] == 'object' ? vargs.shift() : {}
+    const definition = typeof vargs[0] == 'object' ? vargs.shift() : {}
 
     // The main method.
-    var main = vargs.shift()
+    const main = vargs.shift()
 
     // TODO How about an optinal method here for command line completion logic?
-    module.exports = function (argv, invocation) {
-        var options = {}
-        for (var option in definition) {
-            options[option] = definition[option]
-        }
-        for (var option in coalesce(invocation, {})) {
-            options[option] = invocation[option]
-        }
+    module.exports = function (argv, invocation = {}) {
+        const options = Object.assign({}, definition, coalesce(invocation, {}))
 
-        var parameters = []
+        const parameters = []
         if (!Array.isArray(argv)) {
             argv = [ argv ]
         }
 
         argv = argv.slice()
         while (argv.length != 0) {
-            var argument = argv.shift()
+            const argument = argv.shift()
             switch (typeof argument) {
             case 'object':
                 // TODO Probably want `Arguable.flatten({ name: 'a', value: 1 // }, ...)`.
@@ -86,8 +80,8 @@ module.exports = function (...vargs) {
                 if (Array.isArray(argument)) {
                     argv.unshift.apply(argv, argument)
                 } else {
-                    var unshift = []
-                    for (var name in argument) {
+                    const unshift = []
+                    for (const name in argument) {
                         unshift.push('--' + name, argument[name].toString())
                     }
                     argv.unshift(unshift)
@@ -99,23 +93,15 @@ module.exports = function (...vargs) {
             }
         }
 
-        var callback = vargs.pop()
-
-        var pipes = {}
+        const pipes = {}
         if (options.$pipes != null) {
-            options.$pipes = {}
-            for (var fd in coalesce(definition.$pipes, {})) {
-                options.$pipes[fd] = definition.$pipes[fd]
-            }
-            for (var fd in coalesce(invocation.$pipes, {})) {
-                options.$pipes[fd] = invocation.$pipes[fd]
-            }
-            for (var fd in coalesce(options.$pipes)) {
+            options.$pipes = Object.assign({}, coalesce(definition.$pipes, {}), coalesce(invocation.$pipes, {}))
+            for (const fd in options.$pipes) {
                 if (options.$pipes[fd] instanceof require('stream').Stream) {
                     pipes[fd] = options.$pipes[fd]
                 } else {
-                    var socket = { fd: +fd }
-                    for (var property in options.$pipes[fd]) {
+                    const socket = { fd: +fd }
+                    for (const property in options.$pipes[fd]) {
                         socket[property] = options.$pipes[fd][property]
                     }
                     pipes[fd] = new require('net').Socket(socket)
@@ -123,19 +109,12 @@ module.exports = function (...vargs) {
             }
         }
 
-        var isMainModule = ('$isMainModule' in options)
+        const isMainModule = ('$isMainModule' in options)
                          ? options.$isMainModule
                          : process.mainModule === module
-        var lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
+        const lang = coalesce(options.$lang, process.env.LANG && process.env.LANG.split('.')[0])
 
-        var destructible, identifier
-        var identifier = ('$destructible' in options)
-                       ? typeof options.$destructible == 'boolean'
-                            ? module.filename : options.$destructible
-                       : module.filename
-
-        var arguable = new Arguable(usage, parameters, {
-            identifier: identifier,
+        const arguable = new Arguable(usage, parameters, {
             isMainModule: isMainModule,
             stdin: coalesce(options.$stdin, process.stdin),
             stdout: coalesce(options.$stdout, process.stdout),
@@ -147,74 +126,54 @@ module.exports = function (...vargs) {
         let _destroyed = null
         arguable.destroyed = new Promise(resolve => _destroyed = resolve)
 
-        var scram = coalesce(options.$scram, 10000)
-        switch (typeof scram) {
-        case 'object':
-            var parameter = Object.keys(scram)[0]
-            scram = {
-                name: parameter,
-                value: +coalesce(arguable.ultimate[parameter], scram[parameter])
-            }
-            break
-        case 'string':
-            scram = {
-                name: options.$scram,
-                value: +coalesce(arguable.ultimate[options.$scram], scram)
-            }
-            break
-        case 'number':
-            scram = { name: null, value: scram }
-            break
-        }
-
-        arguable.scram = scram.value
-
-        var trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
-        var $trap = ('$trap' in options) ? options.$trap : {}
-        var $untrap = ('$untrap' in options)
-                    ? options.$untrap
-                    : isMainModule ? false
-                                   : true
-        var signals = coalesce(options.$signals, process)
+        const trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
+        const $trap = ('$trap' in options) ? options.$trap : {}
+        const $untrap = ('$untrap' in options)
+                      ? options.$untrap
+                      : isMainModule ? false
+                                     : true
+        const signals = coalesce(options.$signals, process)
         switch (typeof $trap) {
         case 'boolean':
             if (!$trap) {
-                trap = {}
+                for (const name in trap) {
+                    delete trap[name]
+                }
             }
             break
         case 'string':
-            for (var signal in trap) {
+            for (const signal in trap) {
                 trap[signal] = $trap
             }
             break
         default:
-            for (var signal in $trap) {
+            for (const signal in $trap) {
                 trap[signal] = $trap[signal]
             }
             break
         }
-        var traps = [], listener
-        for (var signal in trap) {
+        const traps = []
+        for (const signal in trap) {
             switch (trap[signal]) {
-            case 'destroy':
-                traps.push({
-                    signal: signal,
-                    listener: listener = () => _destroyed.call()
-                })
+            case 'destroy': {
+                const listener = () => {
+                    _destroyed(signal)
+                }
+                traps.push({ signal, listener })
                 signals.on(signal, listener)
                 break
-            case 'swallow':
-                traps.push({
-                    signal: signal,
-                    listener: listener = function () {}
-                })
+            }
+            case 'swallow': {
+                const listener = () => {}
+                traps.push({ signal, listener })
                 signals.on(signal, listener)
                 break
+            }
             case 'default':
                 break
             }
         }
-        return new Child(_execute(main, arguable), _destroyed, arguable.options)
+        return new Child(_execute(main, arguable, signals, $untrap ? traps : []), _destroyed, arguable.options)
     }
 
     if (module === process.mainModule) {

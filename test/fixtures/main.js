@@ -1,4 +1,4 @@
-require('../..')(module, require('cadence')(function (async, destructible, arguable) {
-    destructible.destroy()
-    return [ arguable.isMainModule ]
-}))
+require('../..')(module, async arguable => {
+    await arguable.destroyed
+    return arguable.isMainModule
+})
