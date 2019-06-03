@@ -116,19 +116,16 @@ describe('exported', () => {
         assert.equal(await child.promise, 0, 'exit')
         assert.equal(child.options.$pipes[3].read().toString(), 'piped\n', 'psuedo piped')
     })
-    /*
     it('can filter out exceptions that should be converted to formatted errors', async () => {
         const test = []
         const abend = require('./fixtures/abend')
         try {
             await abend([]).promise
         } catch (error) {
-            console.log(error.stack)
             test.push(error.exitCode)
         }
         assert.deepStrictEqual(test, [ 1 ], 'test')
     })
-    */
     it('can accept an array of name/value pairs as arguments', async () => {
         const args = require('./fixtures/arguments')
         assert.equal(await args([{ name: 'value' }], {}).promise, 'value', 'exit')

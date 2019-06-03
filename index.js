@@ -1,16 +1,10 @@
-const Future = require('prospective/future')
-
-const stream = require('stream')
-
 const coalesce = require('extant')
+const rescue = require('rescue')
 
 const Arguable = require('./arguable')
-
 const Usage = require('./usage')
 const _main = require('./main')
 const rethrow = require('./rethrow')
-
-const rescue = require('rescue')
 
 class Child {
     constructor (promise, destroyed, options) {
@@ -28,12 +22,7 @@ async function _execute (main, arguable, signals, untrap) {
     try {
         return await main(arguable)
     } catch (error) {
-        rescue([{
-            name: 'message',
-            when: [ '..', /^bigeasy\.arguable#abend$/m, 'only' ]
-        }])(function (rescued) {
-            throw rescued.errors[0]
-        })(error)
+        rescue(error, [ Arguable.Error ], error => { throw error })
     } finally {
         for (const trap of untrap) {
             signals.removeListener(trap.signal, trap.listener)

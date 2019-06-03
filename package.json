@@ -25,7 +25,7 @@
                             "extant":                       "1.0.x",
                             "interrupt":                    "8.0.x",
                             "prospective":                  "0.0.x",
-                            "rescue":                       "5.0.x",
+                            "rescue":                       "6.0.x",
                             "synonymous":                   "1.0.x"
     },
     "devDependencies":
