@@ -210,7 +210,7 @@ describe('arguable', () => {
         assert.equal(arguable.ultimate.processes, '3', 'successful function validation')
     })
     it('can fail validation via a regex', () => {
-        const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
+        const arguable = new Arguable(Usage(__filename), [ '-p', 1, '-l', 'x' ], {})
         try {
             arguable.validate('%s is not an integer', 'other', 'level', /^\d+$/)
         } catch (error) {
