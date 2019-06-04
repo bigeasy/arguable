@@ -4,7 +4,6 @@ const rescue = require('rescue')
 const Arguable = require('./arguable')
 const Usage = require('./usage')
 const _main = require('./main')
-const rethrow = require('./rethrow')
 
 class Child {
     constructor (promise, destroyed, options) {
@@ -166,6 +165,6 @@ module.exports = function (...vargs) {
     }
 
     if (module === process.mainModule) {
-        _main(process)(module.exports, process.argv.slice(2), rethrow)
+        _main(process)(module.exports, process.argv.slice(2))
     }
 }

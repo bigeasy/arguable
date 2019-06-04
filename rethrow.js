@@ -1,3 +1,1 @@
-module.exports = function (error) {
-    setImmediate(() => { throw error })
-}
+module.exports = function (error) { throw error }
