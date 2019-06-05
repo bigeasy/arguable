@@ -1,28 +1,32 @@
-function Path (path) {
-    this.family = 'unix'
-    this.path = path
+class Path {
+    constructor (path) {
+        this.family = 'unix'
+        this.path = path
+    }
+
+    toString () {
+        return this.path
+    }
+
+    options (connect) {
+        return { path: this.path, ...connect }
+    }
 }
 
-Path.prototype.toString = function () {
-    return this.path
-}
+class Bindable {
+    constructor (host, port) {
+        this.family = 'IPv4'
+        this.host = host
+        this.port = port
+    }
 
-Path.prototype.options = function (connect) {
-    return { path: this.path, ...connect }
-}
+    toString () {
+        return this.host + ':' + this.port
+    }
 
-function Bindable (host, port) {
-    this.family = 'IPv4'
-    this.host = host
-    this.port = port
-}
-
-Bindable.prototype.toString = function () {
-    return this.host + ':' + this.port
-}
-
-Bindable.prototype.options = function (connect) {
-    return { host: this.host, port: this.port, ...connect }
+    options (connect) {
+        return { host: this.host, port: this.port, ...connect }
+    }
 }
 
 function isNumeric (value) {
@@ -34,7 +38,7 @@ function parse (value) {
     if (/^[.\/]/.test(value)) {
         return new Path(value)
     }
-    var bind = value.split(':')
+    const bind = value.split(':')
     if (bind.length == 1) {
         bind.unshift('0.0.0.0')
     }
@@ -42,7 +46,7 @@ function parse (value) {
     if (!isNumeric(bind[1])) {
         return null
     }
-    var parts = bind[0].split('.')
+    const parts = bind[0].split('.')
     if (parts.length != 4) {
         return null
     }
@@ -51,7 +55,6 @@ function parse (value) {
     }).length != 4) {
         return null
     }
-    var bind = value.split(':')
     if (bind.length == 1) {
         bind.unshift('0.0.0.0')
     }
