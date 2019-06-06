@@ -1,5 +1,4 @@
 const events = require('events')
-const util = require('util')
 
 class Messenger extends events.EventEmitter {
     constructor () {
