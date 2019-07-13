@@ -8,9 +8,9 @@ function getopt (patterns, argv) {
         }
     })
 
-    var ordered = []
+    const ordered = []
 
-    var i = 0, terminal = false
+    let i = 0, terminal = false
     for (;;) {
         if (argv[0] == '--') {
             break
@@ -18,13 +18,13 @@ function getopt (patterns, argv) {
         if (argv.length == 0 || !/^--?[^-]/.test(argv[0])) {
             break
         }
-        var arg = argv.shift()
-        var $ = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true]
-        var catenated = !! $[0]
-        var parameter = $[1]
-        var value = $[2]
-        var isLong = parameter[1] == '-'
-        var alternates = patterns.filter(function (pattern) {
+        const arg = argv.shift()
+        const $ = /^(--[^=]+)=(.*)$/.exec(arg) || /^(-[^-])(.+)$/.exec(arg) || [false, arg, true]
+        const catenated = !! $[0]
+        const parameter = $[1]
+        let value = $[2]
+        const isLong = parameter[1] == '-'
+       const alternates = patterns.filter(function (pattern) {
             return pattern.verbose.lastIndexOf(parameter, 0) == 0
                 || pattern.terse.lastIndexOf(parameter, 0) == 0
         })
@@ -35,7 +35,7 @@ function getopt (patterns, argv) {
             }
         }
 
-        var pattern = alternates.shift()
+        const pattern = alternates.shift()
         if (pattern.valuable) {
             if (!catenated) {
                 if (argv.length == 0) {
