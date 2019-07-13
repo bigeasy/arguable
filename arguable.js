@@ -28,7 +28,7 @@ class Arguable {
         this.lang = coalesce(options.lang, this._usage.language)
 
         // Extract argument patterns from usage.
-        var patterns = this._usage.getPattern()
+        const patterns = this._usage.getPattern()
 
         // Extract the arguments that accept values, TODO maybe call `valuable`.
         this.valuable = patterns.filter(function (pattern) {
@@ -83,7 +83,7 @@ class Arguable {
             this.arrayed[name] = []
         }, this)
         this.parameters.forEach(function (parameter) {
-            var group = this.arrayed[parameter.name]
+            let group = this.arrayed[parameter.name]
             if (group == null) {
                 group = this.arrayed[parameter.name] = []
             }
@@ -97,7 +97,7 @@ class Arguable {
 
     // Assert that there is a value present for a required argument.
     required () {
-        for (var i = 0, I = arguments.length; i < I; i++) {
+        for (let i = 0, I = arguments.length; i < I; i++) {
             if (!(arguments[i] in this.ultimate)) {
                 this.abend(arguments[i] + ' is required')
             }
@@ -109,15 +109,13 @@ class Arguable {
     // parameters in the in the parameters array, so valiation is also
     // transmogrifcation of strings into appropriately typed and structured
     // parameters for your program.
-    validate () {
-        var vargs = []
-        vargs.push.apply(vargs, arguments)
-        var validator = null
-        var type = typeof vargs[0]
+    validate (...vargs) {
+        let validator = null
+        const type = typeof vargs[0]
         if (type == 'string' && ~vargs[0].indexOf('%s')) {
-            var format = vargs.shift()
-            var test = vargs.pop()
-            var valid = test instanceof RegExp ? function (value) {
+            const format = vargs.shift()
+            const test = vargs.pop()
+            const valid = test instanceof RegExp ? function (value) {
                 return test.test(value)
             } : test
             // The validator will throw a format to use to format the error message.
@@ -132,12 +130,12 @@ class Arguable {
         } else {
             validator = vargs.pop()
         }
-        var parameters = this.parameters.map(function (parameter) {
+        const parameters = this.parameters.map(function (parameter) {
             try {
                 if (!~vargs.indexOf(parameter.name)) {
                     return parameter
                 }
-                var value = validator(parameter.value, parameter.name, this)
+                const value = validator(parameter.value, parameter.name, this)
                 if (value !== (void(0))) {
                     parameter.value = value
                 }
@@ -153,23 +151,18 @@ class Arguable {
     }
 
     // Format a message using the string tables provided in the usage message.
-    format (key) {
-        var vargs = []
-        vargs.push.apply(vargs, arguments)
-        var key = vargs.shift()
+    format (key, ...vargs) {
         return this._usage.format(this.lang, key, vargs)
     }
 
     // abend helper stops execution and prints a message
-    abend () {
-        var vargs = []
-        vargs.push.apply(vargs, arguments)
-        var key = vargs.shift(), exitCode = 1
+    abend (key, ...vargs) {
+        let exitCode = 1
         if (typeof key == 'number') {
             exitCode = key
             key = vargs.shift()
         }
-        var message
+        let message
         if (key) {
             message = this._usage.format(this.lang, key, vargs)
         }
@@ -196,7 +189,7 @@ class Arguable {
     // arguments.
     assert (condition) {
         if (!condition) {
-            var vargs = []
+            const vargs = []
             vargs.push.apply(vargs, arguments)
             this.abend.apply(this, vargs.slice(1))
         }
@@ -216,7 +209,7 @@ class Arguable {
 
     //
     delegate (require, format, command) {
-        var pkg = util.format(format, command)
+        const pkg = util.format(format, command)
         try {
             return require(pkg)
         } catch (error) {
