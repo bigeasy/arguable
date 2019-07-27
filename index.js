@@ -111,6 +111,9 @@ module.exports = function (...vargs) {
             pipes: pipes,
             lang: lang
         })
+        // TODO Strongly considering using both `EventEmitter` and `Promise` if
+        // you find yourself doing `.promise.then()` often. If find it
+        // aesthetically unpleasing in code.
         let _destroyed = null
         arguable.destroyed = new Promise(resolve => _destroyed = resolve)
 
