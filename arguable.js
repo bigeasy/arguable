@@ -220,9 +220,9 @@ class Arguable {
             }
         }
     }
-
-    static Error = Interrupt.create('Arguable.Error')
 }
+
+Arguable.Error = Interrupt.create('Arguable.Error')
 
 // Export `Arugable`.
 module.exports = Arguable
