@@ -24,7 +24,7 @@
                             "destructible":                 "4.0.x",
                             "extant":                       "1.0.x",
                             "interrupt":                    "8.0.x",
-                            "prospective":                  "0.0.x",
+                            "prospective":                  "^0.1.0-alpha.1",
                             "rescue":                       "6.0.x",
                             "synonymous":                   "1.0.x"
     },
