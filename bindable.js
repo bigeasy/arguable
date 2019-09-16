@@ -55,9 +55,6 @@ function parse (value) {
     }).length != 4) {
         return null
     }
-    if (bind.length == 1) {
-        bind.unshift('0.0.0.0')
-    }
     return new Bindable(bind[0], +bind[1])
 }
 
