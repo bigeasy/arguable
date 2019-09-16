@@ -1,9 +1,18 @@
-[![Stories in Ready](https://badge.waffle.io/bigeasy/arguable.png?label=ready&title=Ready)](https://waffle.io/bigeasy/arguable) [![Build Status](https://travis-ci.org/bigeasy/arguable.svg?branch=master)](https://travis-ci.org/bigeasy/arguable) [![Coverage Status](https://coveralls.io/repos/bigeasy/arguable/badge.svg?branch=master&service=github)](https://coveralls.io/github/bigeasy/arguable?branch=master)
+[![Actions Status](https://github.com/bigeasy/arguable/workflows/Node%20CI/badge.svg)](https://github.com/bigeasy/ascension/actions)
+[![codecov](https://codecov.io/gh/bigeasy/arguable/branch/master/graph/badge.svg)](https://codecov.io/gh/bigeasy/arguable)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Usage first argument parser for Node.js.
 
- * [Documentation](https://bigeasy.github.io/arguable).
- * [Discussion and Questions](https://github.com/bigeasy/isochronous/issues/1).
- * [Issues](https://github.com/bigeasy/isochronous/issues).
- * Installation: `npm install arguable`.
- * License: MIT.
+| What          | Where                                         |
+| --- | --- |
+| Discussion    | https://github.com/bigeasy/arguable/issues/1  |
+| Documentation | https://bigeasy.github.io/arguable            |
+| Source        | https://github.com/bigeasy/arguable           |
+| Issues        | https://github.com/bigeasy/arguable/issues    |
+| CI            | https://travis-ci.org/bigeasy/arguable        |
+| Coverage:     | https://codecov.io/gh/bigeasy/arguable        |
+
+```
+npm install arguable
+```
