@@ -23,7 +23,7 @@
     {
                             "destructible":                 "^5.0.0-alpha.0",
                             "extant":                       "1.0.x",
-                            "interrupt":                    "8.0.x",
+                            "interrupt":                    "9.0.0-alpha.0",
                             "prospective":                  "^0.1.0-alpha.1",
                             "rescue":                       "6.0.x",
                             "synonymous":                   "1.0.x"
