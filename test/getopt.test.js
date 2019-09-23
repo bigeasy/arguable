@@ -3,6 +3,7 @@ describe('getopt', () => {
     const pattern = [
         { terse: 'a', verbose: 'ambiguous' },
         { terse: 'A', verbose: 'arbitrary' },
+        { terse: 't', verbose: 'toggle' },
         { terse: 'N', verbose: 'name', valuable: true },
         { terse: 'p', verbose: 'processes', valuable: true },
         { terse: 'c', verbose: 'config', valuable: true },
@@ -29,14 +30,29 @@ describe('getopt', () => {
         const params = getopt(pattern, [ '--name=steve'])
         assert.deepStrictEqual(params, [{ name: 'name', value: 'steve' }], 'verbose assigned string')
     })
+    it('can parse booleans', () => {
+        const params = getopt(pattern, [ '--t' ])
+        assert.deepStrictEqual(params, [{ name: 'toggle', value: true }], 'booleans')
+    })
+    it('can negate booleans', () => {
+        const params = getopt(pattern, [ '--no-t' ])
+        assert.deepStrictEqual(params, [{ name: 'toggle', value: false }], 'negations')
+    })
+    it('can negate booleans', () => {
+        const params = getopt(pattern, [ '--no-t' ])
+        assert.deepStrictEqual(params, [{ name: 'toggle', value: false }], 'negations')
+    })
     // Put ambiguous here...
     it('can parse catenated short opt without argument', () => {
-        const params = getopt(pattern, [ '-aA' ])
-        assert.deepStrictEqual(params, [{
-            name: 'ambiguous', value: true
-        }, {
-            name: 'arbitrary', value: true
-        }], 'catenated short opt without argument')
+        try {
+            getopt(pattern, [ '--no-name' ])
+            assert(false, 'did not raise an exception')
+        } catch (error) {
+            assert.deepStrictEqual(error, {
+                abend: 'argument not negatable',
+                context: '--no-name'
+            }, 'error')
+        }
     })
     it('can create an array of matches', () => {
         const params = getopt(pattern, [ '-c', 'one=1', '--config=two=2', '--config', 'three=3' ])

@@ -90,9 +90,18 @@ class Arguable {
             group.push(parameter.value)
         }, this)
         this.ultimate = {}
-        this.given.forEach(function (key) {
-            this.ultimate[key] = this.arrayed[key][this.arrayed[key].length - 1]
-        }, this)
+        this.given.forEach((key) => {
+            if (~this.valuable.indexOf(key)) {
+                this.ultimate[key] = this.arrayed[key][this.arrayed[key].length - 1]
+            } else {
+                this.ultimate[key] = this.arrayed[key].reduce((toggle, value) => {
+                    if (!value) {
+                        return value
+                    }
+                    return ! toggle
+                }, false)
+            }
+        })
     }
 
     // Assert that there is a value present for a required argument.

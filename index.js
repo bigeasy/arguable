@@ -71,7 +71,15 @@ module.exports = function (...vargs) {
                 } else {
                     const unshift = []
                     for (const name in argument) {
-                        unshift.push('--' + name, argument[name].toString())
+                        if (typeof argument[name] == 'boolean') {
+                            if (argument[name]) {
+                                unshift.push('--' + name)
+                            } else {
+                                unshift.push('--no-' + name)
+                            }
+                        } else {
+                            unshift.push('--' + name, argument[name].toString())
+                        }
                     }
                     argv.unshift(unshift)
                 }

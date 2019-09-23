@@ -129,6 +129,30 @@ describe('exported', () => {
     })
     it('can accept an array of name/value pairs as arguments', async () => {
         const args = require('./fixtures/arguments')
-        assert.equal(await args([{ name: 'value' }], {}).promise, 'value', 'exit')
+        assert.deepStrictEqual(await args([{ name: 'value' }], {}).promise, { name: 'value' }, 'exit')
+    })
+    it('can accept short toggle arguments', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args([ '-t' ], {}).promise, { toggle: true }, 'exit')
+    })
+    it('can tally short toggle arguments', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args([ '-t', '-t' ], {}).promise, { toggle: false }, 'exit')
+    })
+    it('can negate long toggle arguments', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args([ '--no-toggle' ], {}).promise, { toggle: false }, 'exit')
+    })
+    it('can negate long toggle arguments then tally', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args([ '-t', '--no-toggle', '-t' ], {}).promise, { toggle: true }, 'exit')
+    })
+    it('can accept toggle arguments from an argument object', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args({ toggle: true }, {}).promise, { toggle: true }, 'exit')
+    })
+    it('can accept false toggle arguments from an argument object', async () => {
+        const args = require('./fixtures/arguments')
+        assert.deepStrictEqual(await args({ toggle: false }, {}).promise, { toggle: false }, 'exit')
     })
 })

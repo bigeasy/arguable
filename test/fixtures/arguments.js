@@ -3,6 +3,7 @@
   usage: executable <args>
 
     -n, --name <string> named argument
+    -t, --toggle boolean argument
   ___ . ___
 */
-require('../..')(module, arguable => arguable.ultimate.name)
+require('../..')(module, arguable => arguable.ultimate)
