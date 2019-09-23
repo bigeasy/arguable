@@ -24,10 +24,14 @@ function getopt (patterns, argv) {
         const parameter = $[1]
         let value = $[2]
         const isLong = parameter[1] == '-'
-       const alternates = patterns.filter(function (pattern) {
-            return pattern.verbose.lastIndexOf(parameter, 0) == 0
+        const negated = /^--no-(.*)$/.exec(parameter)
+        const negation = negated == null ? '\u0000' : `--${negated[1]}`
+        const alternates = patterns.filter(function (pattern) {
+            return pattern.verbose.lastIndexOf(negation, 0) == 0
+                || pattern.verbose.lastIndexOf(parameter, 0) == 0
                 || pattern.terse.lastIndexOf(parameter, 0) == 0
         })
+
         if (alternates.length != 1) {
             throw {
                 abend: alternates.length ? 'ambiguous argument' : 'unknown argument',
@@ -36,6 +40,17 @@ function getopt (patterns, argv) {
         }
 
         const pattern = alternates.shift()
+
+        if (negated != null) {
+            if (pattern.valuable) {
+                throw {
+                    abend: 'argument not negatable',
+                    context: parameter
+                }
+            }
+            value = false
+        }
+
         if (pattern.valuable) {
             if (!catenated) {
                 if (argv.length == 0) {
