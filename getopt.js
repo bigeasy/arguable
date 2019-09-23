@@ -78,7 +78,6 @@ function getopt (patterns, argv) {
         i++
     }
 
-// TODO Implement `--no-foo`.
 // https://github.com/trentm/node-dashdash/pull/13
 // http://stackoverflow.com/questions/9234258/in-python-argparse-is-it-possible-to-have-paired-no-something-something-arg/9236426#9236426
 // http://stackoverflow.com/questions/9234258/in-python-argparse-is-it-possible-to-have-paired-no-something-something-arg
