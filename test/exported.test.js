@@ -69,6 +69,7 @@ describe('exported', () => {
         const signaled = require('./fixtures/signaled')
         const child = signaled([], { $signals: new events.EventEmitter, $trap: true })
         child.options.$signals.emit('SIGINT')
+        // **TODO** I can never remember how destroy works, why `0`?
         child.destroy(0)
         assert.equal(await child.promise, 'SIGINT', 'SIGINT destroyed')
     })
