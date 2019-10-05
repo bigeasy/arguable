@@ -1,16 +1,10 @@
-describe('numeric', () => {
-    const assert = require('assert')
+require('proof')(2, (okay) => {
     const numeric = require('../numeric')
-    it('can validate a number', () => {
-        assert.equal(numeric('3'), 3, 'is numeric')
-    })
-    it('can reject a number', () => {
-        try {
-            numeric('x')
-        } catch (error) {
-            assert.equal(error, '%s is not numeric', 'is not numeric')
-            return
-        }
+    okay(numeric('3'), 3, 'is numeric')
+    try {
+        numeric('x')
         throw new Error
-    })
+    } catch (error) {
+        okay(error, '%s is not numeric', 'is not numeric')
+    }
 })

@@ -11,8 +11,7 @@
 
   ___ . ___
 */
-describe('usage', () => {
-    const assert = require('assert')
+require('proof')(7, (okay) => {
     const fs = require('fs').promises
     const path = require('path')
     const Usage = require('../usage')
@@ -20,13 +19,13 @@ describe('usage', () => {
               '  -c, --config <key=value>\n' +
               '      --longonly\n' +
               ''
-    it('can extract usage from a file', () => {
+    {
         const usage = Usage(__filename, 'en_US', [])
-        assert.equal(usage.chooseUsage('en_US'), message, 'usage')
-    })
-    it('can get option patterns a file', () => {
+        okay(usage.chooseUsage('en_US'), message, 'usage from file')
+    }
+    {
         const usage = Usage(__filename, 'en_US', [])
-        assert.deepStrictEqual(usage.getPattern(), [
+        okay(usage.getPattern(), [
         {
             terse: 'c',
             verbose: 'config',
@@ -35,26 +34,26 @@ describe('usage', () => {
             terse: null,
             verbose: 'longonly',
             valuable: false
-        }], 'patterns')
-    })
-    it('can fall back to the default usage when a language is missing', () => {
+        }], 'patterns from file')
+    }
+    {
         const usage = Usage(__filename, 'en_US', [])
-        assert.equal(usage.chooseUsage('en_GB'), message, 'usage')
-    })
-    it('can parse a file strings but with no usage', () => {
+        okay(usage.chooseUsage('en_GB'), message, 'fall back to default language')
+    }
+    {
         const usage = Usage(path.join(__dirname, 'usageless.js'), 'en_US', [])
-        assert.equal(usage.chooseUsage('en_GB'), '', 'no usage')
-    })
-    it('can format strings', () => {
+        okay(usage.chooseUsage('en_GB'), '', 'parse a file wtih strings but no usage')
+    }
+    {
         const usage = Usage(path.join(__filename), 'en_GB', [])
-        assert.equal(usage.format('en_GB', 'string', []), 'value', 'format')
-    })
-    it('can parse a file with no definition at all', () => {
+        okay(usage.format('en_GB', 'string', []), 'value', 'format strings')
+    }
+    {
         const usage = Usage(path.join(__dirname, 'definitionless.js'), 'en_US', [])
-        assert.equal(usage.chooseUsage('en_GB'), '', 'no usage')
-    })
-    it('can deal with missing formats', () => {
+        okay(usage.chooseUsage('en_GB'), '', 'no usage at all')
+    }
+    {
         const usage = Usage(path.join(__dirname, 'definitionless.js'), 'en_US', [])
-        assert.equal(usage.format('en_US', 'string', []), 'string', 'missing format')
-    })
+        okay(usage.format('en_US', 'string', []), 'string', 'missing format')
+    }
 })

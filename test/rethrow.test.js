@@ -1,11 +1,9 @@
-describe('rethrow', () => {
-    const assert = require('assert')
+require('proof')(1, (okay) => {
     const rethrow = require('../rethrow')
-    it('can throw', () => {
-        try {
-            rethrow(new Error('thrown'))
-        } catch (error) {
-            assert.equal(error.message, 'thrown', 'thrown')
-        }
-    })
+    try {
+        rethrow(new Error('thrown'))
+        throw new Error
+    } catch (error) {
+        okay(error.message, 'thrown', 'thrown')
+    }
 })

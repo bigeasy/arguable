@@ -171,7 +171,7 @@ class Arguable {
             exitCode = key
             key = vargs.shift()
         }
-        let message
+        let message = null
         if (key) {
             message = this._usage.format(this.lang, key, vargs)
         }

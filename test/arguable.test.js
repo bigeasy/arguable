@@ -12,8 +12,7 @@
     unordered: First %s then %s.
     ___ . ___
 */
-describe('arguable', () => {
-    const assert = require('assert')
+require('proof')(35, (okay) => {
     const stream = require('stream')
     const events = require('events')
     const path = require('path')
@@ -26,228 +25,299 @@ describe('arguable', () => {
                   ''
     const Usage = require('../usage')
     const Arguable = require('../arguable')
-    it('can survive a usage with no terminator', () => {
+    {
         const source = path.join(__dirname, 'endless.js')
         const arguable = new Arguable(Usage(source), [], {})
-        assert.deepStrictEqual(arguable.valuable, [], 'missing')
-    })
-    it('can override the default source language', () => {
+        okay(arguable.valuable, [], 'usage with no terminator')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], { lang: 'fr_FR' })
-        assert.equal(arguable.lang, 'fr_FR', 'override language')
-    })
-    it('can detect and report a named argument terminator', () => {
+        okay(arguable.lang, 'fr_FR', 'override default source language')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '--' ], {})
-        assert(arguable.terminator, 'terminator')
-    })
-    it('can parse an argument that is long name only', () => {
+        okay(arguable.terminator, 'detect and report a named argument terminator')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '--longonly' ], {})
-        assert.deepStrictEqual(arguable.given, [ 'longonly' ], 'given')
-        assert(arguable.ultimate.longonly, 'longonly')
-        assert.deepStrictEqual(arguable.arrayed.longonly, [ true ], 'longonly arrayed')
-    })
-    it('can parse a short argument with values', () => {
+        okay({
+            given: arguable.given,
+            ultimate: arguable.ultimate.longonly,
+            arrayed: arguable.arrayed.longonly
+        }, {
+            given: [ 'longonly' ],
+            ultimate: true,
+            arrayed: [ true ]
+        }, 'parse an argument that is long name only')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-cone=1', '-c', 'two=2' ], {})
-        assert.deepStrictEqual(arguable.given, [ 'config' ], 'given')
-        assert.deepStrictEqual(arguable.arrayed, {
-            config: [ 'one=1', 'two=2' ],
-            bind: [],
-            level: [],
-            processes: []
-        }, 'config arrayed')
-        assert.deepStrictEqual(arguable.ultimate, { config: 'two=2' }, 'config ultimate')
-        assert(!arguable.terminator, 'no terminator')
-    })
-    it('can raise a formatted error exit message', () => {
+        okay(arguable.given, [ 'config' ], 'given')
+        okay({
+            terminator: arguable.terminator,
+            ultimate: arguable.ultimate.config,
+            arrayed: arguable.arrayed,
+        }, {
+            terminator: false,
+            ultimate: 'two=2',
+            arrayed: {
+                config: [ 'one=1', 'two=2' ],
+                bind: [],
+                level: [],
+                processes: []
+            }
+        }, 'short argument with values')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.abend('badness')
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
-            assert.equal(error.method, 'abend', 'is abend')
-            assert.equal(error.stderr, 'A bad thing happened.', 'error')
-            assert.equal(error.exitCode, 1, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: 'A bad thing happened.',
+                exitCode: 1
+            }, 'raise a formatted error exit message')
         }
-        throw new Error
-    })
-    it('can raise a messageless error exit message', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.abend()
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
-            assert.equal(error.method, 'abend', 'is abend')
-            assert(error.stderr == null, 'messageless error')
-            assert.equal(error.exitCode, 1, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: null,
+                exitCode: 1
+            }, 'raise a messageless error exit message')
         }
-        throw new Error
-    })
-    it('can raise a formatted error exit message with exit code', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.abend(127, 'badness')
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
-            assert.equal(error.method, 'abend', 'is abend')
-            assert.equal(error.stderr, 'A bad thing happened.', 'error')
-            assert.equal(error.exitCode, 127, 'exit code')
-            return
+            okay(error instanceof Arguable.Error, 'is arguable error')
+            okay(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
+            okay(error.method, 'abend', 'is abend')
+            okay(error.stderr, 'A bad thing happened.', 'error')
+            okay(error.exitCode, 127, 'exit code')
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: 'A bad thing happened.',
+                exitCode: 127
+            }, 'raise a formatted error exit message with exit code')
         }
-        throw new Error
-    })
-    it('can raise an error exit from an assertion', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         arguable.assert(true, 'badness')
         try {
             arguable.assert(false, 'badness')
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'is abend')
-            assert.equal(error.stderr, 'A bad thing happened.', 'error')
-            assert.equal(error.exitCode, 1, 'exit code')
-            return
+            okay(error instanceof Arguable.Error, 'is arguable error')
+            okay(/^(.*)\n/.exec(error.message)[1], 'abend', 'is abend')
+            okay(error.stderr, 'A bad thing happened.', 'error')
+            okay(error.exitCode, 1, 'exit code')
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: 'A bad thing happened.',
+                exitCode: 1
+            }, 'raise an error exit from an assertion')
         }
-        throw new Error
-    })
-    it('can raise an error exit with a missing error message', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.abend('nogoodness')
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
-            assert.equal(error.method, 'abend', 'is abend')
-            assert.equal(error.stderr, 'nogoodness', 'error')
-            assert.equal(error.exitCode, 1, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: 'nogoodness',
+                exitCode: 1
+            }, 'raise an error exit with a missing error message')
         }
-        throw new Error
-    })
-    it('can raise an unknown argument error exit', () => {
+    }
+    {
         try {
             new Arguable(Usage(__filename), [ '-x' ], {})
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
-            assert.equal(error.method, 'abend', 'is abend')
-            assert.equal(error.stderr, 'unknown argument', 'error')
-            assert.equal(error.exitCode, 1, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stderr: error.stderr,
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'abend',
+                stderr: 'unknown argument',
+                exitCode: 1
+            }, 'raise an unknown argument error exit')
         }
-        throw new Error
-    })
-    it('can raise a help exit', () => {
-        const arguable = new Arguable(Usage(__filename), [], {})
+    }
+    {
         try {
-            arguable.help()
+            new Arguable(Usage(__filename), [], {}).help()
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'is abend')
-            assert.equal(error.method, 'help', 'is help')
-            assert.equal(error.stdout + '\n', usage, 'help')
-            assert.equal(error.exitCode, 0, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stdout: error.stdout + '\n',
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'help',
+                stdout: usage,
+                exitCode: 0
+            }, 'raise help exit')
         }
-        throw new Error
-    })
-    it('can raise a help if exit', () => {
-        const arguable = new Arguable(Usage(__filename), [], {})
+    }
+    {
+        const argauble = new Arguable(Usage(__filename), [], {})
         try {
-            arguable.helpIf(true)
+            argauble.helpIf(false)
+            argauble.helpIf(true)
+            throw new Error
         } catch (error) {
-            assert(error instanceof Arguable.Error, 'is arguable error')
-            assert.equal(/^(.*)\n/.exec(error.message)[1], 'abend', 'is abend')
-            assert.equal(error.method, 'help', 'is help')
-            assert.equal(error.stdout + '\n', usage, 'help')
-            assert.equal(error.exitCode, 0, 'exit code')
-            return
+            okay({
+                isArguableError: error instanceof Arguable.Error,
+                message: /^(.*)\n/.exec(error.message)[1],
+                method: error.method,
+                stdout: error.stdout + '\n',
+                exitCode: error.exitCode
+            }, {
+                isArguableError: true,
+                message: 'abend',
+                method: 'help',
+                stdout: usage,
+                exitCode: 0
+            }, 'raise help if exit')
         }
-        throw new Error
-    })
-    it('will not raise a help if exit', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
-        arguable.helpIf(false)
-    })
-    it('can load a delegate module', () => {
-        const arguable = new Arguable(Usage(__filename), [], {})
-        assert(arguable.delegate(require, './fixtures/%s', 'delegate') != null, 'got delegate')
-    })
-    it('can report a missing delegate module', () => {
+        okay(arguable.delegate(require, './fixtures/%s', 'delegate') != null, 'load delegate')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.delegate(require, './fixtures/%s', 'missing')
+            throw new Error
         } catch (error) {
-            assert.equal(error.stderr, 'sub command module not found', 'delegated not found')
-            return
+            okay(error.stderr, 'sub command module not found', 'report missing delegate')
         }
-        throw new Error
-    })
-    it('will propagate delegate module errors', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [], {})
         try {
             arguable.delegate(require, './fixtures/%s', 'broken')
+            throw new Error
         } catch (error) {
-            assert.equal(error.message, 'broken', 'delegate broken')
+            okay(error.message, 'broken', 'propagate delegate module errors')
         }
-    })
-    it('can validate a required argument', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 1 ], {})
         try {
             arguable.required('level', 'processes')
+            throw new Error
         } catch (error) {
-            assert.equal(error.stderr, 'processes is required', 'required')
-            return
+            okay(error.stderr, 'processes is required', 'validate a required argument')
         }
-        throw new Error
-    })
-    it('can validate via a regex', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-p', 3 ], {})
         arguable.validate('%s is not an integer', 'processes', /^\d+$/)
-        assert.equal(arguable.ultimate.processes, '3', 'successful function validation')
-    })
-    it('can fail validation via a regex', () => {
+        okay(arguable.ultimate.processes, 3, 'validate via regex')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-p', 1, '-l', 'x' ], {})
         try {
             arguable.validate('%s is not an integer', 'other', 'level', /^\d+$/)
+            throw new Error
         } catch (error) {
-            assert.equal(error.stderr, 'level is not an integer', 'unsuccessful regex validation')
-            return
+            okay(error.stderr, 'level is not an integer', 'unsuccessful regex validation')
         }
-        throw new Error
-    })
-    it('can validate via a function', () => {
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
         arguable.validate('%s is not copacetic', 'level', (value) => 'x' == value)
-        assert.equal(arguable.ultimate.level, 'x', 'successful function validation')
-    })
-    it('can validate with a validator as the first argument', () => {
+        okay(arguable.ultimate.level, 'x', 'successful function validation')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
         arguable.validate(() => 'y', 'level')
-        assert.equal(arguable.ultimate.level, 'y', 'validator as first argument')
-    })
-    it('can validate with a validator as the last argument', () => {
+        okay(arguable.ultimate.level, 'y', 'validator as first argument')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
         arguable.validate('level', () => 'y')
-        assert.equal(arguable.ultimate.level, 'y', 'validator as last argument')
-    })
-    it('can propagate an exception thrown by a validator', () => {
+        okay(arguable.ultimate.level, 'y', 'validator as last argument')
+    }
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
         try {
             arguable.validate('level', () => { throw new Error('thrown') })
+            throw new Error
         } catch (error) {
-            assert.equal(error.message, 'thrown', 'rethrow actual error')
-            return
+            okay(error.message, 'thrown', 'rethrow error thrown by validator')
         }
-        throw new Error
-    })
+    }
     // TODO Just use `sprintf`.
-    it('can reorder arguments in a format', () => {
+    {
         const arguable = new Arguable(Usage(__filename), [ '-l', 'x' ], {})
-        assert.equal(arguable.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
-        assert.equal(arguable.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
-    })
+        okay(arguable.format('ordered', 'this', 'that'), 'First that then this.', 'ordered format')
+        okay(arguable.format('unordered', 'this', 'that'), 'First this then that.', 'unordered format')
+    }
 })

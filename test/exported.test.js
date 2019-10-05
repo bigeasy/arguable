@@ -1,6 +1,5 @@
-describe('exported', () => {
-    const assert = require('assert')
-    it('can propagate an error', async () => {
+require('proof')(25, async (okay) => {
+    {
         const test = []
         const errored = require('./fixtures/errored')
         const child = errored([])
@@ -9,24 +8,29 @@ describe('exported', () => {
         } catch (error) {
             test.push(error.message)
         }
-        assert.deepStrictEqual(test, [ 'panic' ], 'caught')
-    })
-    it('can mock standard I/O streams', async () => {
+        okay(test, [ 'panic' ], 'progagate error')
+    }
+    {
         const stream = require('stream')
         const echo = require('./fixtures/echo')
         const child = echo([ 'a', 'b' ], { $stdout: new stream.PassThrough })
-        assert.equal(await child.promise, 0, 'exit')
-        assert.equal(child.options.$stdout.read().toString(), 'a b\n', 'stdout')
-    })
-    it('can mock ipc', async () => {
+        okay({
+            exitCode: await child.promise,
+            stdout: child.options.$stdout.read().toString()
+        }, {
+            exitCode: 0,
+            stdout: 'a b\n'
+        }, 'mock standard I/O streams')
+    }
+    {
         const Messenger = require('../messenger')
         const messaged = require('./fixtures/messaged')
         const child = messaged({}, { messenger: new Messenger })
         child.options.messenger.emit('message', { method: 'ignore' })
         child.options.messenger.emit('message', { method: 'shutdown' })
-        assert.equal(await child.promise, 0, 'exit')
-    })
-    it('can choose a language based on environment', async () => {
+        okay(await child.promise, 0, 'mock ipc')
+    }
+    {
         const LANG = process.env.LANG
         process.env.LANG = 'fr_FR'
         const language = require('./fixtures/language')
@@ -36,69 +40,69 @@ describe('exported', () => {
         } else {
             delete process.env.LANG
         }
-        assert.equal(await child.promise, 'fr_FR', 'language from environment')
-    })
-    it('can set a default option', async () => {
+        okay(await child.promise, 'fr_FR', 'language from environment')
+    }
+    {
         const optional = require('./fixtures/optional')
         const child = optional([])
-        assert.equal(await child.promise, process.pid, 'default property return')
-    })
-    it('can override a default option', async () => {
+        okay(await child.promise, process.pid, 'default property return')
+    }
+    {
         const optional = require('./fixtures/optional')
         const child = optional([], { pid: 2 })
-        assert.equal(await child.promise, 2, 'override property return')
-    })
-    it('can specify how to respond to the default signals', async () => {
+        okay(await child.promise, 2, 'override property return')
+    }
+    {
         const events = require('events')
         const signaled = require('./fixtures/signaled')
         const child = signaled([], { $signals: new events.EventEmitter })
         child.options.$signals.emit('SIGHUP') // Should do nothing.
         child.options.$signals.emit('SIGTERM')
-        assert.equal(await child.promise, 'SIGTERM', 'signal destroyed')
-    })
-    it('can override all defined signal handlers to no signal handler', async () => {
+        okay(await child.promise, 'SIGTERM', 'specify signal handling')
+    }
+    {
         const events = require('events')
         const signaled = require('./fixtures/signaled')
         const child = signaled([], { $signals: new events.EventEmitter, $trap: false })
         child.options.$signals.emit('SIGINT')
         child.destroy(0)
-        assert.equal(await child.promise, 0, 'child interface destroyed')
-    })
-    it('can respect the inverse of the trap off-switch', async () => {
+        okay(await child.promise, 0, 'override all defined signal handlers to no signal handler')
+    }
+    {
         const events = require('events')
         const signaled = require('./fixtures/signaled')
         const child = signaled([], { $signals: new events.EventEmitter, $trap: true })
         child.options.$signals.emit('SIGINT')
         // **TODO** I can never remember how destroy works, why `0`?
         child.destroy(0)
-        assert.equal(await child.promise, 'SIGINT', 'SIGINT destroyed')
-    })
-    it('can set all traps to the same action', async () => {
+        okay(await child.promise, 'SIGINT', 'inverse of the trap off-switch')
+    }
+    {
         const events = require('events')
         const signaled = require('./fixtures/signaled')
         const child = signaled([], { $signals: new events.EventEmitter, $trap: 'swallow' })
         child.options.$signals.emit('SIGINT')
         child.destroy(0)
-        assert.equal(await child.promise, 0, 'child interface destroyed')
-    })
-    it('can fake being a main module', async () => {
+        okay(await child.promise, 0, 'all traps set to same action')
+    }
+    {
         // Also tests untrap as false.
         const events = require('events')
         const signaled = require('./fixtures/main')
         const child = signaled([], { $signals: new events.EventEmitter, $isMainModule: true })
         child.destroy(0)
-        assert(await child.promise, 'is main module')
-        assert.equal(child.options.$signals.listenerCount('SIGINT'), 1, 'main module still trapped')
-    })
-    it('can fake being a main module without setting traps', async () => {
+        okay(await child.promise, 'is main module')
+        okay(child.options.$signals.listenerCount('SIGINT'), 1, 'fake main module')
+    }
+    {
         const events = require('events')
         const signaled = require('./fixtures/main')
         const child = signaled([], { $signals: new events.EventEmitter, $isMainModule: true, $untrap: true })
         child.destroy(0)
-        assert(await child.promise, 'is main module')
-        assert.equal(child.options.$signals.listenerCount('SIGINT'), 0, 'main module still trapped')
-    })
-    it('can create streams for parent/child pipes', async () => {
+        okay(await child.promise, 'is main module')
+        okay(child.options.$signals.listenerCount('SIGINT'), 0, 'fake main module wihtout setting traps')
+    }
+    {
         const test = [], data = []
         const path = require('path')
         const children = require('child_process')
@@ -108,16 +112,16 @@ describe('exported', () => {
         child.stdio[3].on('data', buffer => data.push(buffer))
         child.stdio[3].on('end', () => test.push(Buffer.concat(data).toString()))
         await new Promise(resolve => child.stdio[3].once('end', resolve))
-        assert.deepStrictEqual(test, [ 'piped\n' ], 'child pipe')
-    })
-    it('can mock parent/child pipes', async () => {
+        okay(test, [ 'piped\n' ], 'create streams for parent/child pipes')
+    }
+    {
         const stream = require('stream')
         const piped = require('./fixtures/piped')
         const child = piped([], { $pipes: { 3: new stream.PassThrough }, $isMainModule: true })
-        assert.equal(await child.promise, 0, 'exit')
-        assert.equal(child.options.$pipes[3].read().toString(), 'piped\n', 'psuedo piped')
-    })
-    it('can filter out exceptions that should be converted to formatted errors', async () => {
+        okay(await child.promise, 0, 'exit')
+        okay(child.options.$pipes[3].read().toString(), 'piped\n', 'mock parent child pipes')
+    }
+    {
         const test = []
         const abend = require('./fixtures/abend')
         try {
@@ -125,34 +129,34 @@ describe('exported', () => {
         } catch (error) {
             test.push(error.exitCode)
         }
-        assert.deepStrictEqual(test, [ 1 ], 'test')
-    })
-    it('can accept an array of name/value pairs as arguments', async () => {
+        okay(test, [ 1 ], 'propagate exceptions that should be converted to formatted errors')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args([{ name: 'value' }], {}).promise, { name: 'value' }, 'exit')
-    })
-    it('can accept short toggle arguments', async () => {
+        okay(await args([{ name: 'value' }], {}).promise, { name: 'value' }, 'accept array of name/value pairs as arguments')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args([ '-t' ], {}).promise, { toggle: true }, 'exit')
-    })
-    it('can tally short toggle arguments', async () => {
+        okay(await args([ '-t' ], {}).promise, { toggle: true }, 'short toggle arguments')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args([ '-t', '-t' ], {}).promise, { toggle: false }, 'exit')
-    })
-    it('can negate long toggle arguments', async () => {
+        okay(await args([ '-t', '-t' ], {}).promise, { toggle: false }, 'tally short toggle arguments')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args([ '--no-toggle' ], {}).promise, { toggle: false }, 'exit')
-    })
-    it('can negate long toggle arguments then tally', async () => {
+        okay(await args([ '--no-toggle' ], {}).promise, { toggle: false }, 'negate long toggle arguments')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args([ '-t', '--no-toggle', '-t' ], {}).promise, { toggle: true }, 'exit')
-    })
-    it('can accept toggle arguments from an argument object', async () => {
+        okay(await args([ '-t', '--no-toggle', '-t' ], {}).promise, { toggle: true }, 'negate long toggle arguments then tally')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args({ toggle: true }, {}).promise, { toggle: true }, 'exit')
-    })
-    it('can accept false toggle arguments from an argument object', async () => {
+        okay(await args({ toggle: true }, {}).promise, { toggle: true }, 'accept toggle argumetns from an object')
+    }
+    {
         const args = require('./fixtures/arguments')
-        assert.deepStrictEqual(await args({ toggle: false }, {}).promise, { toggle: false }, 'exit')
-    })
+        okay(await args({ toggle: false }, {}).promise, { toggle: false }, 'accept a false toggle argument from an object')
+    }
 })
