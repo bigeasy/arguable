@@ -7,7 +7,7 @@ require('proof')(3, async (okay) => {
         const ee = new events.EventEmitter
         ee.stdout = new stream.PassThrough
         await main(ee)((argv) => {
-            return { promise: Promise.reject(new Arguable.Error('abend', { stdout: 'x' })) }
+            return { exit: Promise.reject(new Arguable.Error('abend', { stdout: 'x' })) }
         }, [])
         okay(ee.stdout.read().toString(), 'x\n', 'user error to stdout')
     }
@@ -15,7 +15,7 @@ require('proof')(3, async (okay) => {
         const ee = new events.EventEmitter
         ee.stderr = new stream.PassThrough
         await main(ee)((argv) => {
-            return { promise: Promise.reject(new Arguable.Error('abend', { stderr: 'x', exitCode: 1 })) }
+            return { exit: Promise.reject(new Arguable.Error('abend', { stderr: 'x', exitCode: 1 })) }
         }, [])
         okay({
             stderr: ee.stderr.read().toString(),
@@ -28,7 +28,7 @@ require('proof')(3, async (okay) => {
     {
         const ee = new events.EventEmitter
         await main(ee)((argv) => {
-            return { promise: Promise.reject(new Arguable.Error('abend', { exitCode: 1 })) }
+            return { exit: Promise.reject(new Arguable.Error('abend', { exitCode: 1 })) }
         }, [])
         okay(ee.exitCode, 1, 'set exit code')
     }

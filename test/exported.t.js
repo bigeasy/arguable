@@ -4,7 +4,7 @@ require('proof')(25, async (okay) => {
         const errored = require('./fixtures/errored')
         const child = errored([])
         try {
-            await child.promise
+            await child.exit
         } catch (error) {
             test.push(error.message)
         }
@@ -15,7 +15,7 @@ require('proof')(25, async (okay) => {
         const echo = require('./fixtures/echo')
         const child = echo([ 'a', 'b' ], { $stdout: new stream.PassThrough })
         okay({
-            exitCode: await child.promise,
+            exitCode: await child.exit,
             stdout: child.options.$stdout.read().toString()
         }, {
             exitCode: 0,
@@ -28,7 +28,7 @@ require('proof')(25, async (okay) => {
         const child = messaged({}, { messenger: new Messenger })
         child.options.messenger.emit('message', { method: 'ignore' })
         child.options.messenger.emit('message', { method: 'shutdown' })
-        okay(await child.promise, 0, 'mock ipc')
+        okay(await child.exit, 0, 'mock ipc')
     }
     {
         const LANG = process.env.LANG
@@ -40,17 +40,17 @@ require('proof')(25, async (okay) => {
         } else {
             delete process.env.LANG
         }
-        okay(await child.promise, 'fr_FR', 'language from environment')
+        okay(await child.exit, 'fr_FR', 'language from environment')
     }
     {
         const optional = require('./fixtures/optional')
         const child = optional([])
-        okay(await child.promise, process.pid, 'default property return')
+        okay(await child.exit, process.pid, 'default property return')
     }
     {
         const optional = require('./fixtures/optional')
         const child = optional([], { pid: 2 })
-        okay(await child.promise, 2, 'override property return')
+        okay(await child.exit, 2, 'override property return')
     }
     {
         const events = require('events')
@@ -58,7 +58,7 @@ require('proof')(25, async (okay) => {
         const child = signaled([], { $signals: new events.EventEmitter })
         child.options.$signals.emit('SIGHUP') // Should do nothing.
         child.options.$signals.emit('SIGTERM')
-        okay(await child.promise, 'SIGTERM', 'specify signal handling')
+        okay(await child.exit, 'SIGTERM', 'specify signal handling')
     }
     {
         const events = require('events')
@@ -66,7 +66,7 @@ require('proof')(25, async (okay) => {
         const child = signaled([], { $signals: new events.EventEmitter, $trap: false })
         child.options.$signals.emit('SIGINT')
         child.destroy(0)
-        okay(await child.promise, 0, 'override all defined signal handlers to no signal handler')
+        okay(await child.exit, 0, 'override all defined signal handlers to no signal handler')
     }
     {
         const events = require('events')
@@ -75,7 +75,7 @@ require('proof')(25, async (okay) => {
         child.options.$signals.emit('SIGINT')
         // **TODO** I can never remember how destroy works, why `0`?
         child.destroy(0)
-        okay(await child.promise, 'SIGINT', 'inverse of the trap off-switch')
+        okay(await child.exit, 'SIGINT', 'inverse of the trap off-switch')
     }
     {
         const events = require('events')
@@ -83,7 +83,7 @@ require('proof')(25, async (okay) => {
         const child = signaled([], { $signals: new events.EventEmitter, $trap: 'swallow' })
         child.options.$signals.emit('SIGINT')
         child.destroy(0)
-        okay(await child.promise, 0, 'all traps set to same action')
+        okay(await child.exit, 0, 'all traps set to same action')
     }
     {
         // Also tests untrap as false.
@@ -91,7 +91,7 @@ require('proof')(25, async (okay) => {
         const signaled = require('./fixtures/main')
         const child = signaled([], { $signals: new events.EventEmitter, $isMainModule: true })
         child.destroy(0)
-        okay(await child.promise, 'is main module')
+        okay(await child.exit, 'is main module')
         okay(child.options.$signals.listenerCount('SIGINT'), 1, 'fake main module')
     }
     {
@@ -99,7 +99,7 @@ require('proof')(25, async (okay) => {
         const signaled = require('./fixtures/main')
         const child = signaled([], { $signals: new events.EventEmitter, $isMainModule: true, $untrap: true })
         child.destroy(0)
-        okay(await child.promise, 'is main module')
+        okay(await child.exit, 'is main module')
         okay(child.options.$signals.listenerCount('SIGINT'), 0, 'fake main module wihtout setting traps')
     }
     {
@@ -118,14 +118,14 @@ require('proof')(25, async (okay) => {
         const stream = require('stream')
         const piped = require('./fixtures/piped')
         const child = piped([], { $pipes: { 3: new stream.PassThrough }, $isMainModule: true })
-        okay(await child.promise, 0, 'exit')
+        okay(await child.exit, 0, 'exit')
         okay(child.options.$pipes[3].read().toString(), 'piped\n', 'mock parent child pipes')
     }
     {
         const test = []
         const abend = require('./fixtures/abend')
         try {
-            await abend([]).promise
+            await abend([]).exit
         } catch (error) {
             test.push(error.exitCode)
         }
@@ -133,30 +133,30 @@ require('proof')(25, async (okay) => {
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args([{ name: 'value' }], {}).promise, { name: 'value' }, 'accept array of name/value pairs as arguments')
+        okay(await args([{ name: 'value' }], {}).exit, { name: 'value' }, 'accept array of name/value pairs as arguments')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args([ '-t' ], {}).promise, { toggle: true }, 'short toggle arguments')
+        okay(await args([ '-t' ], {}).exit, { toggle: true }, 'short toggle arguments')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args([ '-t', '-t' ], {}).promise, { toggle: false }, 'tally short toggle arguments')
+        okay(await args([ '-t', '-t' ], {}).exit, { toggle: false }, 'tally short toggle arguments')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args([ '--no-toggle' ], {}).promise, { toggle: false }, 'negate long toggle arguments')
+        okay(await args([ '--no-toggle' ], {}).exit, { toggle: false }, 'negate long toggle arguments')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args([ '-t', '--no-toggle', '-t' ], {}).promise, { toggle: true }, 'negate long toggle arguments then tally')
+        okay(await args([ '-t', '--no-toggle', '-t' ], {}).exit, { toggle: true }, 'negate long toggle arguments then tally')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args({ toggle: true }, {}).promise, { toggle: true }, 'accept toggle argumetns from an object')
+        okay(await args({ toggle: true }, {}).exit, { toggle: true }, 'accept toggle argumetns from an object')
     }
     {
         const args = require('./fixtures/arguments')
-        okay(await args({ toggle: false }, {}).promise, { toggle: false }, 'accept a false toggle argument from an object')
+        okay(await args({ toggle: false }, {}).exit, { toggle: false }, 'accept a false toggle argument from an object')
     }
 })

@@ -7,8 +7,7 @@ const _main = require('./main')
 
 class Child {
     constructor (promise, destroyed, options) {
-        // **TODO** Give this a real name.
-        this.promise = promise
+        this.exit = promise
         this._destroyed = destroyed
         this.options = options
     }

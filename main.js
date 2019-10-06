@@ -5,7 +5,7 @@ module.exports = function (process) {
     return async function main (f, argv) {
         let exitCode = null
         try {
-            exitCode = await f(argv).promise
+            exitCode = await f(argv).exit
         } catch (error) {
             rescue(error, [ Arguable.Error ], (error) => {
                 if (error.stdout) {
