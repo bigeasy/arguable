@@ -9,7 +9,7 @@ require('arguable')(module, { $trap: true }, async (arguable) => {
     destructible.durable('server', once(fastify.service, 'close', null).promise, () => fastify.close())
     await arguable.destroyed
     destructible.destroy()
-    await destructible.promise
+    await destructible.destructed
 
     return 0
 })
