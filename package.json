@@ -22,14 +22,14 @@
     "dependencies":
     {
                             "extant":                       "^1.0.15",
-                            "interrupt":                    "^9.0.0-alpha.1",
-                            "prospective":                  "^0.1.0-alpha.1",
+                            "interrupt":                    "9.0.0-alpha.1",
+                            "prospective":                  "0.1.0-alpha.1",
                             "rescue":                       "^6.0.1",
                             "synonymous":                   "^1.0.16"
     },
     "devDependencies":
     {
-                            "proof":                        "^8.0.0-alpha.7"
+                            "proof":                        "8.0.0-alpha.7"
     },
     "scripts":
     {
