@@ -22,7 +22,7 @@
     "dependencies":
     {
                             "extant":                       "^1.0.15",
-                            "interrupt":                    "9.0.0-alpha.4",
+                            "interrupt":                    "^10.0.1",
                             "prospective":                  "0.1.0-alpha.4",
                             "rescue":                       "^6.0.1",
                             "synonymous":                   "^1.0.16"
