@@ -11,6 +11,10 @@ const getopt = require('./getopt')
 
 //
 class Arguable {
+    static Error = Interrupt.create('Arguable.Error', {
+        ABEND: 'user initiated an early exit'
+    })
+
     constructor (usage, argv, options) {
         this._usage = usage
 
@@ -230,10 +234,6 @@ class Arguable {
         }
     }
 }
-
-Arguable.Error = Interrupt.create('Arguable.Error', {
-    ABEND: 'user initiated an early exit'
-})
 
 // Export `Arugable`.
 module.exports = Arguable
