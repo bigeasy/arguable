@@ -82,7 +82,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: 'A bad thing happened.',
                 exitCode: 1
@@ -103,7 +103,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: null,
                 exitCode: 1
@@ -117,7 +117,7 @@ require('proof')(35, (okay) => {
             throw new Error
         } catch (error) {
             okay(error instanceof Arguable.Error, 'is arguable error')
-            okay(/^(.*)\n/.exec(error.message)[1], 'abend', 'abend message')
+            okay(/^(.*)\n/.exec(error.message)[1], 'user initiated an early exit', 'abend message')
             okay(error.method, 'abend', 'is abend')
             okay(error.stderr, 'A bad thing happened.', 'error')
             okay(error.exitCode, 127, 'exit code')
@@ -129,7 +129,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: 'A bad thing happened.',
                 exitCode: 127
@@ -144,7 +144,7 @@ require('proof')(35, (okay) => {
             throw new Error
         } catch (error) {
             okay(error instanceof Arguable.Error, 'is arguable error')
-            okay(/^(.*)\n/.exec(error.message)[1], 'abend', 'is abend')
+            okay(/^(.*)\n/.exec(error.message)[1], 'user initiated an early exit', 'is abend')
             okay(error.stderr, 'A bad thing happened.', 'error')
             okay(error.exitCode, 1, 'exit code')
             okay({
@@ -155,7 +155,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: 'A bad thing happened.',
                 exitCode: 1
@@ -176,7 +176,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: 'nogoodness',
                 exitCode: 1
@@ -196,7 +196,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'abend',
                 stderr: 'unknown argument',
                 exitCode: 1
@@ -216,7 +216,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'help',
                 stdout: usage,
                 exitCode: 0
@@ -238,7 +238,7 @@ require('proof')(35, (okay) => {
                 exitCode: error.exitCode
             }, {
                 isArguableError: true,
-                message: 'abend',
+                message: 'user initiated an early exit',
                 method: 'help',
                 stdout: usage,
                 exitCode: 0

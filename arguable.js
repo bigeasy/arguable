@@ -176,7 +176,7 @@ class Arguable {
             message = this._usage.format(this.lang, key, vargs)
         }
         this._redirect = 'stderr'
-        throw new Arguable.Error('abend', {
+        throw new Arguable.Error('ABEND', {
             method: 'abend',
             key: key,
             vargs: vargs,
@@ -187,7 +187,7 @@ class Arguable {
 
     // Stop execution and print help message.
     help () {
-        throw new Arguable.Error('abend', {
+        throw new Arguable.Error('ABEND', {
             method: 'help',
             stdout: this._usage.chooseUsage(this.lang),
             exitCode: 0
@@ -231,7 +231,9 @@ class Arguable {
     }
 }
 
-Arguable.Error = Interrupt.create('Arguable.Error')
+Arguable.Error = Interrupt.create('Arguable.Error', {
+    ABEND: 'user initiated an early exit'
+})
 
 // Export `Arugable`.
 module.exports = Arguable
