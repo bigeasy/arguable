@@ -127,6 +127,7 @@ require('proof')(25, async (okay) => {
         try {
             await abend([]).exit
         } catch (error) {
+            console.log(error.stack)
             test.push(error.exitCode)
         }
         okay(test, [ 1 ], 'propagate exceptions that should be converted to formatted errors')

@@ -20,8 +20,6 @@ class Child {
 async function _execute (main, arguable, signals, untrap) {
     try {
         return await main(arguable)
-    } catch (error) {
-        rescue(error, [ Arguable.Error ], error => { throw error })
     } finally {
         for (const trap of untrap) {
             signals.removeListener(trap.signal, trap.listener)

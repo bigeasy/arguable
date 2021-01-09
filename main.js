@@ -7,16 +7,15 @@ module.exports = function (process) {
         try {
             exitCode = await f(argv).exit
         } catch (error) {
-            rescue(error, [ Arguable.Error ], (error) => {
-                if (error.stdout) {
-                    process.stdout.write(error.stdout)
-                    process.stdout.write('\n')
-                } else if (error.stderr) {
-                    process.stderr.write(error.stderr)
-                    process.stderr.write('\n')
-                }
-                exitCode = error.exitCode
-            })
+            rescue(error, [ Arguable.Error ])
+            if (error.stdout) {
+                process.stdout.write(error.stdout)
+                process.stdout.write('\n')
+            } else if (error.stderr) {
+                process.stderr.write(error.stderr)
+                process.stderr.write('\n')
+            }
+            exitCode = error.exitCode
         }
         if (exitCode != null && typeof exitCode == 'number') {
             process.exitCode = exitCode

@@ -180,6 +180,7 @@ class Arguable {
             message = this._usage.format(this.lang, key, vargs)
         }
         this._redirect = 'stderr'
+        console.log('here')
         throw new Arguable.Error('ABEND', {
             method: 'abend',
             key: key,
