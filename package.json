@@ -22,8 +22,8 @@
     "dependencies":
     {
                             "extant":                       "^1.0.15",
-                            "interrupt":                    "^11.0.0-alpha.5",
-                            "rescue":                       "^7.0.0-alpha.10",
+                            "interrupt":                    "11.0.0-alpha.5",
+                            "rescue":                       "7.0.0-alpha.10",
                             "synonymous":                   "^1.0.16"
     },
     "devDependencies":
