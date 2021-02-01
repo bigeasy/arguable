@@ -1,4 +1,4 @@
-const coalesce = require('extant')
+const { coalesce } = require('extant')
 const rescue = require('rescue')
 
 const Arguable = require('./arguable')

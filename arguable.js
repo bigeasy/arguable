@@ -1,6 +1,6 @@
 const util = require('util')
 
-const coalesce = require('extant')
+const { coalesce } = require('extant')
 const Interrupt = require('interrupt')
 
 const getopt = require('./getopt')
