@@ -80,7 +80,7 @@ require('proof')(25, async (okay) => {
     {
         const events = require('events')
         const signaled = require('./fixtures/signaled')
-        const child = signaled([], { $signals: new events.EventEmitter, $trap: 'swallow' })
+        const child = signaled([], { $signals: new events.EventEmitter, $trap: null })
         child.options.$signals.emit('SIGINT')
         child.destroy(0)
         okay(await child.exit, 0, 'all traps set to same action')
