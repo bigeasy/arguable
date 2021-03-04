@@ -1,5 +1,7 @@
 const util = require('util')
 
+const events = require('events')
+
 const { coalesce } = require('extant')
 const { Interrupt } = require('interrupt')
 
@@ -10,12 +12,15 @@ const getopt = require('./getopt')
 // ideology.
 
 //
-class Arguable {
+class Arguable extends events.EventEmitter {
     static Error = Interrupt.create('Arguable.Error', {
+        INVALID_TRAP: 'the trap is invalid',
         ABEND: 'user initiated an early exit'
     })
 
     constructor (usage, argv, options) {
+        super()
+
         this._usage = usage
 
         // These are the merged defintion and invocation options provided by the
@@ -180,7 +185,6 @@ class Arguable {
             message = this._usage.format(this.lang, key, vargs)
         }
         this._redirect = 'stderr'
-        console.log('here')
         throw new Arguable.Error('ABEND', {
             method: 'abend',
             key: key,
