@@ -6,14 +6,14 @@ const Usage = require('./usage')
 const _main = require('./main')
 
 class Child {
-    constructor (promise, arguable, options) {
+    constructor (promise, destroyed, options) {
         this.exit = promise
-        this._arguable = arguable
+        this._destroyed = destroyed
         this.options = options
     }
 
     destroy (...vargs) {
-        this._arguable.emit.apply(this._arguable, [ 'destroy' ].concat(vargs))
+        this._destroyed.apply(null, vargs)
     }
 }
 
@@ -123,7 +123,7 @@ module.exports = function (...vargs) {
         let _destroyed = null
         arguable.destroyed = new Promise(resolve => _destroyed = resolve)
 
-        const trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: null }
+        const trap = { SIGINT: 'destroy', SIGTERM: 'destroy', SIGHUP: 'swallow' }
         const $trap = ('$trap' in options) ? options.$trap : {}
         const $untrap = ('$untrap' in options)
                       ? options.$untrap
@@ -143,39 +143,34 @@ module.exports = function (...vargs) {
                 trap[signal] = $trap
             }
             break
-        case 'object':
-            if ($trap == null) {
-                for (const name in trap) {
-                    trap[name] = null
-                }
-            } else {
-                for (const signal in $trap) {
-                    trap[signal] = $trap[signal]
-                }
+        default:
+            for (const signal in $trap) {
+                trap[signal] = $trap[signal]
             }
             break
         }
         const traps = []
         for (const signal in trap) {
-            switch (typeof trap[signal]) {
-            case 'object': {
-                    Arguable.Error.assert(trap[signal] === null, 'INVALID_TRAP', { trap: trap[signal] })
-                    const listener = () => {}
-                    traps.push({ signal, listener })
-                    signals.on(signal, listener)
-                    break
+            switch (trap[signal]) {
+            case 'destroy': {
+                const listener = () => {
+                    _destroyed(signal)
                 }
-            case 'string': {
-                    const listener = () => {
-                        arguable.emit(trap[signal], signal)
-                    }
-                    traps.push({ signal, listener })
-                    signals.on(signal, listener)
-                    break
-                }
+                traps.push({ signal, listener })
+                signals.on(signal, listener)
+                break
+            }
+            case 'swallow': {
+                const listener = () => {}
+                traps.push({ signal, listener })
+                signals.on(signal, listener)
+                break
+            }
+            case 'default':
+                break
             }
         }
-        return new Child(_execute(main, arguable, signals, $untrap ? traps : []), arguable, arguable.options)
+        return new Child(_execute(main, arguable, signals, $untrap ? traps : []), _destroyed, arguable.options)
     }
 
     if (module === process.mainModule) {

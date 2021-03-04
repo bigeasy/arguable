@@ -1,4 +1,4 @@
 require('../..')(module, async arguable => {
-    await new Promise(resolve => arguable.on('destroy', resolve))
+    await arguable.destroyed
     return arguable.isMainModule
 })
