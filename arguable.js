@@ -3,7 +3,7 @@ const util = require('util')
 const events = require('events')
 
 const { coalesce } = require('extant')
-const { Interrupt } = require('interrupt')
+const Interrupt = require('interrupt')
 
 const getopt = require('./getopt')
 
